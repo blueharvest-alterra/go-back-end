@@ -23,7 +23,7 @@ func FromUseCase(admin *entities.Admin) *Admin {
 		ID:       admin.ID,
 		FullName: admin.FullName,
 		Auth: auth.Auth{
-			ID:       admin.AuthID,
+			ID:       admin.Auth.ID,
 			Email:    admin.Auth.Email,
 			Password: admin.Auth.Password,
 		},
@@ -39,7 +39,7 @@ func (u *Admin) ToUseCase() *entities.Admin {
 		ID:       u.ID,
 		FullName: u.FullName,
 		Auth: entities.Auth{
-			ID:       u.AuthID,
+			ID:       u.Auth.ID,
 			Email:    u.Auth.Email,
 			Password: u.Auth.Password,
 		},

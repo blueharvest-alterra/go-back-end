@@ -50,6 +50,21 @@ func (ac *AdminController) Login(c echo.Context) error {
 	return c.JSON(http.StatusOK, base.NewSuccessResponse("Berhasil login!", adminResponse))
 }
 
+func (ac *AdminController) Create(c echo.Context) error {
+	var adminCreate request.CreateAdmin
+	if err := c.Bind(&adminCreate); err != nil {
+		return c.JSON(utils.ConvertResponseCode(err), base.NewErrorResponse(err.Error()))
+	}
+
+	admin, errUseCase := ac.adminUseCase.Create(adminCreate.ToEntities())
+	if errUseCase != nil {
+		return c.JSON(utils.ConvertResponseCode(errUseCase), base.NewErrorResponse(errUseCase.Error()))
+	}
+
+	adminResponse := response.CreateAdminFromUseCase(&admin)
+	return c.JSON(http.StatusCreated, base.NewSuccessResponse("Berhasil membuat user Admin!", adminResponse))
+}
+
 func NewAdminController(adminUseCase entities.AdminUseCaseInterface) *AdminController {
 	return &AdminController{
 		adminUseCase: adminUseCase,
