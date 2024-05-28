@@ -18,8 +18,10 @@ type Admin struct {
 
 type AdminRepositoryInterface interface {
 	Login(admin *Admin) error
+	Create(admin *Admin) error
 }
 
 type AdminUseCaseInterface interface {
 	Login(admin *Admin) (Admin, error)
+	Create(admin *Admin) (Admin, error)
 }

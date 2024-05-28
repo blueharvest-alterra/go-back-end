@@ -11,4 +11,6 @@ type AdminRouteController struct {
 
 func (r *AdminRouteController) InitRoute(e *echo.Echo) {
 	e.POST("/v1/login/admin", r.AdminController.Login)
+	// TODO: FOR TESTING ADMIN USER
+	e.POST("/v1/create/admin", r.AdminController.Create)
 }

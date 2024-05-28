@@ -3,6 +3,7 @@ package customer
 import (
 	"errors"
 	"github.com/blueharvest-alterra/go-back-end/constant"
+	"github.com/blueharvest-alterra/go-back-end/drivers/postgresql/auth"
 	"github.com/blueharvest-alterra/go-back-end/entities"
 	"gorm.io/gorm"
 )
@@ -18,7 +19,22 @@ func NewCustomerRepo(db *gorm.DB) *Repo {
 func (r *Repo) Login(customer *entities.Customer) error {
 	customerDb := FromUseCase(customer)
 
-	if err := r.DB.Joins("Auth").First(&customerDb).Error; err != nil {
+	customerAuth := auth.Auth{Email: customerDb.Auth.Email}
+	if err := r.DB.Model(&customerAuth).Where("email = ?", customerDb.Auth.Email).First(&customerAuth).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return constant.ErrInvalidEmailOrPassword
+		}
+		return err
+	}
+
+	customerDb.Auth.ID = customerAuth.ID
+	customerDb.Auth.Email = customerAuth.Email
+	customerDb.Auth.Password = customerAuth.Password
+
+	if err := r.DB.Model(&customerDb).Where("auth_id = ?", customerAuth.ID).First(&customerDb).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return constant.ErrInvalidEmailOrPassword
+		}
 		return err
 	}
 
