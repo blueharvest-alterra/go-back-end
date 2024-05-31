@@ -16,14 +16,19 @@ type Customer struct {
 	CreatedAt   time.Time
 	UpdatedAt   time.Time
 	DeletedAt   gorm.DeletedAt
+	Addresses   []Address
 }
 
 type CustomerRepositoryInterface interface {
-	Login(admin *Customer) error
-	Register(admin *Customer) error
+	Login(customer *Customer) error
+	Register(customer *Customer) error
+	AddAddress(customer *Customer) error
+	GetAddresses(customer *Customer) error
 }
 
 type CustomerUseCaseInterface interface {
-	Login(admin *Customer) (Customer, error)
-	Register(admin *Customer) (Customer, error)
+	Login(customer *Customer) (Customer, error)
+	Register(customer *Customer) (Customer, error)
+	AddAddress(customer *Customer) (Customer, error)
+	GetAddresses(customer *Customer) (Customer, error)
 }

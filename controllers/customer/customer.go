@@ -82,6 +82,41 @@ func (ac *CustomerController) Register(c echo.Context) error {
 	return c.JSON(http.StatusCreated, base.NewSuccessResponse("Berhasil mendaftarkan akun!", customerResponse))
 }
 
+func (ac *CustomerController) CreateAddress(c echo.Context) error {
+	customerData, ok := c.Get("claims").(*middlewares.Claims)
+	if !ok {
+		return echo.ErrInternalServerError
+	}
+
+	var customerAddAddress request.CustomerAddAddress
+	if err := c.Bind(&customerAddAddress); err != nil {
+		return c.JSON(utils.ConvertResponseCode(err), base.NewErrorResponse(err.Error()))
+	}
+
+	customer, errUseCase := ac.customerUseCase.AddAddress(customerAddAddress.AddAddressToEntities(customerData.ID))
+	if errUseCase != nil {
+		return c.JSON(utils.ConvertResponseCode(errUseCase), base.NewErrorResponse(errUseCase.Error()))
+	}
+
+	customerResponse := response.AddressResponseFromUseCase(&customer)
+	return c.JSON(http.StatusCreated, base.NewSuccessResponse("Berhasil menambahkan Alamat baru!", customerResponse))
+}
+
+func (ac *CustomerController) GetAddresses(c echo.Context) error {
+	customerData, ok := c.Get("claims").(*middlewares.Claims)
+	if !ok {
+		return echo.ErrInternalServerError
+	}
+
+	customer, errUseCase := ac.customerUseCase.GetAddresses(&entities.Customer{ID: customerData.ID})
+	if errUseCase != nil {
+		return c.JSON(utils.ConvertResponseCode(errUseCase), base.NewErrorResponse(errUseCase.Error()))
+	}
+
+	customerResponse := response.AddressesResponseFromUseCase(&customer)
+	return c.JSON(http.StatusOK, base.NewSuccessResponse("Berhasil mendapatkan semua data addresses!", customerResponse))
+}
+
 func NewCustomerController(customerUseCase entities.CustomerUseCaseInterface) *CustomerController {
 	return &CustomerController{
 		customerUseCase: customerUseCase,
