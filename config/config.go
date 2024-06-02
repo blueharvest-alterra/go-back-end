@@ -1,16 +1,43 @@
 package config
 
 import (
-	"github.com/blueharvest-alterra/go-back-end/drivers/postgresql"
 	"os"
+
+	"github.com/blueharvest-alterra/go-back-end/drivers/postgresql"
+	"github.com/blueharvest-alterra/go-back-end/utils"
 )
 
 func InitConfigPostgresql() postgresql.Config {
+	dbName := os.Getenv("DB_NAME")
+	if dbName == "" {
+		dbName = utils.GetConfig("DB_NAME")
+	}
+
+	dbUser := os.Getenv("DB_USER")
+	if dbUser == "" {
+		dbUser = utils.GetConfig("DB_USER")
+	}
+
+	dbPass := os.Getenv("DB_PASS")
+	if dbPass == "" {
+		dbPass = utils.GetConfig("DB_PASS")
+	}
+
+	dbHost := os.Getenv("DB_HOST")
+	if dbHost == "" {
+		dbHost = utils.GetConfig("DB_HOST")
+	}
+
+	dbPort := os.Getenv("DB_PORT")
+	if dbPort == "" {
+		dbPort = utils.GetConfig("DB_PORT")
+	}
+
 	return postgresql.Config{
-		Name: os.Getenv("DB_NAME"),
-		User: os.Getenv("DB_USER"),
-		Pass: os.Getenv("DB_PASS"),
-		Host: os.Getenv("DB_HOST"),
-		Port: os.Getenv("DB_PORT"),
+		Name: dbName,
+		User: dbUser,
+		Pass: dbPass,
+		Host: dbHost,
+		Port: dbPort,
 	}
 }
