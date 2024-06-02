@@ -2,8 +2,10 @@ package postgresql
 
 import (
 	"fmt"
+
 	"github.com/blueharvest-alterra/go-back-end/drivers/postgresql/admin"
 	"github.com/blueharvest-alterra/go-back-end/drivers/postgresql/auth"
+	"github.com/blueharvest-alterra/go-back-end/drivers/postgresql/farm"
 	"github.com/blueharvest-alterra/go-back-end/drivers/postgresql/customer"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
@@ -36,7 +38,7 @@ func ConnectDB(config Config) *gorm.DB {
 }
 
 func MigrationUser(db *gorm.DB) {
-	err := db.AutoMigrate(auth.Auth{}, customer.Customer{}, admin.Admin{})
+	err := db.AutoMigrate(auth.Auth{}, customer.Customer{}, admin.Admin{}, farm.Farm{})
 	if err != nil {
 		return
 	}
