@@ -5,10 +5,13 @@ import (
 	adminController "github.com/blueharvest-alterra/go-back-end/controllers/admin"
 	customerController "github.com/blueharvest-alterra/go-back-end/controllers/customer"
 	farmController "github.com/blueharvest-alterra/go-back-end/controllers/farm"
+	promoController "github.com/blueharvest-alterra/go-back-end/controllers/promo"
+
 	"github.com/blueharvest-alterra/go-back-end/drivers/postgresql"
 	"github.com/blueharvest-alterra/go-back-end/drivers/postgresql/admin"
 	"github.com/blueharvest-alterra/go-back-end/drivers/postgresql/customer"
 	"github.com/blueharvest-alterra/go-back-end/drivers/postgresql/farm"
+	"github.com/blueharvest-alterra/go-back-end/drivers/postgresql/promo"
 	"github.com/blueharvest-alterra/go-back-end/routes"
 	"github.com/blueharvest-alterra/go-back-end/usecases"
 	"github.com/labstack/echo/v4"
@@ -34,9 +37,16 @@ func main() {
 	farmUseCase := usecases.NewFarmUseCase(farmRepo)
 	newFarmController := farmController.NewFarmController(farmUseCase)
 
+	promoRepo := promo.NewPromoRepo(db)
+	promoUseCase := usecases.NewPromoUseCase(promoRepo)
+	newPromoController := promoController.NewPromoController(promoUseCase)
 
 	farmRouteController := routes.FarmRouteController{
 		FarmController: newFarmController,
+	}
+
+	promoRouteController := routes.PromoRouteController{
+		PromoController: newPromoController,
 	}
 
 	adminRouteController := routes.AdminRouteController{
@@ -49,6 +59,7 @@ func main() {
 	adminRouteController.InitRoute(e)
 	customerRouteController.InitRoute(e)
 	farmRouteController.InitRoute(e)
+	promoRouteController.InitRoute(e)
 
 	e.Logger.Fatal(e.Start(":8080"))
 }
