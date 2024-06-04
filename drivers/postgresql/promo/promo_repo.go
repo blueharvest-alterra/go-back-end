@@ -58,8 +58,12 @@ func (r *Repo) Delete(promo *entities.Promo) error {
 func (r *Repo) GetById(promo *entities.Promo) error {
 	var promoDb Promo
 	if err := r.DB.First(&promoDb, "id = ?", promo.ID).Error; err != nil {
+		if r.DB.RowsAffected < 1 {
+			return constant.ErrNotFound
+		}
 		return err
 	}
+	
 	*promo = *promoDb.ToUseCase()
 	return nil
 }

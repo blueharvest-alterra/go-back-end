@@ -10,7 +10,6 @@ type Repo struct {
 	DB *gorm.DB
 }
 
-
 func NewFarmRepo(db *gorm.DB) *Repo {
 	return &Repo{DB: db}
 }
@@ -48,6 +47,7 @@ func (r *Repo) Delete(farm *entities.Farm) error {
 	if db.RowsAffected < 1 {
 		return constant.ErrNotFound
 	}
+
 	if err := db.Error; err != nil {
 		return err
 	}
@@ -56,14 +56,16 @@ func (r *Repo) Delete(farm *entities.Farm) error {
 	return nil
 }
 
-
 func (r *Repo) GetById(farm *entities.Farm) error {
-    var farmDb Farm
-    if err := r.DB.First(&farmDb, "id = ?", farm.ID).Error; err != nil {
-        return err
-    }
-    *farm = *farmDb.ToUseCase()
-    return nil
+	var farmDb Farm
+	if err := r.DB.First(&farmDb, "id = ?", farm.ID).Error; err != nil {
+		if r.DB.RowsAffected < 1 {
+			return constant.ErrNotFound
+		}
+		return err
+	}
+	*farm = *farmDb.ToUseCase()
+	return nil
 }
 
 func (r *Repo) GetAll(farms *[]entities.Farm) error {
