@@ -2,12 +2,12 @@ package postgresql
 
 import (
 	"fmt"
-
 	"github.com/blueharvest-alterra/go-back-end/drivers/postgresql/admin"
 	"github.com/blueharvest-alterra/go-back-end/drivers/postgresql/auth"
 	"github.com/blueharvest-alterra/go-back-end/drivers/postgresql/customer"
 	"github.com/blueharvest-alterra/go-back-end/drivers/postgresql/farm"
 	"github.com/blueharvest-alterra/go-back-end/drivers/postgresql/promo"
+	"github.com/blueharvest-alterra/go-back-end/drivers/postgresql/product"
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 )
@@ -39,7 +39,7 @@ func ConnectDB(config Config) *gorm.DB {
 }
 
 func MigrationUser(db *gorm.DB) {
-	db.Exec("DO $$ BEGIN IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'promo_status') THEN CREATE TYPE promo_status AS ENUM ('available', 'unavailable'); END IF; END $$;")
+  db.Exec("DO $$ BEGIN IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'promo_status') THEN CREATE TYPE promo_status AS ENUM ('available', 'unavailable'); END IF; END $$;")
 
 	err := db.AutoMigrate(auth.Auth{}, customer.Customer{}, admin.Admin{}, farm.Farm{}, promo.Promo{})
 	if err != nil {

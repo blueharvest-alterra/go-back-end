@@ -5,13 +5,14 @@ import (
 	adminController "github.com/blueharvest-alterra/go-back-end/controllers/admin"
 	customerController "github.com/blueharvest-alterra/go-back-end/controllers/customer"
 	farmController "github.com/blueharvest-alterra/go-back-end/controllers/farm"
-	promoController "github.com/blueharvest-alterra/go-back-end/controllers/promo"
-
+  promoController "github.com/blueharvest-alterra/go-back-end/controllers/promo"
+	productController "github.com/blueharvest-alterra/go-back-end/controllers/product"
 	"github.com/blueharvest-alterra/go-back-end/drivers/postgresql"
 	"github.com/blueharvest-alterra/go-back-end/drivers/postgresql/admin"
 	"github.com/blueharvest-alterra/go-back-end/drivers/postgresql/customer"
 	"github.com/blueharvest-alterra/go-back-end/drivers/postgresql/farm"
 	"github.com/blueharvest-alterra/go-back-end/drivers/postgresql/promo"
+	"github.com/blueharvest-alterra/go-back-end/drivers/postgresql/product"
 	"github.com/blueharvest-alterra/go-back-end/routes"
 	"github.com/blueharvest-alterra/go-back-end/usecases"
 	"github.com/labstack/echo/v4"
@@ -44,6 +45,9 @@ func main() {
 	farmRouteController := routes.FarmRouteController{
 		FarmController: newFarmController,
 	}
+	productRepo := product.NewProductRepo(db)
+	productUseCase := usecases.NewProductUseCase(productRepo)
+	newProductController := productController.NewProductController(productUseCase)
 
 	promoRouteController := routes.PromoRouteController{
 		PromoController: newPromoController,
@@ -55,11 +59,18 @@ func main() {
 	customerRouteController := routes.CustomerRouteController{
 		CustomerController: newCustomerController,
 	}
+	farmRouteController := routes.FarmRouteController{
+		FarmController: newFarmController,
+	}
+	productRouteController := routes.ProductRouteController{
+		ProductController: newProductController,
+	}
 
 	adminRouteController.InitRoute(e)
 	customerRouteController.InitRoute(e)
 	farmRouteController.InitRoute(e)
 	promoRouteController.InitRoute(e)
+	productRouteController.InitRoute(e)
 
 	e.Logger.Fatal(e.Start(":8080"))
 }
