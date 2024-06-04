@@ -3,16 +3,18 @@ package main
 import (
 	"github.com/blueharvest-alterra/go-back-end/config"
 	adminController "github.com/blueharvest-alterra/go-back-end/controllers/admin"
+	articleController "github.com/blueharvest-alterra/go-back-end/controllers/article"
 	customerController "github.com/blueharvest-alterra/go-back-end/controllers/customer"
 	farmController "github.com/blueharvest-alterra/go-back-end/controllers/farm"
-  promoController "github.com/blueharvest-alterra/go-back-end/controllers/promo"
 	productController "github.com/blueharvest-alterra/go-back-end/controllers/product"
+	promoController "github.com/blueharvest-alterra/go-back-end/controllers/promo"
 	"github.com/blueharvest-alterra/go-back-end/drivers/postgresql"
 	"github.com/blueharvest-alterra/go-back-end/drivers/postgresql/admin"
 	"github.com/blueharvest-alterra/go-back-end/drivers/postgresql/customer"
 	"github.com/blueharvest-alterra/go-back-end/drivers/postgresql/farm"
-	"github.com/blueharvest-alterra/go-back-end/drivers/postgresql/promo"
 	"github.com/blueharvest-alterra/go-back-end/drivers/postgresql/product"
+	"github.com/blueharvest-alterra/go-back-end/drivers/postgresql/article"
+	"github.com/blueharvest-alterra/go-back-end/drivers/postgresql/promo"
 	"github.com/blueharvest-alterra/go-back-end/routes"
 	"github.com/blueharvest-alterra/go-back-end/usecases"
 	"github.com/labstack/echo/v4"
@@ -42,16 +44,26 @@ func main() {
 	promoUseCase := usecases.NewPromoUseCase(promoRepo)
 	newPromoController := promoController.NewPromoController(promoUseCase)
 
-	farmRouteController := routes.FarmRouteController{
-		FarmController: newFarmController,
-	}
 	productRepo := product.NewProductRepo(db)
 	productUseCase := usecases.NewProductUseCase(productRepo)
 	newProductController := productController.NewProductController(productUseCase)
 
+	articleRepo := article.NewArticleRepo(db)
+	articleUseCase := usecases.NewArticleUseCase(articleRepo)
+	newArticleController := articleController.NewarticleController(articleUseCase)
+
+	farmRouteController := routes.FarmRouteController{
+		FarmController: newFarmController,
+	}
+
 	promoRouteController := routes.PromoRouteController{
 		PromoController: newPromoController,
 	}
+
+	articleRouteController := routes.ArticleRouteController{
+		ArticleController: newArticleController,
+	}
+
 
 	adminRouteController := routes.AdminRouteController{
 		AdminController: newAdminController,
@@ -59,9 +71,7 @@ func main() {
 	customerRouteController := routes.CustomerRouteController{
 		CustomerController: newCustomerController,
 	}
-	farmRouteController := routes.FarmRouteController{
-		FarmController: newFarmController,
-	}
+
 	productRouteController := routes.ProductRouteController{
 		ProductController: newProductController,
 	}
@@ -71,6 +81,7 @@ func main() {
 	farmRouteController.InitRoute(e)
 	promoRouteController.InitRoute(e)
 	productRouteController.InitRoute(e)
+	articleRouteController.InitRoute(e)
 
 	e.Logger.Fatal(e.Start(":8080"))
 }
