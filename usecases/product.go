@@ -28,9 +28,30 @@ func (cu *ProductUseCase) Create(product *entities.Product, userData *middleware
 	}
 
 	product.ID = uuid.New()
+	product.Status = "available"
 
 	if err := cu.repository.Create(product, thumbnail); err != nil {
 		return entities.Product{}, err
+	}
+
+	return *product, nil
+}
+
+func (cu *ProductUseCase) GetByID(product *entities.Product) (entities.Product, error) {
+	if product.ID == uuid.Nil {
+		return entities.Product{}, constant.ErrEmptyInput
+	}
+
+	if err := cu.repository.GetByID(product); err != nil {
+		return entities.Product{}, err
+	}
+
+	return *product, nil
+}
+
+func (cu *ProductUseCase) GetAll(product *[]entities.Product) ([]entities.Product, error) {
+	if err := cu.repository.GetAll(product); err != nil {
+		return []entities.Product{}, err
 	}
 
 	return *product, nil
