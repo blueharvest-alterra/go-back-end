@@ -55,3 +55,28 @@ func (r *Repo) Register(customer *entities.Customer) error {
 	*customer = *customerDb.ToUseCase()
 	return nil
 }
+
+func (r *Repo) AddAddress(user *entities.Customer) error {
+	customerDb := FromUseCase(user)
+
+	if err := r.DB.Model(&customerDb).Association("Addresses").Append(&customerDb); err != nil {
+		return constant.ErrInsertDatabase
+	}
+
+	*user = *customerDb.ToUseCase()
+	return nil
+}
+
+func (r *Repo) GetAddresses(customer *entities.Customer) error {
+	customerDb := FromUseCase(customer)
+
+	if err := r.DB.Preload("Addresses").First(&customerDb, "id = ?", customerDb.ID).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return constant.ErrNotFound
+		}
+		return err
+	}
+
+	*customer = *customerDb.ToUseCase()
+	return nil
+}

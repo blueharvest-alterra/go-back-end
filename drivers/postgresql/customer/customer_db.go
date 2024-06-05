@@ -1,6 +1,7 @@
 package customer
 
 import (
+	"github.com/blueharvest-alterra/go-back-end/drivers/postgresql/address"
 	"github.com/blueharvest-alterra/go-back-end/drivers/postgresql/auth"
 	"github.com/blueharvest-alterra/go-back-end/entities"
 	"github.com/google/uuid"
@@ -14,13 +15,32 @@ type Customer struct {
 	PhoneNumber string    `gorm:"type:varchar(20)"`
 	BirthDate   time.Time `gorm:"type:date"`
 	Auth        auth.Auth
-	AuthID      uuid.UUID      `gorm:"type:varchar(100)"`
-	CreatedAt   time.Time      `gorm:"autoCreateTime"`
-	UpdatedAt   time.Time      `gorm:"autoUpdateTime"`
-	DeletedAt   gorm.DeletedAt `gorm:"index"`
+	AuthID      uuid.UUID         `gorm:"type:varchar(100)"`
+	CreatedAt   time.Time         `gorm:"autoCreateTime"`
+	UpdatedAt   time.Time         `gorm:"autoUpdateTime"`
+	DeletedAt   gorm.DeletedAt    `gorm:"index"`
+	Addresses   []address.Address `gorm:"many2many:customer_addresses;"`
 }
 
 func FromUseCase(customer *entities.Customer) *Customer {
+	addresses := make([]address.Address, len(customer.Addresses))
+	for i, _address := range customer.Addresses {
+		addresses[i] = address.Address{
+			ID:        _address.ID,
+			Address:   _address.Address,
+			CityID:    _address.CityID,
+			City:      _address.City,
+			StateID:   _address.StateID,
+			State:     _address.State,
+			ZipCode:   _address.ZipCode,
+			Country:   _address.Country,
+			Longitude: _address.Longitude,
+			Latitude:  _address.Latitude,
+			CreatedAt: _address.CreatedAt,
+			UpdatedAt: _address.UpdatedAt,
+		}
+	}
+
 	return &Customer{
 		ID:          customer.ID,
 		FullName:    customer.FullName,
@@ -35,10 +55,29 @@ func FromUseCase(customer *entities.Customer) *Customer {
 		CreatedAt: customer.CreatedAt,
 		UpdatedAt: customer.UpdatedAt,
 		DeletedAt: customer.DeletedAt,
+		Addresses: addresses,
 	}
 }
 
 func (u *Customer) ToUseCase() *entities.Customer {
+	addresses := make([]entities.Address, len(u.Addresses))
+	for i, _address := range u.Addresses {
+		addresses[i] = entities.Address{
+			ID:        _address.ID,
+			Address:   _address.Address,
+			CityID:    _address.CityID,
+			City:      _address.City,
+			StateID:   _address.StateID,
+			State:     _address.State,
+			ZipCode:   _address.ZipCode,
+			Country:   _address.Country,
+			Longitude: _address.Longitude,
+			Latitude:  _address.Latitude,
+			CreatedAt: _address.CreatedAt,
+			UpdatedAt: _address.UpdatedAt,
+		}
+	}
+
 	return &entities.Customer{
 		ID:          u.ID,
 		FullName:    u.FullName,
@@ -53,5 +92,6 @@ func (u *Customer) ToUseCase() *entities.Customer {
 		CreatedAt: u.CreatedAt,
 		UpdatedAt: u.UpdatedAt,
 		DeletedAt: u.DeletedAt,
+		Addresses: addresses,
 	}
 }

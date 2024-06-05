@@ -56,3 +56,25 @@ func (cu *CustomerUseCase) Register(customer *entities.Customer) (entities.Custo
 
 	return *customer, nil
 }
+
+func (cu *CustomerUseCase) AddAddress(customer *entities.Customer) (entities.Customer, error) {
+	if customer.Addresses[0].Address == "" || customer.Addresses[0].Latitude == "" || customer.Addresses[0].ZipCode == "" || customer.Addresses[0].State == "" || customer.Addresses[0].Country == "" || customer.Addresses[0].City == "" {
+		return entities.Customer{}, constant.ErrEmptyInput
+	}
+
+	customer.Addresses[0].ID = uuid.New()
+
+	if err := cu.repository.AddAddress(customer); err != nil {
+		return entities.Customer{}, err
+	}
+
+	return *customer, nil
+}
+
+func (cu *CustomerUseCase) GetAddresses(customer *entities.Customer) (entities.Customer, error) {
+	if err := cu.repository.GetAddresses(customer); err != nil {
+		return entities.Customer{}, err
+	}
+
+	return *customer, nil
+}
