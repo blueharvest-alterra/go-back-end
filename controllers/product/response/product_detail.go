@@ -21,6 +21,7 @@ type ProductDetail struct {
 	PickupAvailable   bool           `json:"pickup_available"`
 	DeliveryAvailable bool           `json:"delivery_available"`
 	Thumbnail         string         `json:"thumbnail"`
+	Status            string         `json:"status"`
 	CreatedAt         time.Time      `json:"created_at"`
 	UpdatedAt         time.Time      `json:"updated_at"`
 	DeletedAt         gorm.DeletedAt `json:"deleted_at"`
@@ -35,6 +36,7 @@ func ProductDetailFromUseCase(product *entities.Product) *ProductDetail {
 		PickupAvailable:   product.PickupAvailable,
 		DeliveryAvailable: product.DeliveryAvailable,
 		Thumbnail:         product.Thumbnail,
+		Status:            product.Status,
 		CreatedAt:         product.CreatedAt,
 		UpdatedAt:         product.UpdatedAt,
 		DeletedAt:         product.DeletedAt,

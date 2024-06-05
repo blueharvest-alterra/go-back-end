@@ -14,4 +14,6 @@ func (r *ProductRouteController) InitRoute(e *echo.Echo) {
 	p := e.Group("/v1/products")
 	p.Use(middlewares.JWTMiddleware)
 	p.POST("", r.ProductController.Create)
+	p.GET("/:id", r.ProductController.GetByID)
+	p.GET("", r.ProductController.GetAll)
 }
