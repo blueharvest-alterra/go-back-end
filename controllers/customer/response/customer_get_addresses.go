@@ -8,7 +8,9 @@ import (
 type customerAddress struct {
 	ID        uuid.UUID `json:"id"`
 	Address   string    `json:"address"`
+	CityID    string    `json:"city_id"`
 	City      string    `json:"city"`
+	StateID   string    `json:"state_id"`
 	State     string    `json:"state"`
 	ZipCode   string    `json:"zip_code"`
 	Country   string    `json:"country"`
@@ -27,7 +29,9 @@ func AddressesResponseFromUseCase(customer *entities.Customer) *GetAddressesResp
 		addresses[i] = customerAddress{
 			ID:        address.ID,
 			Address:   address.Address,
+			CityID:    address.CityID,
 			City:      address.City,
+			StateID:   address.StateID,
 			State:     address.State,
 			ZipCode:   address.ZipCode,
 			Country:   address.Country,

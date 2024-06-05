@@ -28,7 +28,9 @@ func FromUseCase(customer *entities.Customer) *Customer {
 		addresses[i] = address.Address{
 			ID:        _address.ID,
 			Address:   _address.Address,
+			CityID:    _address.CityID,
 			City:      _address.City,
+			StateID:   _address.StateID,
 			State:     _address.State,
 			ZipCode:   _address.ZipCode,
 			Country:   _address.Country,
@@ -63,7 +65,9 @@ func (u *Customer) ToUseCase() *entities.Customer {
 		addresses[i] = entities.Address{
 			ID:        _address.ID,
 			Address:   _address.Address,
+			CityID:    _address.CityID,
 			City:      _address.City,
+			StateID:   _address.StateID,
 			State:     _address.State,
 			ZipCode:   _address.ZipCode,
 			Country:   _address.Country,

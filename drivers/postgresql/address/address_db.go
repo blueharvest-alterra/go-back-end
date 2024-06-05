@@ -61,19 +61,6 @@ func (a *Address) ToUseCase() *entities.Address {
 	}
 }
 
-//type RajaongkirGetCityResponse struct {
-//	Rajaongkir struct {
-//		Query struct {
-//			Province string `json:"province"`
-//		} `json:"query"`
-//		Status struct {
-//			Code        int    `json:"code"`
-//			Description string `json:"description"`
-//		} `json:"status"`
-//		Results []Address `json:"results"`
-//	} `json:"rajaongkir"`
-//}
-
 type RajaongkirResponse struct {
 	Rajaongkir struct {
 		Status struct {
