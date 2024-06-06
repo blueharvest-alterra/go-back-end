@@ -29,7 +29,7 @@ type ArticleRepositoryInterface interface {
 type ArticleUseCaseInterface interface {
 	Create(article *Article, picture []*multipart.FileHeader) (Article, error)
 	GetById(id uuid.UUID) (Article, error)
-	Update(article *Article) (Article, error)
+	Update(article *Article, picture []*multipart.FileHeader) (Article, error)
 	Delete(id uuid.UUID) (Article, error)
 	GetAll(articles *[]Article) ([]Article, error)
 }

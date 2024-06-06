@@ -47,7 +47,6 @@ func (ac *ArticleController) Create(c echo.Context) error {
 		}
 	}
 
-
 	article, errUseCase := ac.articleUseCase.Create(articleCreate.ToEntities(), picture)
 	if errUseCase != nil {
 		return c.JSON(utils.ConvertResponseCode(errUseCase), base.NewErrorResponse(errUseCase.Error()))
@@ -85,7 +84,23 @@ func (ac *ArticleController) Update(c echo.Context) error {
 	}
 	articleEdit.ID = articleId
 
-	article, errUseCase := ac.articleUseCase.Update(articleEdit.ToEntities())
+	form, err := c.MultipartForm()
+	if err != nil {
+		return c.JSON(utils.ConvertResponseCode(err), base.NewErrorResponse(err.Error()))
+	}
+
+	picture := form.File["picture_file"]
+
+	if len(picture) > 1 {
+		return c.JSON(http.StatusBadRequest, "Gambar Tanaman Hanya Boleh Satu")
+	}
+	for _, file := range picture {
+		if !utils.IsImageFile(file.Filename) {
+			return c.JSON(http.StatusBadRequest, "Format file gambar tidak didukung")
+		}
+	}
+
+	article, errUseCase := ac.articleUseCase.Update(articleEdit.ToEntities(), picture)
 	if errUseCase != nil {
 		return c.JSON(utils.ConvertResponseCode(errUseCase), base.NewErrorResponse(errUseCase.Error()))
 	}

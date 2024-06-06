@@ -58,7 +58,27 @@ func (c *ArticleUseCase) GetById(id uuid.UUID) (entities.Article, error) {
 	return article, nil
 }
 
-func (c *ArticleUseCase) Update(article *entities.Article) (entities.Article, error) {
+func (c *ArticleUseCase) Update(article *entities.Article, picture []*multipart.FileHeader) (entities.Article, error) {
+
+	if len(picture) != 0 {
+		file, err := picture[0].Open()
+		if err != nil {
+			return entities.Article{}, err
+		}
+		defer file.Close()
+	
+		ext := filepath.Ext(picture[0].Filename)
+	
+		ctx := context.Background()
+	
+		objectName := article.ID.String() + ext
+		url, err := google.Upload.UploadFile(ctx, file, objectName)
+		if err != nil {
+			return entities.Article{}, err
+		}
+		article.Picture = url
+	}
+
 	if err := c.repository.Update(article); err != nil {
 		return entities.Article{}, err
 	}
