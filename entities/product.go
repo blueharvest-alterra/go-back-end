@@ -24,8 +24,12 @@ type Product struct {
 
 type ProductRepositoryInterface interface {
 	Create(product *Product, thumbnail []*multipart.FileHeader) error
+	GetByID(product *Product) error
+	GetAll(product *[]Product) error
 }
 
 type ProductUseCaseInterface interface {
 	Create(product *Product, userData *middlewares.Claims, thumbnail []*multipart.FileHeader) (Product, error)
+	GetByID(product *Product) (Product, error)
+	GetAll(product *[]Product) ([]Product, error)
 }

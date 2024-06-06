@@ -7,6 +7,7 @@ import (
 	"github.com/blueharvest-alterra/go-back-end/entities"
 	"github.com/blueharvest-alterra/go-back-end/middlewares"
 	"github.com/blueharvest-alterra/go-back-end/utils"
+	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
 	"net/http"
 )
@@ -39,7 +40,36 @@ func (ac *ProductController) Create(c echo.Context) error {
 	}
 
 	productResponse := response.ProductDetailFromUseCase(&product)
-	return c.JSON(http.StatusCreated, base.NewSuccessResponse("Berhasil membuat user Admin!", productResponse))
+	return c.JSON(http.StatusCreated, base.NewSuccessResponse("product created", productResponse))
+}
+
+func (ac *ProductController) GetByID(c echo.Context) error {
+	var product entities.Product
+
+	productID, err := uuid.Parse(c.Param("id"))
+	if err != nil {
+		return c.JSON(utils.ConvertResponseCode(err), base.NewErrorResponse(err.Error()))
+	}
+
+	product.ID = productID
+
+	product, errUseCase := ac.productUseCase.GetByID(&product)
+	if errUseCase != nil {
+		return c.JSON(utils.ConvertResponseCode(errUseCase), base.NewErrorResponse(errUseCase.Error()))
+	}
+
+	productResponse := response.ProductDetailFromUseCase(&product)
+	return c.JSON(http.StatusCreated, base.NewSuccessResponse("product created", productResponse))
+}
+
+func (ac *ProductController) GetAll(c echo.Context) error {
+	products, errUseCase := ac.productUseCase.GetAll(&[]entities.Product{})
+	if errUseCase != nil {
+		return c.JSON(utils.ConvertResponseCode(errUseCase), base.NewErrorResponse(errUseCase.Error()))
+	}
+
+	productResponse := response.SliceFromUseCase(&products)
+	return c.JSON(http.StatusCreated, base.NewSuccessResponse("product created", productResponse))
 }
 
 func NewProductController(productUseCase entities.ProductUseCaseInterface) *ProductController {

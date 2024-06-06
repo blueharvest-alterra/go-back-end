@@ -7,7 +7,9 @@ import (
 
 type CustomerAddAddress struct {
 	Address   string `json:"address"`
+	CityID    string `json:"city_id"`
 	City      string `json:"city"`
+	StateID   string `json:"state_id"`
 	State     string `json:"state"`
 	ZipCode   string `json:"zip_code"`
 	Country   string `json:"country"`
@@ -20,7 +22,9 @@ func (r *CustomerAddAddress) AddAddressToEntities(customerId uuid.UUID) *entitie
 	customer.ID = customerId
 	newAddress := entities.Address{
 		Address:   r.Address,
+		CityID:    r.CityID,
 		City:      r.City,
+		StateID:   r.StateID,
 		State:     r.State,
 		ZipCode:   r.ZipCode,
 		Country:   r.Country,

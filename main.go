@@ -2,6 +2,7 @@ package main
 
 import (
 	"github.com/blueharvest-alterra/go-back-end/config"
+	addressController "github.com/blueharvest-alterra/go-back-end/controllers/address"
 	adminController "github.com/blueharvest-alterra/go-back-end/controllers/admin"
 	articleController "github.com/blueharvest-alterra/go-back-end/controllers/article"
 	customerController "github.com/blueharvest-alterra/go-back-end/controllers/customer"
@@ -9,6 +10,7 @@ import (
 	productController "github.com/blueharvest-alterra/go-back-end/controllers/product"
 	promoController "github.com/blueharvest-alterra/go-back-end/controllers/promo"
 	"github.com/blueharvest-alterra/go-back-end/drivers/postgresql"
+	"github.com/blueharvest-alterra/go-back-end/drivers/postgresql/address"
 	"github.com/blueharvest-alterra/go-back-end/drivers/postgresql/admin"
 	"github.com/blueharvest-alterra/go-back-end/drivers/postgresql/customer"
 	"github.com/blueharvest-alterra/go-back-end/drivers/postgresql/farm"
@@ -55,6 +57,9 @@ func main() {
 	farmRouteController := routes.FarmRouteController{
 		FarmController: newFarmController,
 	}
+	addressRepo := address.NewAddressRepo(db)
+	addressUseCase := usecases.NewAddressUseCase(addressRepo)
+	newAddressController := addressController.NewAddressController(addressUseCase)
 
 	promoRouteController := routes.PromoRouteController{
 		PromoController: newPromoController,
@@ -75,6 +80,9 @@ func main() {
 	productRouteController := routes.ProductRouteController{
 		ProductController: newProductController,
 	}
+	addressRouteController := routes.AddressRouteController{
+		AddressController: newAddressController,
+	}
 
 	adminRouteController.InitRoute(e)
 	customerRouteController.InitRoute(e)
@@ -82,6 +90,7 @@ func main() {
 	promoRouteController.InitRoute(e)
 	productRouteController.InitRoute(e)
 	articleRouteController.InitRoute(e)
+	addressRouteController.InitRoute(e)
 
 	e.Logger.Fatal(e.Start(":8080"))
 }

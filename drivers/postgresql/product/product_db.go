@@ -1,13 +1,9 @@
 package product
 
 import (
-	"context"
 	"github.com/blueharvest-alterra/go-back-end/entities"
-	"github.com/blueharvest-alterra/go-back-end/utils/google"
 	"github.com/google/uuid"
 	"gorm.io/gorm"
-	"mime/multipart"
-	"path/filepath"
 	"time"
 )
 
@@ -57,24 +53,24 @@ func (product *Product) ToUseCase() *entities.Product {
 	}
 }
 
-func (p *Product) UploadThumbnail(thumbnail []*multipart.FileHeader) error {
-	file, err := thumbnail[0].Open()
-	if err != nil {
-		return err
-	}
-	defer file.Close()
-
-	ext := filepath.Ext(thumbnail[0].Filename)
-
-	ctx := context.Background()
-
-	objectName := uuid.NewString() + ext
-	url, err := google.Upload.UploadFile(ctx, file, objectName)
-	if err != nil {
-		return err
-	}
-
-	p.Thumbnail = url
-
-	return nil
-}
+//func (p *Product) UploadThumbnail(thumbnail []*multipart.FileHeader) error {
+//	file, err := thumbnail[0].Open()
+//	if err != nil {
+//		return err
+//	}
+//	defer file.Close()
+//
+//	ext := filepath.Ext(thumbnail[0].Filename)
+//
+//	ctx := context.Background()
+//
+//	objectName := uuid.NewString() + ext
+//	url, err := google.Upload.UploadFile(ctx, file, objectName)
+//	if err != nil {
+//		return err
+//	}
+//
+//	p.Thumbnail = url
+//
+//	return nil
+//}
