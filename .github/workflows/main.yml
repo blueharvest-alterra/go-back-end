@@ -57,4 +57,4 @@ jobs:
           script: |
             cd blueharvest-backend
             echo $OPEN_API_KEY
-            DB_HOST="$DB_HOST" DB_NAME="$DB_NAME" DB_PASS="$DB_PASS" DB_PORT="$DB_PORT" DB_USER="$DB_USER" JWT_SECRET_KEY="$JWT_SECRET_KEY" RAJAONGKIR_API_KEY="$RAJAONGKIR_API_KEY" KEY_GCS"$KEY_GCS" docker compose up --build -d --no-deps
+            DB_HOST="$DB_HOST" DB_NAME="$DB_NAME" DB_PASS="$DB_PASS" DB_PORT="$DB_PORT" DB_USER="$DB_USER" JWT_SECRET_KEY="$JWT_SECRET_KEY" RAJAONGKIR_API_KEY="$RAJAONGKIR_API_KEY" KEY_GCS="$KEY_GCS" docker compose up --build -d --no-deps
