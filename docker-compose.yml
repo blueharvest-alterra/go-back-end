@@ -26,3 +26,4 @@ services:
       - DB_USER=${DB_USER}
       - JWT_SECRET_KEY=${JWT_SECRET_KEY}
       - RAJAONGKIR_API_KEY=${RAJAONGKIR_API_KEY}
+      - KEY_GCS=${KEY_GCS}
