@@ -12,10 +12,10 @@ import (
 	"github.com/blueharvest-alterra/go-back-end/drivers/postgresql"
 	"github.com/blueharvest-alterra/go-back-end/drivers/postgresql/address"
 	"github.com/blueharvest-alterra/go-back-end/drivers/postgresql/admin"
+	"github.com/blueharvest-alterra/go-back-end/drivers/postgresql/article"
 	"github.com/blueharvest-alterra/go-back-end/drivers/postgresql/customer"
 	"github.com/blueharvest-alterra/go-back-end/drivers/postgresql/farm"
 	"github.com/blueharvest-alterra/go-back-end/drivers/postgresql/product"
-	"github.com/blueharvest-alterra/go-back-end/drivers/postgresql/article"
 	"github.com/blueharvest-alterra/go-back-end/drivers/postgresql/promo"
 	"github.com/blueharvest-alterra/go-back-end/routes"
 	"github.com/blueharvest-alterra/go-back-end/usecases"
@@ -24,6 +24,7 @@ import (
 )
 
 func main() {
+
 	config.InitConfigPostgresql()
 	db := postgresql.ConnectDB(config.InitConfigPostgresql())
 
@@ -68,7 +69,6 @@ func main() {
 	articleRouteController := routes.ArticleRouteController{
 		ArticleController: newArticleController,
 	}
-
 
 	adminRouteController := routes.AdminRouteController{
 		AdminController: newAdminController,
