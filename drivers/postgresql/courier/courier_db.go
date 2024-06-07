@@ -64,18 +64,15 @@ func GetAllAvailableCouriers(couriers *[]Courier, request RajaOngkirCostRequest)
 	availableCouriers := []string{"jne", "pos", "tiki"}
 
 	for _, courier := range availableCouriers {
-		fmt.Println("courier", courier)
 		request.Courier = courier
 		jsonRequestBody, err := json.Marshal(request)
 		if err != nil {
-			fmt.Println("Error marshaling request body:", err)
-			return err
+			return fmt.Errorf("error marshaling request body", err)
 		}
 
 		req, err := http.NewRequest("POST", url, bytes.NewBuffer(jsonRequestBody))
 		if err != nil {
-			fmt.Println("Error creating request:", err)
-			return err
+			return fmt.Errorf("error creating request", err)
 		}
 
 		req.Header.Add("key", os.Getenv("RAJAONGKIR_API_KEY"))
@@ -84,27 +81,23 @@ func GetAllAvailableCouriers(couriers *[]Courier, request RajaOngkirCostRequest)
 		client := &http.Client{}
 		res, err := client.Do(req)
 		if err != nil {
-			fmt.Println("Error sending request:", err)
-			return err
+			return fmt.Errorf("error sending request", err)
 		}
 		defer res.Body.Close()
 
 		if res.StatusCode != http.StatusOK {
-			fmt.Printf("Failed to get available couriers, server responded with %s\n", res.Status)
-			return nil
+			return fmt.Errorf("failed to get available couriers, server responded with %s\n", res.Status)
 		}
 
 		body, err := io.ReadAll(res.Body)
 		if err != nil {
-			fmt.Println("Error reading response body:", err)
-			return err
+			return fmt.Errorf("error reading response body", err)
 		}
 
 		var response RajaOngkirCostResponse
 		err = json.Unmarshal(body, &response)
 		if err != nil {
-			fmt.Println("Error unmarshaling JSON response:", err)
-			return err
+			return fmt.Errorf("error unmarshaling JSON response", err)
 		}
 
 		for _, result := range response.RajaOngkir.Results {
