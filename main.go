@@ -4,6 +4,7 @@ import (
 	"github.com/blueharvest-alterra/go-back-end/config"
 	addressController "github.com/blueharvest-alterra/go-back-end/controllers/address"
 	adminController "github.com/blueharvest-alterra/go-back-end/controllers/admin"
+	courierController "github.com/blueharvest-alterra/go-back-end/controllers/courier"
 	customerController "github.com/blueharvest-alterra/go-back-end/controllers/customer"
 	farmController "github.com/blueharvest-alterra/go-back-end/controllers/farm"
 	productController "github.com/blueharvest-alterra/go-back-end/controllers/product"
@@ -11,6 +12,7 @@ import (
 	"github.com/blueharvest-alterra/go-back-end/drivers/postgresql"
 	"github.com/blueharvest-alterra/go-back-end/drivers/postgresql/address"
 	"github.com/blueharvest-alterra/go-back-end/drivers/postgresql/admin"
+	"github.com/blueharvest-alterra/go-back-end/drivers/postgresql/courier"
 	"github.com/blueharvest-alterra/go-back-end/drivers/postgresql/customer"
 	"github.com/blueharvest-alterra/go-back-end/drivers/postgresql/farm"
 	"github.com/blueharvest-alterra/go-back-end/drivers/postgresql/product"
@@ -52,6 +54,10 @@ func main() {
 	addressUseCase := usecases.NewAddressUseCase(addressRepo)
 	newAddressController := addressController.NewAddressController(addressUseCase)
 
+	courierRepo := courier.NewCourierRepo(db)
+	courierUseCase := usecases.NewCourierUseCase(courierRepo)
+	newCourierController := courierController.NewCourierController(courierUseCase)
+
 	promoRouteController := routes.PromoRouteController{
 		PromoController: newPromoController,
 	}
@@ -70,6 +76,9 @@ func main() {
 	addressRouteController := routes.AddressRouteController{
 		AddressController: newAddressController,
 	}
+	courierRouteController := routes.CourierRouteController{
+		CourierController: newCourierController,
+	}
 
 	adminRouteController.InitRoute(e)
 	customerRouteController.InitRoute(e)
@@ -77,6 +86,7 @@ func main() {
 	promoRouteController.InitRoute(e)
 	productRouteController.InitRoute(e)
 	addressRouteController.InitRoute(e)
+	courierRouteController.InitRoute(e)
 
 	e.Logger.Fatal(e.Start(":8080"))
 }
