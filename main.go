@@ -4,6 +4,7 @@ import (
 	"github.com/blueharvest-alterra/go-back-end/config"
 	addressController "github.com/blueharvest-alterra/go-back-end/controllers/address"
 	adminController "github.com/blueharvest-alterra/go-back-end/controllers/admin"
+	courierController "github.com/blueharvest-alterra/go-back-end/controllers/courier"
 	articleController "github.com/blueharvest-alterra/go-back-end/controllers/article"
 	customerController "github.com/blueharvest-alterra/go-back-end/controllers/customer"
 	farmController "github.com/blueharvest-alterra/go-back-end/controllers/farm"
@@ -13,6 +14,7 @@ import (
 	"github.com/blueharvest-alterra/go-back-end/drivers/postgresql"
 	"github.com/blueharvest-alterra/go-back-end/drivers/postgresql/address"
 	"github.com/blueharvest-alterra/go-back-end/drivers/postgresql/admin"
+	"github.com/blueharvest-alterra/go-back-end/drivers/postgresql/courier"
 	"github.com/blueharvest-alterra/go-back-end/drivers/postgresql/article"
 	"github.com/blueharvest-alterra/go-back-end/drivers/postgresql/customer"
 	"github.com/blueharvest-alterra/go-back-end/drivers/postgresql/farm"
@@ -26,6 +28,7 @@ import (
 )
 
 func main() {
+
 	config.InitConfigPostgresql()
 	db := postgresql.ConnectDB(config.InitConfigPostgresql())
 
@@ -64,7 +67,11 @@ func main() {
 	transactionUseCase := usecases.NewTransactionUseCase(transactionRepo)
 	newTransactionController := transactionController.NewTransactionController(transactionUseCase)
 
-	farmRouteController := routes.FarmRouteController{
+	courierRepo := courier.NewCourierRepo(db)
+	courierUseCase := usecases.NewCourierUseCase(courierRepo)
+	newCourierController := courierController.NewCourierController(courierUseCase)
+
+  farmRouteController := routes.FarmRouteController{
 		FarmController: newFarmController,
 	}
 	promoRouteController := routes.PromoRouteController{
@@ -87,6 +94,9 @@ func main() {
 	}
 	transactionRouteController := routes.TransactionRouteController{
 		TransactionController: newTransactionController,
+  }
+	courierRouteController := routes.CourierRouteController{
+		CourierController: newCourierController,
 	}
 
 	adminRouteController.InitRoute(e)
@@ -97,6 +107,7 @@ func main() {
 	articleRouteController.InitRoute(e)
 	addressRouteController.InitRoute(e)
 	transactionRouteController.InitRoute(e)
+	courierRouteController.InitRoute(e)
 
 	e.Logger.Fatal(e.Start(":8080"))
 }
