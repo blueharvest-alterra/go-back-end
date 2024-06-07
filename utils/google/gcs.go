@@ -6,8 +6,10 @@ import (
 	"io"
 	"log"
 	"mime/multipart"
+	"os"
 
 	"cloud.google.com/go/storage"
+	"github.com/blueharvest-alterra/go-back-end/utils"
 	"google.golang.org/api/option"
 )
 
@@ -29,8 +31,11 @@ type ClientUploader struct {
 
 func init() {
 	ctx := context.Background()
-	keyPath := "utils/google/key.json"
-	client, err := storage.NewClient(ctx, option.WithCredentialsFile(keyPath))
+	credential := os.Getenv("KEY_GCS")
+	if credential == "" {
+		credential = utils.GetConfig("KEY_GCS")
+	}
+	client, err := storage.NewClient(ctx, option.WithCredentialsJSON([]byte(credential)))
 	if err != nil {
 		log.Fatalf("Failed to create client: %v", err)
 	}

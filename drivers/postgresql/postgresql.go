@@ -2,8 +2,10 @@ package postgresql
 
 import (
 	"fmt"
+
 	"github.com/blueharvest-alterra/go-back-end/drivers/postgresql/address"
 	"github.com/blueharvest-alterra/go-back-end/drivers/postgresql/admin"
+	"github.com/blueharvest-alterra/go-back-end/drivers/postgresql/article"
 	"github.com/blueharvest-alterra/go-back-end/drivers/postgresql/auth"
 	"github.com/blueharvest-alterra/go-back-end/drivers/postgresql/courier"
 	"github.com/blueharvest-alterra/go-back-end/drivers/postgresql/customer"
@@ -52,6 +54,7 @@ func MigrationUser(db *gorm.DB) {
 		admin.Admin{},
 		farm.Farm{},
 		promo.Promo{},
+    article.Article{},
 		product.Product{},
 		transaction.Transaction{},
 		transactionDetail.TransactionDetail{},
