@@ -1,8 +1,6 @@
 package main
 
 import (
-	"fmt"
-
 	"github.com/blueharvest-alterra/go-back-end/config"
 	addressController "github.com/blueharvest-alterra/go-back-end/controllers/address"
 	adminController "github.com/blueharvest-alterra/go-back-end/controllers/admin"
@@ -23,16 +21,10 @@ import (
 	"github.com/blueharvest-alterra/go-back-end/usecases"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
-	"github.com/robfig/cron"
 )
 
 func main() {
-    cron := cron.New()
 
-   // Define the Cron job schedule
-   cron.AddFunc("*/2 * * * * *", func() {
-		fmt.Println("Hello world!")
-	})
 	config.InitConfigPostgresql()
 	db := postgresql.ConnectDB(config.InitConfigPostgresql())
 
@@ -77,7 +69,6 @@ func main() {
 	articleRouteController := routes.ArticleRouteController{
 		ArticleController: newArticleController,
 	}
-
 
 	adminRouteController := routes.AdminRouteController{
 		AdminController: newAdminController,
