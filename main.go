@@ -10,6 +10,7 @@ import (
 	farmController "github.com/blueharvest-alterra/go-back-end/controllers/farm"
 	productController "github.com/blueharvest-alterra/go-back-end/controllers/product"
 	promoController "github.com/blueharvest-alterra/go-back-end/controllers/promo"
+	transactionController "github.com/blueharvest-alterra/go-back-end/controllers/transaction"
 	"github.com/blueharvest-alterra/go-back-end/drivers/postgresql"
 	"github.com/blueharvest-alterra/go-back-end/drivers/postgresql/address"
 	"github.com/blueharvest-alterra/go-back-end/drivers/postgresql/admin"
@@ -19,6 +20,7 @@ import (
 	"github.com/blueharvest-alterra/go-back-end/drivers/postgresql/farm"
 	"github.com/blueharvest-alterra/go-back-end/drivers/postgresql/product"
 	"github.com/blueharvest-alterra/go-back-end/drivers/postgresql/promo"
+	"github.com/blueharvest-alterra/go-back-end/drivers/postgresql/transaction"
 	"github.com/blueharvest-alterra/go-back-end/routes"
 	"github.com/blueharvest-alterra/go-back-end/usecases"
 	"github.com/labstack/echo/v4"
@@ -61,6 +63,10 @@ func main() {
 	addressUseCase := usecases.NewAddressUseCase(addressRepo)
 	newAddressController := addressController.NewAddressController(addressUseCase)
 
+	transactionRepo := transaction.NewTransactionRepo(db)
+	transactionUseCase := usecases.NewTransactionUseCase(transactionRepo)
+	newTransactionController := transactionController.NewTransactionController(transactionUseCase)
+
 	courierRepo := courier.NewCourierRepo(db)
 	courierUseCase := usecases.NewCourierUseCase(courierRepo)
 	newCourierController := courierController.NewCourierController(courierUseCase)
@@ -86,6 +92,9 @@ func main() {
 	addressRouteController := routes.AddressRouteController{
 		AddressController: newAddressController,
 	}
+	transactionRouteController := routes.TransactionRouteController{
+		TransactionController: newTransactionController,
+  }
 	courierRouteController := routes.CourierRouteController{
 		CourierController: newCourierController,
 	}
@@ -97,6 +106,7 @@ func main() {
 	productRouteController.InitRoute(e)
 	articleRouteController.InitRoute(e)
 	addressRouteController.InitRoute(e)
+	transactionRouteController.InitRoute(e)
 	courierRouteController.InitRoute(e)
 
 	e.Logger.Fatal(e.Start(":8080"))
