@@ -67,8 +67,12 @@ func (r Repo) Create(transaction *entities.Transaction) error {
 		return err
 	}
 
-	if err := tx.Commit().Error; err != nil {
+	if err := tx.Create(&transactionDb).Error; err != nil {
 		panic(err)
+	}
+
+	if err := tx.Commit().Error; err != nil {
+		tx.Rollback()
 	}
 
 	*transaction = *transactionDb.ToUseCase()

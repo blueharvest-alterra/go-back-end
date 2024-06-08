@@ -1,6 +1,8 @@
 package entities
 
-import "github.com/google/uuid"
+import (
+	"github.com/google/uuid"
+)
 
 type Payment struct {
 	ID         uuid.UUID
@@ -8,4 +10,12 @@ type Payment struct {
 	InvoiceURL string
 	Status     string
 	Amount     float64
+}
+
+type PaymentRepositoryInterface interface {
+	UpdateStatus(payment *Payment) error
+}
+
+type PaymentUseCaseInterface interface {
+	UpdateStatus(payment *Payment) (Payment, error)
 }

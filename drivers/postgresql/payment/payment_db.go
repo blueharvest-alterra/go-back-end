@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/blueharvest-alterra/go-back-end/constant"
+	"github.com/blueharvest-alterra/go-back-end/entities"
 	"github.com/blueharvest-alterra/go-back-end/utils"
 	"github.com/google/uuid"
 	"net/http"
@@ -17,6 +18,26 @@ type Payment struct {
 	InvoiceURL string    `gorm:"type:text;not null"`
 	Status     string    `gorm:"type:varchar(50);not null"`
 	Amount     float64   `gorm:"type:decimal;not null"`
+}
+
+func FromUseCase(payment *entities.Payment) *Payment {
+	return &Payment{
+		ID:         payment.ID,
+		ExternalID: payment.ExternalID,
+		InvoiceURL: payment.InvoiceURL,
+		Status:     payment.Status,
+		Amount:     payment.Amount,
+	}
+}
+
+func (p *Payment) ToUseCase() *entities.Payment {
+	return &entities.Payment{
+		ID:         p.ID,
+		ExternalID: p.ExternalID,
+		InvoiceURL: p.InvoiceURL,
+		Status:     p.Status,
+		Amount:     p.Amount,
+	}
 }
 
 type xdtInvoiceResponse struct {

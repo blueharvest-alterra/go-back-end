@@ -9,6 +9,7 @@ import (
 	courierController "github.com/blueharvest-alterra/go-back-end/controllers/courier"
 	customerController "github.com/blueharvest-alterra/go-back-end/controllers/customer"
 	farmController "github.com/blueharvest-alterra/go-back-end/controllers/farm"
+	paymentController "github.com/blueharvest-alterra/go-back-end/controllers/payment"
 	productController "github.com/blueharvest-alterra/go-back-end/controllers/product"
 	promoController "github.com/blueharvest-alterra/go-back-end/controllers/promo"
 	transactionController "github.com/blueharvest-alterra/go-back-end/controllers/transaction"
@@ -19,6 +20,7 @@ import (
 	"github.com/blueharvest-alterra/go-back-end/drivers/postgresql/courier"
 	"github.com/blueharvest-alterra/go-back-end/drivers/postgresql/customer"
 	"github.com/blueharvest-alterra/go-back-end/drivers/postgresql/farm"
+	"github.com/blueharvest-alterra/go-back-end/drivers/postgresql/payment"
 	"github.com/blueharvest-alterra/go-back-end/drivers/postgresql/product"
 	"github.com/blueharvest-alterra/go-back-end/drivers/postgresql/promo"
 	"github.com/blueharvest-alterra/go-back-end/drivers/postgresql/transaction"
@@ -72,6 +74,10 @@ func main() {
 	courierUseCase := usecases.NewCourierUseCase(courierRepo)
 	newCourierController := courierController.NewCourierController(courierUseCase)
 
+	paymentRepo := payment.NewPaymentRepo(db)
+	paymentUseCase := usecases.NewPaymentUseCase(paymentRepo)
+	newPaymentController := paymentController.NewPaymentController(paymentUseCase)
+
 	adminRouteController := routes.AdminRouteController{
 		AdminController: newAdminController,
 	}
@@ -99,6 +105,9 @@ func main() {
 	courierRouteController := routes.CourierRouteController{
 		CourierController: newCourierController,
 	}
+	paymentRouteController := routes.PaymentRouteController{
+		PaymentController: newPaymentController,
+	}
 
 	adminRouteController.InitRoute(e)
 	customerRouteController.InitRoute(e)
@@ -109,6 +118,7 @@ func main() {
 	addressRouteController.InitRoute(e)
 	transactionRouteController.InitRoute(e)
 	courierRouteController.InitRoute(e)
+	paymentRouteController.InitRoute(e)
 
 	e.Logger.Fatal(e.Start(":8080"))
 }
