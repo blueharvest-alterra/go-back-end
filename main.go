@@ -1,11 +1,12 @@
 package main
 
 import (
+	"fmt"
 	"github.com/blueharvest-alterra/go-back-end/config"
 	addressController "github.com/blueharvest-alterra/go-back-end/controllers/address"
 	adminController "github.com/blueharvest-alterra/go-back-end/controllers/admin"
-	courierController "github.com/blueharvest-alterra/go-back-end/controllers/courier"
 	articleController "github.com/blueharvest-alterra/go-back-end/controllers/article"
+	courierController "github.com/blueharvest-alterra/go-back-end/controllers/courier"
 	customerController "github.com/blueharvest-alterra/go-back-end/controllers/customer"
 	farmController "github.com/blueharvest-alterra/go-back-end/controllers/farm"
 	productController "github.com/blueharvest-alterra/go-back-end/controllers/product"
@@ -14,8 +15,8 @@ import (
 	"github.com/blueharvest-alterra/go-back-end/drivers/postgresql"
 	"github.com/blueharvest-alterra/go-back-end/drivers/postgresql/address"
 	"github.com/blueharvest-alterra/go-back-end/drivers/postgresql/admin"
-	"github.com/blueharvest-alterra/go-back-end/drivers/postgresql/courier"
 	"github.com/blueharvest-alterra/go-back-end/drivers/postgresql/article"
+	"github.com/blueharvest-alterra/go-back-end/drivers/postgresql/courier"
 	"github.com/blueharvest-alterra/go-back-end/drivers/postgresql/customer"
 	"github.com/blueharvest-alterra/go-back-end/drivers/postgresql/farm"
 	"github.com/blueharvest-alterra/go-back-end/drivers/postgresql/product"
@@ -28,10 +29,10 @@ import (
 )
 
 func main() {
-
 	config.InitConfigPostgresql()
 	db := postgresql.ConnectDB(config.InitConfigPostgresql())
 
+	fmt.Println(db)
 	e := echo.New()
 	e.Use(middleware.Logger())
 
@@ -71,7 +72,13 @@ func main() {
 	courierUseCase := usecases.NewCourierUseCase(courierRepo)
 	newCourierController := courierController.NewCourierController(courierUseCase)
 
-  farmRouteController := routes.FarmRouteController{
+	adminRouteController := routes.AdminRouteController{
+		AdminController: newAdminController,
+	}
+	customerRouteController := routes.CustomerRouteController{
+		CustomerController: newCustomerController,
+	}
+	farmRouteController := routes.FarmRouteController{
 		FarmController: newFarmController,
 	}
 	promoRouteController := routes.PromoRouteController{
@@ -79,12 +86,6 @@ func main() {
 	}
 	articleRouteController := routes.ArticleRouteController{
 		ArticleController: newArticleController,
-	}
-	adminRouteController := routes.AdminRouteController{
-		AdminController: newAdminController,
-	}
-	customerRouteController := routes.CustomerRouteController{
-		CustomerController: newCustomerController,
 	}
 	productRouteController := routes.ProductRouteController{
 		ProductController: newProductController,
@@ -94,7 +95,7 @@ func main() {
 	}
 	transactionRouteController := routes.TransactionRouteController{
 		TransactionController: newTransactionController,
-  }
+	}
 	courierRouteController := routes.CourierRouteController{
 		CourierController: newCourierController,
 	}

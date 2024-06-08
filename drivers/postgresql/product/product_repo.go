@@ -2,6 +2,7 @@ package product
 
 import (
 	"errors"
+	"fmt"
 	"github.com/blueharvest-alterra/go-back-end/constant"
 	"github.com/blueharvest-alterra/go-back-end/entities"
 	"gorm.io/gorm"
@@ -19,10 +20,10 @@ func NewProductRepo(db *gorm.DB) *Repo {
 func (r *Repo) Create(product *entities.Product, thumbnail []*multipart.FileHeader) error {
 	productDb := FromUseCase(product)
 
-	//if err := productDb.UploadThumbnail(thumbnail); err != nil {
-	//	fmt.Println("err repo Create", err)
-	//	return err
-	//}
+	if err := productDb.UploadThumbnail(thumbnail); err != nil {
+		fmt.Println("err repo Create", err)
+		return err
+	}
 
 	if err := r.DB.Create(&productDb).Error; err != nil {
 		return err

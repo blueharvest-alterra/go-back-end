@@ -54,7 +54,7 @@ func MigrationUser(db *gorm.DB) {
 		admin.Admin{},
 		farm.Farm{},
 		promo.Promo{},
-    article.Article{},
+		article.Article{},
 		product.Product{},
 		transaction.Transaction{},
 		transactionDetail.TransactionDetail{},

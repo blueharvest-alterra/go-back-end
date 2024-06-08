@@ -8,23 +8,25 @@ import (
 )
 
 type Transaction struct {
-	ID                 uuid.UUID
-	Type               string
-	Status             string
-	CustomerID         uuid.UUID
-	Customer           Customer
-	SubTotal           float64
-	Tax                float64
-	Discount           float64
-	Total              float64
-	Quantity           uint
-	PaymentExternalID  string
-	CourierID          uuid.UUID
-	Courier            Courier
-	TransactionDetails TransactionDetail
-	CreatedAt          time.Time
-	UpdatedAt          time.Time
-	DeletedAt          gorm.DeletedAt
+	ID                   uuid.UUID
+	Type                 string
+	Status               string
+	CustomerID           uuid.UUID
+	Customer             Customer
+	SubTotal             float64
+	Tax                  float64
+	Discount             float64
+	Total                float64
+	PaymentExternalID    string
+	PaymentInvoiceURL    string
+	PromoID              uuid.UUID
+	DestinationAddressID uuid.UUID
+	CourierID            uuid.UUID
+	Courier              Courier
+	TransactionDetails   []TransactionDetail
+	CreatedAt            time.Time
+	UpdatedAt            time.Time
+	DeletedAt            gorm.DeletedAt
 }
 
 type TransactionRepositoryInterface interface {
