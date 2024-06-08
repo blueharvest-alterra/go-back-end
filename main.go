@@ -4,20 +4,22 @@ import (
 	"github.com/blueharvest-alterra/go-back-end/config"
 	addressController "github.com/blueharvest-alterra/go-back-end/controllers/address"
 	adminController "github.com/blueharvest-alterra/go-back-end/controllers/admin"
-	courierController "github.com/blueharvest-alterra/go-back-end/controllers/courier"
 	articleController "github.com/blueharvest-alterra/go-back-end/controllers/article"
+	courierController "github.com/blueharvest-alterra/go-back-end/controllers/courier"
 	customerController "github.com/blueharvest-alterra/go-back-end/controllers/customer"
 	farmController "github.com/blueharvest-alterra/go-back-end/controllers/farm"
+	farmInvestController "github.com/blueharvest-alterra/go-back-end/controllers/farminvest"
 	productController "github.com/blueharvest-alterra/go-back-end/controllers/product"
 	promoController "github.com/blueharvest-alterra/go-back-end/controllers/promo"
 	transactionController "github.com/blueharvest-alterra/go-back-end/controllers/transaction"
 	"github.com/blueharvest-alterra/go-back-end/drivers/postgresql"
 	"github.com/blueharvest-alterra/go-back-end/drivers/postgresql/address"
 	"github.com/blueharvest-alterra/go-back-end/drivers/postgresql/admin"
-	"github.com/blueharvest-alterra/go-back-end/drivers/postgresql/courier"
 	"github.com/blueharvest-alterra/go-back-end/drivers/postgresql/article"
+	"github.com/blueharvest-alterra/go-back-end/drivers/postgresql/courier"
 	"github.com/blueharvest-alterra/go-back-end/drivers/postgresql/customer"
 	"github.com/blueharvest-alterra/go-back-end/drivers/postgresql/farm"
+	farmInvestRP "github.com/blueharvest-alterra/go-back-end/drivers/postgresql/farmInvest"
 	"github.com/blueharvest-alterra/go-back-end/drivers/postgresql/product"
 	"github.com/blueharvest-alterra/go-back-end/drivers/postgresql/promo"
 	"github.com/blueharvest-alterra/go-back-end/drivers/postgresql/transaction"
@@ -34,6 +36,10 @@ func main() {
 
 	e := echo.New()
 	e.Use(middleware.Logger())
+	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
+		AllowOrigins: []string{"*"},
+		AllowHeaders: []string{echo.HeaderOrigin, echo.HeaderContentType, echo.HeaderAccept},
+	}))
 
 	adminRepo := admin.NewAdminRepo(db)
 	adminUseCase := usecases.NewAdminUseCase(adminRepo)
@@ -71,7 +77,11 @@ func main() {
 	courierUseCase := usecases.NewCourierUseCase(courierRepo)
 	newCourierController := courierController.NewCourierController(courierUseCase)
 
-  farmRouteController := routes.FarmRouteController{
+	farmInvestRepo := farmInvestRP.NewFarmInvestRepo(db)
+	farmInvestUseCase := usecases.NewFarmInvestUseCase(farmInvestRepo)
+	newFarmInvestController := farmInvestController.NewFarmInvestController(farmInvestUseCase)
+
+	farmRouteController := routes.FarmRouteController{
 		FarmController: newFarmController,
 	}
 	promoRouteController := routes.PromoRouteController{
@@ -94,9 +104,14 @@ func main() {
 	}
 	transactionRouteController := routes.TransactionRouteController{
 		TransactionController: newTransactionController,
-  }
+	}
+
 	courierRouteController := routes.CourierRouteController{
 		CourierController: newCourierController,
+	}
+
+	farmInvestRouteController := routes.FarmInvestRouteController{
+		FarmInvestController: newFarmInvestController,
 	}
 
 	adminRouteController.InitRoute(e)
@@ -108,6 +123,7 @@ func main() {
 	addressRouteController.InitRoute(e)
 	transactionRouteController.InitRoute(e)
 	courierRouteController.InitRoute(e)
+	farmInvestRouteController.InitRoute(e)
 
 	e.Logger.Fatal(e.Start(":8080"))
 }
