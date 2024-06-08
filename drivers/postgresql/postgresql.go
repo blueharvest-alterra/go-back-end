@@ -7,9 +7,12 @@ import (
 	"github.com/blueharvest-alterra/go-back-end/drivers/postgresql/admin"
 	"github.com/blueharvest-alterra/go-back-end/drivers/postgresql/article"
 	"github.com/blueharvest-alterra/go-back-end/drivers/postgresql/auth"
+	"github.com/blueharvest-alterra/go-back-end/drivers/postgresql/cart"
 	"github.com/blueharvest-alterra/go-back-end/drivers/postgresql/courier"
 	"github.com/blueharvest-alterra/go-back-end/drivers/postgresql/customer"
 	"github.com/blueharvest-alterra/go-back-end/drivers/postgresql/farm"
+	farminvest "github.com/blueharvest-alterra/go-back-end/drivers/postgresql/farmInvest"
+	farmmonitor "github.com/blueharvest-alterra/go-back-end/drivers/postgresql/farmMonitor"
 	"github.com/blueharvest-alterra/go-back-end/drivers/postgresql/product"
 	"github.com/blueharvest-alterra/go-back-end/drivers/postgresql/promo"
 	"github.com/blueharvest-alterra/go-back-end/drivers/postgresql/transaction"
@@ -59,6 +62,9 @@ func MigrationUser(db *gorm.DB) {
 		transaction.Transaction{},
 		transactionDetail.TransactionDetail{},
 		courier.Courier{},
+		farmmonitor.FarmMonitor{},
+		farminvest.FarmInvest{},
+		cart.Cart{},
 	)
 	if err != nil {
 		return
