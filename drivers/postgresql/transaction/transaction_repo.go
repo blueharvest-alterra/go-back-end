@@ -57,9 +57,13 @@ func (r Repo) Create(transaction *entities.Transaction) error {
 	transactionDb.SubTotal = subTotal
 	transactionDb.Tax = TaxFee
 	transactionDb.Total = (transactionDb.SubTotal + transactionDb.Tax + transactionDb.Courier.Fee) - transactionDb.Discount
-	transactionDb.Status = "unpaid"
 
-	if err := transactionDb.PaymentCreate(); err != nil {
+	transactionDb.PaymentID = uuid.New()
+	transactionDb.Payment.ID = transactionDb.PaymentID
+	transactionDb.Payment.Amount = transactionDb.Total
+	transactionDb.Payment.Status = "UNPAID"
+
+	if err := transactionDb.Payment.Create(); err != nil {
 		return err
 	}
 

@@ -43,7 +43,3 @@ func (ac *TransactionController) Create(c echo.Context) error {
 	transactionResponse := response.GetTransactionFromUseCase(&transaction)
 	return c.JSON(http.StatusCreated, base.NewSuccessResponse("transaction created", transactionResponse))
 }
-
-func (ac *TransactionController) PaymentCallback(c echo.Context) error {
-	return nil
-}

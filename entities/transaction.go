@@ -9,16 +9,14 @@ import (
 
 type Transaction struct {
 	ID                   uuid.UUID
-	Type                 string
-	Status               string
 	CustomerID           uuid.UUID
 	Customer             Customer
 	SubTotal             float64
 	Tax                  float64
 	Discount             float64
 	Total                float64
-	PaymentExternalID    string
-	PaymentInvoiceURL    string
+	PaymentID            uuid.UUID
+	Payment              Payment
 	PromoID              uuid.UUID
 	DestinationAddressID uuid.UUID
 	CourierID            uuid.UUID

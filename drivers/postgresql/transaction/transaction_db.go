@@ -1,19 +1,14 @@
 package transaction
 
 import (
-	"bytes"
-	"encoding/json"
-	"fmt"
-	"github.com/blueharvest-alterra/go-back-end/constant"
 	"github.com/blueharvest-alterra/go-back-end/drivers/postgresql/courier"
 	"github.com/blueharvest-alterra/go-back-end/drivers/postgresql/customer"
+	"github.com/blueharvest-alterra/go-back-end/drivers/postgresql/payment"
 	"github.com/blueharvest-alterra/go-back-end/drivers/postgresql/product"
 	"github.com/blueharvest-alterra/go-back-end/drivers/postgresql/transactionDetail"
 	"github.com/blueharvest-alterra/go-back-end/entities"
 	"github.com/google/uuid"
 	"gorm.io/gorm"
-	"net/http"
-	"os"
 	"time"
 )
 
@@ -21,16 +16,14 @@ const TaxFee = float64(10000)
 
 type Transaction struct {
 	ID                 uuid.UUID `gorm:"type:varchar(100)"`
-	Type               string    `gorm:"type:varchar(100)"`
-	Status             string    `gorm:"type:varchar(50)"`
 	CustomerID         uuid.UUID `gorm:"type:varchar(100)"`
 	Customer           customer.Customer
 	SubTotal           float64   `gorm:"type:decimal"`
 	Tax                float64   `gorm:"type:decimal"`
 	Discount           float64   `gorm:"type:decimal"`
 	Total              float64   `gorm:"type:decimal"`
-	PaymentExternalID  string    `gorm:"type:text"`
-	PaymentInvoiceURL  string    `gorm:"type:text"`
+	PaymentID          uuid.UUID `gorm:"type:varchar(100)"`
+	Payment            payment.Payment
 	CourierID          uuid.UUID `gorm:"type:varchar(100)"`
 	PromoID            uuid.UUID `gorm:"type:varchar(100)"`
 	Courier            courier.Courier
@@ -61,8 +54,6 @@ func FromUseCase(transaction *entities.Transaction) *Transaction {
 
 	return &Transaction{
 		ID:         transaction.ID,
-		Type:       transaction.Type,
-		Status:     transaction.Status,
 		CustomerID: transaction.CustomerID,
 		Customer: customer.Customer{
 			ID:          transaction.Customer.ID,
@@ -70,14 +61,19 @@ func FromUseCase(transaction *entities.Transaction) *Transaction {
 			PhoneNumber: transaction.Customer.PhoneNumber,
 			BirthDate:   transaction.Customer.BirthDate,
 		},
-		SubTotal:          transaction.SubTotal,
-		Tax:               transaction.Tax,
-		Discount:          transaction.Discount,
-		Total:             transaction.Total,
-		PaymentExternalID: transaction.PaymentExternalID,
-		PaymentInvoiceURL: transaction.PaymentInvoiceURL,
-		CourierID:         transaction.CourierID,
-		PromoID:           transaction.PromoID,
+		SubTotal:  transaction.SubTotal,
+		Tax:       transaction.Tax,
+		Discount:  transaction.Discount,
+		Total:     transaction.Total,
+		PaymentID: transaction.PaymentID,
+		Payment: payment.Payment{
+			ID:         transaction.Payment.ID,
+			ExternalID: transaction.Payment.ExternalID,
+			InvoiceURL: transaction.Payment.InvoiceURL,
+			Status:     transaction.Payment.Status,
+		},
+		CourierID: transaction.CourierID,
+		PromoID:   transaction.PromoID,
 		Courier: courier.Courier{
 			ID:                   transaction.Courier.ID,
 			DestinationAddressID: transaction.Courier.DestinationAddressID,
@@ -111,8 +107,6 @@ func (u *Transaction) ToUseCase() *entities.Transaction {
 
 	return &entities.Transaction{
 		ID:         u.ID,
-		Type:       u.Type,
-		Status:     u.Status,
 		CustomerID: u.CustomerID,
 		Customer: entities.Customer{
 			ID:          u.Customer.ID,
@@ -120,14 +114,18 @@ func (u *Transaction) ToUseCase() *entities.Transaction {
 			PhoneNumber: u.Customer.PhoneNumber,
 			BirthDate:   u.Customer.BirthDate,
 		},
-		SubTotal:          u.SubTotal,
-		Tax:               u.Tax,
-		Discount:          u.Discount,
-		Total:             u.Total,
-		PaymentExternalID: u.PaymentExternalID,
-		PaymentInvoiceURL: u.PaymentInvoiceURL,
-		CourierID:         u.CourierID,
-		PromoID:           u.PromoID,
+		SubTotal: u.SubTotal,
+		Tax:      u.Tax,
+		Discount: u.Discount,
+		Total:    u.Total,
+		Payment: entities.Payment{
+			ID:         u.Payment.ID,
+			ExternalID: u.Payment.ExternalID,
+			InvoiceURL: u.Payment.InvoiceURL,
+			Status:     u.Payment.Status,
+		},
+		CourierID: u.CourierID,
+		PromoID:   u.PromoID,
 		Courier: entities.Courier{
 			ID:                   u.Courier.ID,
 			DestinationAddressID: u.Courier.DestinationAddressID,
@@ -137,63 +135,4 @@ func (u *Transaction) ToUseCase() *entities.Transaction {
 		},
 		TransactionDetails: allTransactionDetails,
 	}
-}
-
-type xdtInvoiceResponse struct {
-	ID         string `json:"id"`
-	ExternalID string `json:"external_id"`
-	Amount     int64  `json:"amount"`
-	InvoiceURL string `json:"invoice_url"`
-}
-
-type xdtInvoicePayload struct {
-	ExternalID  string `json:"external_id"`
-	Amount      int64  `json:"amount"`
-	PayerEmail  string `json:"payer_email"`
-	Description string `json:"description"`
-}
-
-func (p *Transaction) PaymentCreate() error {
-	url := "https://api.xendit.co/v2/invoices"
-	method := "POST"
-
-	var payload xdtInvoicePayload
-	payload.ExternalID = "buy_product:" + p.ID.String()
-	payload.Amount = int64(p.Total)
-	payload.PayerEmail = "blueharvest@gmail.com"
-	payload.Description = "Blueharvest App Invoice"
-	jsonPayload, err := json.Marshal(payload)
-	if err != nil {
-		return err
-	}
-
-	client := &http.Client{}
-	req, err := http.NewRequest(method, url, bytes.NewBuffer(jsonPayload))
-	if err != nil {
-		return err
-	}
-	req.Header.Add("Content-Type", "application/json")
-	req.Header.Add("Authorization", "Basic "+os.Getenv("XDT_SECRET_API_KEY"))
-
-	res, err := client.Do(req)
-	if err != nil {
-		return err
-	}
-	defer res.Body.Close()
-
-	if res.Status != "200 OK" {
-		fmt.Println("response Status:", res.Status)
-		return constant.ErrPaymentGateway
-	}
-
-	var response xdtInvoiceResponse
-	err = json.NewDecoder(res.Body).Decode(&response)
-	if err != nil {
-		return err
-	}
-
-	p.PaymentExternalID = response.ID
-	p.PaymentInvoiceURL = response.InvoiceURL
-
-	return nil
 }
