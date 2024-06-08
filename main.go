@@ -9,8 +9,8 @@ import (
 	courierController "github.com/blueharvest-alterra/go-back-end/controllers/courier"
 	customerController "github.com/blueharvest-alterra/go-back-end/controllers/customer"
 	farmController "github.com/blueharvest-alterra/go-back-end/controllers/farm"
-	paymentController "github.com/blueharvest-alterra/go-back-end/controllers/payment"
 	farmInvestController "github.com/blueharvest-alterra/go-back-end/controllers/farminvest"
+	paymentController "github.com/blueharvest-alterra/go-back-end/controllers/payment"
 	productController "github.com/blueharvest-alterra/go-back-end/controllers/product"
 	promoController "github.com/blueharvest-alterra/go-back-end/controllers/promo"
 	transactionController "github.com/blueharvest-alterra/go-back-end/controllers/transaction"
@@ -21,8 +21,8 @@ import (
 	"github.com/blueharvest-alterra/go-back-end/drivers/postgresql/courier"
 	"github.com/blueharvest-alterra/go-back-end/drivers/postgresql/customer"
 	"github.com/blueharvest-alterra/go-back-end/drivers/postgresql/farm"
+	"github.com/blueharvest-alterra/go-back-end/drivers/postgresql/farmInvest"
 	"github.com/blueharvest-alterra/go-back-end/drivers/postgresql/payment"
-	farmInvestRP "github.com/blueharvest-alterra/go-back-end/drivers/postgresql/farmInvest"
 	"github.com/blueharvest-alterra/go-back-end/drivers/postgresql/product"
 	"github.com/blueharvest-alterra/go-back-end/drivers/postgresql/promo"
 	"github.com/blueharvest-alterra/go-back-end/drivers/postgresql/transaction"
@@ -83,8 +83,8 @@ func main() {
 	paymentRepo := payment.NewPaymentRepo(db)
 	paymentUseCase := usecases.NewPaymentUseCase(paymentRepo)
 	newPaymentController := paymentController.NewPaymentController(paymentUseCase)
-  
-  farmInvestRepo := farmInvestRP.NewFarmInvestRepo(db)
+
+	farmInvestRepo := farminvest.NewFarmInvestRepo(db)
 	farmInvestUseCase := usecases.NewFarmInvestUseCase(farmInvestRepo)
 	newFarmInvestController := farmInvestController.NewFarmInvestController(farmInvestUseCase)
 
