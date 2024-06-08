@@ -1,6 +1,7 @@
 package main
 
 import (
+	"fmt"
 	"github.com/blueharvest-alterra/go-back-end/config"
 	addressController "github.com/blueharvest-alterra/go-back-end/controllers/address"
 	adminController "github.com/blueharvest-alterra/go-back-end/controllers/admin"
@@ -9,6 +10,7 @@ import (
 	customerController "github.com/blueharvest-alterra/go-back-end/controllers/customer"
 	farmController "github.com/blueharvest-alterra/go-back-end/controllers/farm"
 	farmInvestController "github.com/blueharvest-alterra/go-back-end/controllers/farminvest"
+	paymentController "github.com/blueharvest-alterra/go-back-end/controllers/payment"
 	productController "github.com/blueharvest-alterra/go-back-end/controllers/product"
 	promoController "github.com/blueharvest-alterra/go-back-end/controllers/promo"
 	transactionController "github.com/blueharvest-alterra/go-back-end/controllers/transaction"
@@ -19,7 +21,8 @@ import (
 	"github.com/blueharvest-alterra/go-back-end/drivers/postgresql/courier"
 	"github.com/blueharvest-alterra/go-back-end/drivers/postgresql/customer"
 	"github.com/blueharvest-alterra/go-back-end/drivers/postgresql/farm"
-	farmInvestRP "github.com/blueharvest-alterra/go-back-end/drivers/postgresql/farmInvest"
+	"github.com/blueharvest-alterra/go-back-end/drivers/postgresql/farmInvest"
+	"github.com/blueharvest-alterra/go-back-end/drivers/postgresql/payment"
 	"github.com/blueharvest-alterra/go-back-end/drivers/postgresql/product"
 	"github.com/blueharvest-alterra/go-back-end/drivers/postgresql/promo"
 	"github.com/blueharvest-alterra/go-back-end/drivers/postgresql/transaction"
@@ -30,10 +33,10 @@ import (
 )
 
 func main() {
-
 	config.InitConfigPostgresql()
 	db := postgresql.ConnectDB(config.InitConfigPostgresql())
 
+	fmt.Println(db)
 	e := echo.New()
 	e.Use(middleware.Logger())
 	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
@@ -77,10 +80,20 @@ func main() {
 	courierUseCase := usecases.NewCourierUseCase(courierRepo)
 	newCourierController := courierController.NewCourierController(courierUseCase)
 
-	farmInvestRepo := farmInvestRP.NewFarmInvestRepo(db)
+	paymentRepo := payment.NewPaymentRepo(db)
+	paymentUseCase := usecases.NewPaymentUseCase(paymentRepo)
+	newPaymentController := paymentController.NewPaymentController(paymentUseCase)
+
+	farmInvestRepo := farminvest.NewFarmInvestRepo(db)
 	farmInvestUseCase := usecases.NewFarmInvestUseCase(farmInvestRepo)
 	newFarmInvestController := farmInvestController.NewFarmInvestController(farmInvestUseCase)
 
+	adminRouteController := routes.AdminRouteController{
+		AdminController: newAdminController,
+	}
+	customerRouteController := routes.CustomerRouteController{
+		CustomerController: newCustomerController,
+	}
 	farmRouteController := routes.FarmRouteController{
 		FarmController: newFarmController,
 	}
@@ -89,12 +102,6 @@ func main() {
 	}
 	articleRouteController := routes.ArticleRouteController{
 		ArticleController: newArticleController,
-	}
-	adminRouteController := routes.AdminRouteController{
-		AdminController: newAdminController,
-	}
-	customerRouteController := routes.CustomerRouteController{
-		CustomerController: newCustomerController,
 	}
 	productRouteController := routes.ProductRouteController{
 		ProductController: newProductController,
@@ -105,11 +112,12 @@ func main() {
 	transactionRouteController := routes.TransactionRouteController{
 		TransactionController: newTransactionController,
 	}
-
 	courierRouteController := routes.CourierRouteController{
 		CourierController: newCourierController,
 	}
-
+	paymentRouteController := routes.PaymentRouteController{
+		PaymentController: newPaymentController,
+	}
 	farmInvestRouteController := routes.FarmInvestRouteController{
 		FarmInvestController: newFarmInvestController,
 	}
@@ -123,6 +131,7 @@ func main() {
 	addressRouteController.InitRoute(e)
 	transactionRouteController.InitRoute(e)
 	courierRouteController.InitRoute(e)
+	paymentRouteController.InitRoute(e)
 	farmInvestRouteController.InitRoute(e)
 
 	e.Logger.Fatal(e.Start(":8080"))

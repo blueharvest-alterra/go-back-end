@@ -12,10 +12,11 @@ import (
 )
 
 type Courier struct {
-	ID   uuid.UUID `gorm:"type:varchar(100)"`
-	Name string    `gorm:"type:varchar(255);not null"`
-	Fee  float64   `gorm:"type:decimal;not null"`
-	Type string    `gorm:"type:varchar(50);not null"`
+	ID                   uuid.UUID `gorm:"type:varchar(100)"`
+	DestinationAddressID uuid.UUID `gorm:"type:varchar(100)"`
+	Name                 string    `gorm:"type:varchar(255);not null"`
+	Fee                  float64   `gorm:"type:decimal;not null"`
+	Type                 string    `gorm:"type:varchar(50);not null"`
 }
 
 func FromUseCase(courier *entities.Courier) *Courier {
@@ -91,13 +92,13 @@ func GetAllAvailableCouriers(couriers *[]Courier, request RajaOngkirCostRequest)
 
 		body, err := io.ReadAll(res.Body)
 		if err != nil {
-			return fmt.Errorf("error reading response body", err)
+			return fmt.Errorf("error reading request body", err)
 		}
 
 		var response RajaOngkirCostResponse
 		err = json.Unmarshal(body, &response)
 		if err != nil {
-			return fmt.Errorf("error unmarshaling JSON response", err)
+			return fmt.Errorf("error unmarshaling JSON request", err)
 		}
 
 		for _, result := range response.RajaOngkir.Results {

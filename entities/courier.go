@@ -5,10 +5,11 @@ import (
 )
 
 type Courier struct {
-	ID   uuid.UUID
-	Name string
-	Fee  float64
-	Type string
+	ID                   uuid.UUID
+	DestinationAddressID uuid.UUID
+	Name                 string
+	Fee                  float64
+	Type                 string
 }
 
 type CostCourierAPIRequest struct {

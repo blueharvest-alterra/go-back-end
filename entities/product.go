@@ -9,17 +9,15 @@ import (
 )
 
 type Product struct {
-	ID                uuid.UUID
-	Name              string
-	Description       string
-	Price             float64
-	Status            string
-	PickupAvailable   bool
-	DeliveryAvailable bool
-	CreatedAt         time.Time
-	UpdatedAt         time.Time
-	DeletedAt         gorm.DeletedAt
-	Thumbnail         string
+	ID          uuid.UUID
+	Name        string
+	Description string
+	Price       float64
+	Status      string
+	CreatedAt   time.Time
+	UpdatedAt   time.Time
+	DeletedAt   gorm.DeletedAt
+	Thumbnail   string
 }
 
 type ProductRepositoryInterface interface {
