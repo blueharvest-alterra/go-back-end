@@ -11,6 +11,31 @@ type TransactionUseCase struct {
 	repository entities.TransactionRepositoryInterface
 }
 
+func (t TransactionUseCase) GetAll(transactions *[]entities.Transaction, userData *middlewares.Claims) ([]entities.Transaction, error) {
+
+	if err := t.repository.GetAll(transactions, userData); err != nil {
+		return []entities.Transaction{}, err
+	}
+
+	return *transactions, nil
+}
+
+func (t TransactionUseCase) GetByID(transaction *entities.Transaction, userData *middlewares.Claims) (entities.Transaction, error) {
+	if transaction.ID == uuid.Nil {
+		return entities.Transaction{}, constant.ErrEmptyInput
+	}
+
+	if userData.Role == "customer" {
+		transaction.CustomerID = userData.ID
+	}
+
+	if err := t.repository.GetByID(transaction, userData); err != nil {
+		return entities.Transaction{}, err
+	}
+
+	return *transaction, nil
+}
+
 func NewTransactionUseCase(repository entities.TransactionRepositoryInterface) *TransactionUseCase {
 	return &TransactionUseCase{repository: repository}
 }
@@ -18,6 +43,10 @@ func NewTransactionUseCase(repository entities.TransactionRepositoryInterface) *
 func (t TransactionUseCase) Create(transaction *entities.Transaction, userData *middlewares.Claims) (entities.Transaction, error) {
 	if userData.Role != "customer" {
 		return entities.Transaction{}, constant.ErrNotAuthorized
+	}
+
+	if len(transaction.TransactionDetails) < 1 || transaction.Courier.DestinationAddressID == uuid.Nil || transaction.Courier.Name == "" || transaction.Courier.Type == "" || transaction.Courier.Fee < 0 {
+		return entities.Transaction{}, constant.ErrEmptyInput
 	}
 
 	transaction.ID = uuid.New()

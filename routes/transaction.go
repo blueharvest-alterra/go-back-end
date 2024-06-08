@@ -14,4 +14,6 @@ func (r *TransactionRouteController) InitRoute(e *echo.Echo) {
 	t := e.Group("/v1/transactions")
 	t.Use(middlewares.JWTMiddleware)
 	t.POST("", r.TransactionController.Create)
+	t.GET("/:id", r.TransactionController.GetByID)
+	t.GET("", r.TransactionController.GetAll)
 }
