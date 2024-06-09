@@ -1,6 +1,7 @@
 package main
 
 import (
+	"github.com/blueharvest-alterra/go-back-end/drivers/postgresql/cart"
 	"github.com/blueharvest-alterra/go-back-end/drivers/postgresql/farmInvest"
 	"github.com/blueharvest-alterra/go-back-end/drivers/postgresql/farmMonitor"
 	"log"
@@ -9,6 +10,7 @@ import (
 	addressController "github.com/blueharvest-alterra/go-back-end/controllers/address"
 	adminController "github.com/blueharvest-alterra/go-back-end/controllers/admin"
 	articleController "github.com/blueharvest-alterra/go-back-end/controllers/article"
+	cartController "github.com/blueharvest-alterra/go-back-end/controllers/cart"
 	courierController "github.com/blueharvest-alterra/go-back-end/controllers/courier"
 	customerController "github.com/blueharvest-alterra/go-back-end/controllers/customer"
 	farmController "github.com/blueharvest-alterra/go-back-end/controllers/farm"
@@ -97,6 +99,10 @@ func main() {
 	farmMonitorUseCase := usecases.NewFarmMonitorUseCase(farmMonitorRepo)
 	newFarmMonitorController := farmMonitorController.NewFarmMonitorController(farmMonitorUseCase)
 
+	cartRepo := cart.NewCartRepo(db)
+	cartUseCase := usecases.NewCartUseCase(cartRepo)
+	newCartController := cartController.NewCartController(cartUseCase)
+
 	adminRouteController := routes.AdminRouteController{
 		AdminController: newAdminController,
 	}
@@ -134,6 +140,10 @@ func main() {
 		FarmMonitorController: newFarmMonitorController,
 	}
 
+	cartRouteController := routes.CartRouteController{
+		CartController: newCartController,
+	}
+
 	adminRouteController.InitRoute(e)
 	customerRouteController.InitRoute(e)
 	farmRouteController.InitRoute(e)
@@ -146,6 +156,7 @@ func main() {
 	paymentRouteController.InitRoute(e)
 	farmInvestRouteController.InitRoute(e)
 	farmMonitorRouteController.InitRoute(e)
+	cartRouteController.InitRoute(e)
 
 	//init cron
 	c := cron.New()
