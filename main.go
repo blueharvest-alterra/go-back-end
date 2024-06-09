@@ -149,6 +149,7 @@ func main() {
 	farmInvestRouteController.InitRoute(e)
 	farmMonitorRouteController.InitRoute(e)
 
+	//init cron
 	c := cron.New()
 	frp := farm.NewFarmRepo(db)
 	fmrp := farmMonitorRP.NewFarmMonitorRepo(db)
