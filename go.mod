@@ -7,6 +7,7 @@ require (
 	github.com/golang-jwt/jwt/v5 v5.2.1
 	github.com/google/uuid v1.6.0
 	github.com/labstack/echo/v4 v4.12.0
+	github.com/robfig/cron v1.2.0
 	github.com/spf13/viper v1.18.2
 	golang.org/x/crypto v0.23.0
 	google.golang.org/api v0.182.0
