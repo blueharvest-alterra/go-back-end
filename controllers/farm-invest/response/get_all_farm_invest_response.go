@@ -3,7 +3,7 @@ package response
 import "github.com/blueharvest-alterra/go-back-end/entities"
 
 type FarmInvestGetAll struct {
-	FarmInvests []FarmInvestResponse `json:"farmInvest"`
+	FarmInvests []FarmInvestResponse `json:"farm-invest"`
 }
 
 func SliceFromUseCase(farmInvests *[]entities.FarmInvest) *FarmInvestGetAll {
