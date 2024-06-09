@@ -29,8 +29,12 @@ type Transaction struct {
 
 type TransactionRepositoryInterface interface {
 	Create(transaction *Transaction) error
+	GetByID(transaction *Transaction, userData *middlewares.Claims) error
+	GetAll(transactions *[]Transaction, userData *middlewares.Claims) error
 }
 
 type TransactionUseCaseInterface interface {
 	Create(transaction *Transaction, userData *middlewares.Claims) (Transaction, error)
+	GetByID(transaction *Transaction, userData *middlewares.Claims) (Transaction, error)
+	GetAll(transactions *[]Transaction, userData *middlewares.Claims) ([]Transaction, error)
 }

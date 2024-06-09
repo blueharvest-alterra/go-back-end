@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"github.com/blueharvest-alterra/go-back-end/config"
 	addressController "github.com/blueharvest-alterra/go-back-end/controllers/address"
 	adminController "github.com/blueharvest-alterra/go-back-end/controllers/admin"
@@ -36,7 +35,6 @@ func main() {
 	config.InitConfigPostgresql()
 	db := postgresql.ConnectDB(config.InitConfigPostgresql())
 
-	fmt.Println(db)
 	e := echo.New()
 	e.Use(middleware.Logger())
 	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
