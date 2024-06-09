@@ -171,10 +171,10 @@ func processDailyFarmMonitor(frp *farm.Repo, fmrp *farmMonitorRP.Repo) {
 		log.Fatalf("Error getting farms: %v", err)
 	}
 
-	for _, farm := range farms {
+	for _, _farm := range farms {
 		farmMonitor := entities.FarmMonitor{
 			ID:              uuid.New(),
-			FarmID:          farm.ID,
+			FarmID:          _farm.ID,
 			Temperature:     float64(0),
 			PH:              float64(0),
 			DissolvedOxygen: float64(0),
