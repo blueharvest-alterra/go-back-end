@@ -49,7 +49,7 @@ jobs:
           RAJAONGKIR_API_KEY: ${{ secrets.RAJAONGKIR_API_KEY }}
           KEY_GCS: ${{ secrets.KEY_GCS }}
           XDT_SECRET_API_KEY: ${{ secrets.XDT_SECRET_API_KEY }}
-          $XDT_CALLBACK_VERIFICATION: ${{ secrets.$XDT_CALLBACK_VERIFICATION }}
+          $XDT_CALLBACK_VERIFICATION: ${{ secrets.XDT_CALLBACK_VERIFICATION }}
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.SSH_HOST }}
