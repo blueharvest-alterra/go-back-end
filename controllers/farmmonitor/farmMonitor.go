@@ -1,11 +1,11 @@
-package farmmonitor
+package farmMonitor
 
 import (
 	"net/http"
 
 	"github.com/blueharvest-alterra/go-back-end/controllers/base"
-	"github.com/blueharvest-alterra/go-back-end/controllers/farmmonitor/request"
-	"github.com/blueharvest-alterra/go-back-end/controllers/farmmonitor/response"
+	"github.com/blueharvest-alterra/go-back-end/controllers/farmMonitor/request"
+	"github.com/blueharvest-alterra/go-back-end/controllers/farmMonitor/response"
 	"github.com/blueharvest-alterra/go-back-end/entities"
 	"github.com/blueharvest-alterra/go-back-end/utils"
 	"github.com/google/uuid"

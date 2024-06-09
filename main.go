@@ -1,6 +1,8 @@
 package main
 
 import (
+	"github.com/blueharvest-alterra/go-back-end/drivers/postgresql/farmInvest"
+	"github.com/blueharvest-alterra/go-back-end/drivers/postgresql/farmMonitor"
 	"log"
 
 	"github.com/blueharvest-alterra/go-back-end/config"
@@ -10,8 +12,8 @@ import (
 	courierController "github.com/blueharvest-alterra/go-back-end/controllers/courier"
 	customerController "github.com/blueharvest-alterra/go-back-end/controllers/customer"
 	farmController "github.com/blueharvest-alterra/go-back-end/controllers/farm"
-	farmInvestController "github.com/blueharvest-alterra/go-back-end/controllers/farminvest"
-	farmMonitorController "github.com/blueharvest-alterra/go-back-end/controllers/farmmonitor"
+	farmInvestController "github.com/blueharvest-alterra/go-back-end/controllers/farmInvest"
+	farmMonitorController "github.com/blueharvest-alterra/go-back-end/controllers/farmMonitor"
 	paymentController "github.com/blueharvest-alterra/go-back-end/controllers/payment"
 	productController "github.com/blueharvest-alterra/go-back-end/controllers/product"
 	promoController "github.com/blueharvest-alterra/go-back-end/controllers/promo"
@@ -23,9 +25,6 @@ import (
 	"github.com/blueharvest-alterra/go-back-end/drivers/postgresql/courier"
 	"github.com/blueharvest-alterra/go-back-end/drivers/postgresql/customer"
 	"github.com/blueharvest-alterra/go-back-end/drivers/postgresql/farm"
-	farmInvestRP "github.com/blueharvest-alterra/go-back-end/drivers/postgresql/farmInvest"
-	farmMonitorRP "github.com/blueharvest-alterra/go-back-end/drivers/postgresql/farmMonitor"
-	"github.com/blueharvest-alterra/go-back-end/drivers/postgresql/farmInvest"
 	"github.com/blueharvest-alterra/go-back-end/drivers/postgresql/payment"
 	"github.com/blueharvest-alterra/go-back-end/drivers/postgresql/product"
 	"github.com/blueharvest-alterra/go-back-end/drivers/postgresql/promo"
@@ -90,11 +89,11 @@ func main() {
 	paymentUseCase := usecases.NewPaymentUseCase(paymentRepo)
 	newPaymentController := paymentController.NewPaymentController(paymentUseCase)
 
-	farmInvestRepo := farminvest.NewFarmInvestRepo(db)
+	farmInvestRepo := farmInvest.NewFarmInvestRepo(db)
 	farmInvestUseCase := usecases.NewFarmInvestUseCase(farmInvestRepo)
 	newFarmInvestController := farmInvestController.NewFarmInvestController(farmInvestUseCase)
 
-	farmMonitorRepo := farmMonitorRP.NewFarmMonitorRepo(db)
+	farmMonitorRepo := farmMonitor.NewFarmMonitorRepo(db)
 	farmMonitorUseCase := usecases.NewFarmMonitorUseCase(farmMonitorRepo)
 	newFarmMonitorController := farmMonitorController.NewFarmMonitorController(farmMonitorUseCase)
 
@@ -131,7 +130,6 @@ func main() {
 	farmInvestRouteController := routes.FarmInvestRouteController{
 		FarmInvestController: newFarmInvestController,
 	}
-
 	farmMonitorRouteController := routes.FarmMonitorRouteController{
 		FarmMonitorController: newFarmMonitorController,
 	}
@@ -152,7 +150,7 @@ func main() {
 	//init cron
 	c := cron.New()
 	frp := farm.NewFarmRepo(db)
-	fmrp := farmMonitorRP.NewFarmMonitorRepo(db)
+	fmrp := farmMonitor.NewFarmMonitorRepo(db)
 
 	err := c.AddFunc("@daily", func() { processDailyFarmMonitor(frp, fmrp) })
 	if err != nil {
@@ -165,7 +163,7 @@ func main() {
 	e.Logger.Fatal(e.Start(":8080"))
 }
 
-func processDailyFarmMonitor(frp *farm.Repo, fmrp *farmMonitorRP.Repo) {
+func processDailyFarmMonitor(frp *farm.Repo, fmrp *farmMonitor.Repo) {
 	var farms []entities.Farm
 	if err := frp.GetAll(&farms); err != nil {
 		log.Fatalf("Error getting farms: %v", err)
