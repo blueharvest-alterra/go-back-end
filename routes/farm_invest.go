@@ -1,13 +1,13 @@
 package routes
 
 import (
-	"github.com/blueharvest-alterra/go-back-end/controllers/farminvest"
-	"github.com/labstack/echo/v4"
+	"github.com/blueharvest-alterra/go-back-end/controllers/farmInvest"
 	"github.com/blueharvest-alterra/go-back-end/middlewares"
+	"github.com/labstack/echo/v4"
 )
 
 type FarmInvestRouteController struct {
-	FarmInvestController *farminvest.FarmInvestController
+	FarmInvestController *farmInvest.FarmInvestController
 }
 
 func (r *FarmInvestRouteController) InitRoute(e *echo.Echo) {
