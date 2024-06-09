@@ -29,16 +29,14 @@ type ProductDetail struct {
 
 func ProductDetailFromUseCase(product *entities.Product) *ProductDetail {
 	return &ProductDetail{
-		ID:                product.ID,
-		Name:              product.Name,
-		Description:       product.Description,
-		Price:             product.Price,
-		PickupAvailable:   product.PickupAvailable,
-		DeliveryAvailable: product.DeliveryAvailable,
-		Thumbnail:         product.Thumbnail,
-		Status:            product.Status,
-		CreatedAt:         product.CreatedAt,
-		UpdatedAt:         product.UpdatedAt,
-		DeletedAt:         product.DeletedAt,
+		ID:          product.ID,
+		Name:        product.Name,
+		Description: product.Description,
+		Price:       product.Price,
+		Thumbnail:   product.Thumbnail,
+		Status:      product.Status,
+		CreatedAt:   product.CreatedAt,
+		UpdatedAt:   product.UpdatedAt,
+		DeletedAt:   product.DeletedAt,
 	}
 }

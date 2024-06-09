@@ -48,13 +48,14 @@ jobs:
           JWT_SECRET_KEY: ${{ secrets.JWT_SECRET_KEY }}
           RAJAONGKIR_API_KEY: ${{ secrets.RAJAONGKIR_API_KEY }}
           KEY_GCS: ${{ secrets.KEY_GCS }}
+          XDT_SECRET_API_KEY: ${{ secrets.XDT_SECRET_API_KEY }}
+          XDT_CALLBACK_VERIFICATION: ${{ secrets.XDT_CALLBACK_VERIFICATION }}
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.SSH_HOST }}
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_KEY }}
-          envs: DB_NAME,DB_USER,DB_PASS,DB_HOST,DB_PORT,JWT_SECRET_KEY,RAJAONGKIR_API_KEY,KEY_GCS
+          envs: DB_NAME,DB_USER,DB_PASS,DB_HOST,DB_PORT,JWT_SECRET_KEY,RAJAONGKIR_API_KEY,KEY_GCS,XDT_SECRET_API_KEY,XDT_CALLBACK_VERIFICATION
           script: |
             cd blueharvest-backend
-            echo $OPEN_API_KEY
-            DB_HOST="$DB_HOST" DB_NAME="$DB_NAME" DB_PASS="$DB_PASS" DB_PORT="$DB_PORT" DB_USER="$DB_USER" JWT_SECRET_KEY="$JWT_SECRET_KEY" RAJAONGKIR_API_KEY="$RAJAONGKIR_API_KEY" KEY_GCS="$KEY_GCS" docker compose up --build -d --no-deps
+            DB_HOST="$DB_HOST" DB_NAME="$DB_NAME" DB_PASS="$DB_PASS" DB_PORT="$DB_PORT" DB_USER="$DB_USER" JWT_SECRET_KEY="$JWT_SECRET_KEY" RAJAONGKIR_API_KEY="$RAJAONGKIR_API_KEY" KEY_GCS="$KEY_GCS" XDT_CALLBACK_VERIFICATION="$XDT_CALLBACK_VERIFICATION" XDT_SECRET_API_KEY="$XDT_SECRET_API_KEY" docker compose up --build -d --no-deps

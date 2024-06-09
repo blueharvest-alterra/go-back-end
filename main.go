@@ -12,6 +12,7 @@ import (
 	farmController "github.com/blueharvest-alterra/go-back-end/controllers/farm"
 	farmInvestController "github.com/blueharvest-alterra/go-back-end/controllers/farminvest"
 	farmMonitorController "github.com/blueharvest-alterra/go-back-end/controllers/farmmonitor"
+	paymentController "github.com/blueharvest-alterra/go-back-end/controllers/payment"
 	productController "github.com/blueharvest-alterra/go-back-end/controllers/product"
 	promoController "github.com/blueharvest-alterra/go-back-end/controllers/promo"
 	transactionController "github.com/blueharvest-alterra/go-back-end/controllers/transaction"
@@ -24,6 +25,8 @@ import (
 	"github.com/blueharvest-alterra/go-back-end/drivers/postgresql/farm"
 	farmInvestRP "github.com/blueharvest-alterra/go-back-end/drivers/postgresql/farmInvest"
 	farmMonitorRP "github.com/blueharvest-alterra/go-back-end/drivers/postgresql/farmMonitor"
+	"github.com/blueharvest-alterra/go-back-end/drivers/postgresql/farmInvest"
+	"github.com/blueharvest-alterra/go-back-end/drivers/postgresql/payment"
 	"github.com/blueharvest-alterra/go-back-end/drivers/postgresql/product"
 	"github.com/blueharvest-alterra/go-back-end/drivers/postgresql/promo"
 	"github.com/blueharvest-alterra/go-back-end/drivers/postgresql/transaction"
@@ -37,7 +40,6 @@ import (
 )
 
 func main() {
-
 	config.InitConfigPostgresql()
 	db := postgresql.ConnectDB(config.InitConfigPostgresql())
 
@@ -84,7 +86,11 @@ func main() {
 	courierUseCase := usecases.NewCourierUseCase(courierRepo)
 	newCourierController := courierController.NewCourierController(courierUseCase)
 
-	farmInvestRepo := farmInvestRP.NewFarmInvestRepo(db)
+	paymentRepo := payment.NewPaymentRepo(db)
+	paymentUseCase := usecases.NewPaymentUseCase(paymentRepo)
+	newPaymentController := paymentController.NewPaymentController(paymentUseCase)
+
+	farmInvestRepo := farminvest.NewFarmInvestRepo(db)
 	farmInvestUseCase := usecases.NewFarmInvestUseCase(farmInvestRepo)
 	newFarmInvestController := farmInvestController.NewFarmInvestController(farmInvestUseCase)
 
@@ -92,6 +98,12 @@ func main() {
 	farmMonitorUseCase := usecases.NewFarmMonitorUseCase(farmMonitorRepo)
 	newFarmMonitorController := farmMonitorController.NewFarmMonitorController(farmMonitorUseCase)
 
+	adminRouteController := routes.AdminRouteController{
+		AdminController: newAdminController,
+	}
+	customerRouteController := routes.CustomerRouteController{
+		CustomerController: newCustomerController,
+	}
 	farmRouteController := routes.FarmRouteController{
 		FarmController: newFarmController,
 	}
@@ -100,12 +112,6 @@ func main() {
 	}
 	articleRouteController := routes.ArticleRouteController{
 		ArticleController: newArticleController,
-	}
-	adminRouteController := routes.AdminRouteController{
-		AdminController: newAdminController,
-	}
-	customerRouteController := routes.CustomerRouteController{
-		CustomerController: newCustomerController,
 	}
 	productRouteController := routes.ProductRouteController{
 		ProductController: newProductController,
@@ -116,11 +122,12 @@ func main() {
 	transactionRouteController := routes.TransactionRouteController{
 		TransactionController: newTransactionController,
 	}
-
 	courierRouteController := routes.CourierRouteController{
 		CourierController: newCourierController,
 	}
-
+	paymentRouteController := routes.PaymentRouteController{
+		PaymentController: newPaymentController,
+	}
 	farmInvestRouteController := routes.FarmInvestRouteController{
 		FarmInvestController: newFarmInvestController,
 	}
@@ -138,6 +145,7 @@ func main() {
 	addressRouteController.InitRoute(e)
 	transactionRouteController.InitRoute(e)
 	courierRouteController.InitRoute(e)
+	paymentRouteController.InitRoute(e)
 	farmInvestRouteController.InitRoute(e)
 	farmMonitorRouteController.InitRoute(e)
 
