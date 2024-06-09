@@ -28,7 +28,26 @@ func (fc *FarmController) Create(c echo.Context) error {
 		return c.JSON(utils.ConvertResponseCode(err), base.NewErrorResponse(err.Error()))
 	}
 
-	farm, errUseCase := fc.farmUseCase.Create(farmCreate.ToEntities())
+	form, err := c.MultipartForm()
+	if err != nil {
+		return c.JSON(utils.ConvertResponseCode(err), base.NewErrorResponse(err.Error()))
+	}
+
+	picture := form.File["picture_file"]
+	if len(picture) == 0 {
+		return c.JSON(http.StatusBadRequest, base.NewErrorResponse("Gambar Farm Tidak Boleh Kosong"))
+	}
+
+	if len(picture) > 1 {
+		return c.JSON(http.StatusBadRequest, base.NewErrorResponse("Gambar Farm Hanya Boleh Satu"))
+	}
+	for _, file := range picture {
+		if !utils.IsImageFile(file.Filename) {
+			return c.JSON(http.StatusBadRequest, base.NewErrorResponse("Format file gambar tidak didukung"))
+		}
+	}
+
+	farm, errUseCase := fc.farmUseCase.Create(farmCreate.ToEntities(), picture)
 	if errUseCase != nil {
 		return c.JSON(utils.ConvertResponseCode(errUseCase), base.NewErrorResponse(errUseCase.Error()))
 	}
@@ -65,7 +84,23 @@ func (fc *FarmController) Update(c echo.Context) error {
 	}
 	farmEdit.ID = farmId
 
-	farm, errUseCase := fc.farmUseCase.Update(farmEdit.ToEntities())
+	form, err := c.MultipartForm()
+	if err != nil {
+		return c.JSON(utils.ConvertResponseCode(err), base.NewErrorResponse(err.Error()))
+	}
+
+	picture := form.File["picture_file"]
+
+	if len(picture) > 1 {
+		return c.JSON(http.StatusBadRequest, base.NewErrorResponse("Gambar Tanaman Hanya Boleh Satu"))
+	}
+	for _, file := range picture {
+		if !utils.IsImageFile(file.Filename) {
+			return c.JSON(http.StatusBadRequest, base.NewErrorResponse("Format file gambar tidak didukung"))
+		}
+	}
+
+	farm, errUseCase := fc.farmUseCase.Update(farmEdit.ToEntities(), picture)
 	if errUseCase != nil {
 		return c.JSON(utils.ConvertResponseCode(errUseCase), base.NewErrorResponse(errUseCase.Error()))
 	}
