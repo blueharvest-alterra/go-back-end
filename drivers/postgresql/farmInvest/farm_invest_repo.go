@@ -1,4 +1,4 @@
-package farminvest
+package farmInvest
 
 import (
 	"github.com/blueharvest-alterra/go-back-end/constant"

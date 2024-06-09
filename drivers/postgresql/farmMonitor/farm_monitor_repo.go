@@ -1,4 +1,4 @@
-package farmmonitor
+package farmMonitor
 
 import (
 	"github.com/blueharvest-alterra/go-back-end/constant"
