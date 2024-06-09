@@ -1,11 +1,11 @@
-package farmInvest
+package farm_invest
 
 import (
 	"net/http"
 
 	"github.com/blueharvest-alterra/go-back-end/controllers/base"
-	"github.com/blueharvest-alterra/go-back-end/controllers/farmInvest/request"
-	"github.com/blueharvest-alterra/go-back-end/controllers/farmInvest/response"
+	"github.com/blueharvest-alterra/go-back-end/controllers/farm-invest/request"
+	"github.com/blueharvest-alterra/go-back-end/controllers/farm-invest/response"
 	"github.com/blueharvest-alterra/go-back-end/entities"
 	"github.com/blueharvest-alterra/go-back-end/middlewares"
 	"github.com/blueharvest-alterra/go-back-end/utils"
