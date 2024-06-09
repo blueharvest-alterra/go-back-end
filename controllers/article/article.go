@@ -35,15 +35,15 @@ func (ac *ArticleController) Create(c echo.Context) error {
 
 	picture := form.File["picture_file"]
 	if len(picture) == 0 {
-		return c.JSON(http.StatusBadRequest, "Gambar Tanaman Tidak Boleh Kosong")
+		return c.JSON(http.StatusBadRequest, base.NewErrorResponse("Gambar Artikel Tidak Boleh Kosong"))
 	}
 
 	if len(picture) > 1 {
-		return c.JSON(http.StatusBadRequest, "Gambar Tanaman Hanya Boleh Satu")
+		return c.JSON(http.StatusBadRequest, base.NewErrorResponse("Gambar Artikel Hanya Boleh Satu"))
 	}
 	for _, file := range picture {
 		if !utils.IsImageFile(file.Filename) {
-			return c.JSON(http.StatusBadRequest, "Format file gambar tidak didukung")
+			return c.JSON(http.StatusBadRequest, base.NewErrorResponse("Format file gambar tidak didukung"))
 		}
 	}
 
@@ -92,11 +92,11 @@ func (ac *ArticleController) Update(c echo.Context) error {
 	picture := form.File["picture_file"]
 
 	if len(picture) > 1 {
-		return c.JSON(http.StatusBadRequest, "Gambar Tanaman Hanya Boleh Satu")
+		return c.JSON(http.StatusBadRequest, base.NewErrorResponse("Gambar Tanaman Hanya Boleh Satu"))
 	}
 	for _, file := range picture {
 		if !utils.IsImageFile(file.Filename) {
-			return c.JSON(http.StatusBadRequest, "Format file gambar tidak didukung")
+			return c.JSON(http.StatusBadRequest, base.NewErrorResponse("Format file gambar tidak didukung"))
 		}
 	}
 

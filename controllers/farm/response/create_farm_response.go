@@ -9,6 +9,7 @@ type FarmResponse struct {
 	ID          uuid.UUID `json:"id"`
 	Title       string    `json:"title"`
 	Description string    `json:"description"`
+	Picture     string    `json:"picture"`
 }
 
 func FarmResponseFromUseCase(farm *entities.Farm) *FarmResponse {
@@ -16,5 +17,6 @@ func FarmResponseFromUseCase(farm *entities.Farm) *FarmResponse {
 		ID:          farm.ID,
 		Title:       farm.Title,
 		Description: farm.Description,
+		Picture:     farm.Picture,
 	}
 }

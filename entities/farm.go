@@ -1,6 +1,7 @@
 package entities
 
 import (
+	"mime/multipart"
 	"time"
 
 	"github.com/google/uuid"
@@ -11,6 +12,7 @@ type Farm struct {
 	ID          uuid.UUID
 	Title       string
 	Description string
+	Picture     string
 	CreatedAt   time.Time
 	UpdatedAt   time.Time
 	DeletedAt   gorm.DeletedAt
@@ -25,9 +27,9 @@ type FarmRepositoryInterface interface {
 }
 
 type FarmUseCaseInterface interface {
-	Create(farm *Farm) (Farm, error)
+	Create(farm *Farm, picture []*multipart.FileHeader) (Farm, error)
 	GetById(id uuid.UUID) (Farm, error)
-	Update(farm *Farm) (Farm, error)
+	Update(farm *Farm, picture []*multipart.FileHeader) (Farm, error)
 	Delete(id uuid.UUID) (Farm, error)
 	GetAll(farms *[]Farm) ([]Farm, error)
 }

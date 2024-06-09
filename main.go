@@ -1,6 +1,8 @@
 package main
 
 import (
+	"log"
+
 	"github.com/blueharvest-alterra/go-back-end/config"
 	addressController "github.com/blueharvest-alterra/go-back-end/controllers/address"
 	adminController "github.com/blueharvest-alterra/go-back-end/controllers/admin"
@@ -9,6 +11,7 @@ import (
 	customerController "github.com/blueharvest-alterra/go-back-end/controllers/customer"
 	farmController "github.com/blueharvest-alterra/go-back-end/controllers/farm"
 	farmInvestController "github.com/blueharvest-alterra/go-back-end/controllers/farminvest"
+	farmMonitorController "github.com/blueharvest-alterra/go-back-end/controllers/farmmonitor"
 	paymentController "github.com/blueharvest-alterra/go-back-end/controllers/payment"
 	productController "github.com/blueharvest-alterra/go-back-end/controllers/product"
 	promoController "github.com/blueharvest-alterra/go-back-end/controllers/promo"
@@ -20,15 +23,20 @@ import (
 	"github.com/blueharvest-alterra/go-back-end/drivers/postgresql/courier"
 	"github.com/blueharvest-alterra/go-back-end/drivers/postgresql/customer"
 	"github.com/blueharvest-alterra/go-back-end/drivers/postgresql/farm"
+	farmInvestRP "github.com/blueharvest-alterra/go-back-end/drivers/postgresql/farmInvest"
+	farmMonitorRP "github.com/blueharvest-alterra/go-back-end/drivers/postgresql/farmMonitor"
 	"github.com/blueharvest-alterra/go-back-end/drivers/postgresql/farmInvest"
 	"github.com/blueharvest-alterra/go-back-end/drivers/postgresql/payment"
 	"github.com/blueharvest-alterra/go-back-end/drivers/postgresql/product"
 	"github.com/blueharvest-alterra/go-back-end/drivers/postgresql/promo"
 	"github.com/blueharvest-alterra/go-back-end/drivers/postgresql/transaction"
+	"github.com/blueharvest-alterra/go-back-end/entities"
 	"github.com/blueharvest-alterra/go-back-end/routes"
 	"github.com/blueharvest-alterra/go-back-end/usecases"
+	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
 	"github.com/labstack/echo/v4/middleware"
+	"github.com/robfig/cron"
 )
 
 func main() {
@@ -86,6 +94,10 @@ func main() {
 	farmInvestUseCase := usecases.NewFarmInvestUseCase(farmInvestRepo)
 	newFarmInvestController := farmInvestController.NewFarmInvestController(farmInvestUseCase)
 
+	farmMonitorRepo := farmMonitorRP.NewFarmMonitorRepo(db)
+	farmMonitorUseCase := usecases.NewFarmMonitorUseCase(farmMonitorRepo)
+	newFarmMonitorController := farmMonitorController.NewFarmMonitorController(farmMonitorUseCase)
+
 	adminRouteController := routes.AdminRouteController{
 		AdminController: newAdminController,
 	}
@@ -120,6 +132,10 @@ func main() {
 		FarmInvestController: newFarmInvestController,
 	}
 
+	farmMonitorRouteController := routes.FarmMonitorRouteController{
+		FarmMonitorController: newFarmMonitorController,
+	}
+
 	adminRouteController.InitRoute(e)
 	customerRouteController.InitRoute(e)
 	farmRouteController.InitRoute(e)
@@ -131,6 +147,41 @@ func main() {
 	courierRouteController.InitRoute(e)
 	paymentRouteController.InitRoute(e)
 	farmInvestRouteController.InitRoute(e)
+	farmMonitorRouteController.InitRoute(e)
+
+	c := cron.New()
+	frp := farm.NewFarmRepo(db)
+	fmrp := farmMonitorRP.NewFarmMonitorRepo(db)
+
+	err := c.AddFunc("@daily", func() { processDailyFarmMonitor(frp, fmrp) })
+	if err != nil {
+		log.Fatalf("Error adding cron job: %v", err)
+	}
+
+	c.Start()
+	defer c.Stop()
 
 	e.Logger.Fatal(e.Start(":8080"))
+}
+
+func processDailyFarmMonitor(frp *farm.Repo, fmrp *farmMonitorRP.Repo) {
+	var farms []entities.Farm
+	if err := frp.GetAll(&farms); err != nil {
+		log.Fatalf("Error getting farms: %v", err)
+	}
+
+	for _, farm := range farms {
+		farmMonitor := entities.FarmMonitor{
+			ID:              uuid.New(),
+			FarmID:          farm.ID,
+			Temperature:     float64(0),
+			PH:              float64(0),
+			DissolvedOxygen: float64(0),
+		}
+
+		if err := fmrp.Create(&farmMonitor); err != nil {
+			log.Fatalf("Error creating farm monitor: %v", err)
+		}
+	}
+	log.Printf("Successfully running cron")
 }

@@ -13,6 +13,7 @@ func SliceFromUseCase(farms *[]entities.Farm) *FarmGetAll {
 			ID:          _farm.ID,
 			Title:       _farm.Description,
 			Description: _farm.Description,
+			Picture:     _farm.Picture,
 		}
 	}
 

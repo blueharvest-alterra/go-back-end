@@ -1,14 +1,18 @@
 package request
 
 import (
+	"mime/multipart"
+
 	"github.com/blueharvest-alterra/go-back-end/entities"
 	"github.com/google/uuid"
 )
 
 type EditFarmRequest struct {
 	ID          uuid.UUID
-	Title       string `json:"title"`
-	Description string `json:"description"`
+	Title       string `form:"title"`
+	Description string `form:"description"`
+	Picture     string
+	PictureFile []*multipart.FileHeader `form:"picture_file"`
 }
 
 func (r *EditFarmRequest) ToEntities() *entities.Farm {
@@ -16,5 +20,6 @@ func (r *EditFarmRequest) ToEntities() *entities.Farm {
 		ID:          r.ID,
 		Title:       r.Title,
 		Description: r.Description,
+		Picture:     r.Picture,
 	}
 }
