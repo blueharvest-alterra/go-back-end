@@ -1,4 +1,4 @@
-package farminvest
+package farmInvest
 
 import (
 	"time"
