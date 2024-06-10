@@ -16,4 +16,6 @@ func (r *ProductRouteController) InitRoute(e *echo.Echo) {
 	p.POST("", r.ProductController.Create)
 	p.GET("/:id", r.ProductController.GetByID)
 	p.GET("", r.ProductController.GetAll)
+	p.PUT("/:id", r.ProductController.Update)
+	p.DELETE("/:id", r.ProductController.Delete)
 }
