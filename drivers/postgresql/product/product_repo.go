@@ -2,7 +2,6 @@ package product
 
 import (
 	"errors"
-	"fmt"
 	"github.com/blueharvest-alterra/go-back-end/constant"
 	"github.com/blueharvest-alterra/go-back-end/entities"
 	"gorm.io/gorm"
@@ -13,6 +12,37 @@ type Repo struct {
 	DB *gorm.DB
 }
 
+func (r *Repo) Delete(product *entities.Product) error {
+	productDb := FromUseCase(product)
+
+	if err := r.DB.Where("id = ?", product.ID).Delete(&productDb).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return constant.ErrNotFound
+		}
+		return err
+	}
+
+	*product = *productDb.ToUseCase()
+	return nil
+}
+
+func (r *Repo) Update(product *entities.Product, thumbnail []*multipart.FileHeader) error {
+	productDb := FromUseCase(product)
+
+	if len(thumbnail) != 0 {
+		if err := productDb.UploadThumbnail(thumbnail); err != nil {
+			return err
+		}
+	}
+
+	if err := r.DB.Where("id = ?", product.ID).Updates(&productDb).Error; err != nil {
+		return err
+	}
+
+	*product = *productDb.ToUseCase()
+	return nil
+}
+
 func NewProductRepo(db *gorm.DB) *Repo {
 	return &Repo{DB: db}
 }
@@ -21,7 +51,6 @@ func (r *Repo) Create(product *entities.Product, thumbnail []*multipart.FileHead
 	productDb := FromUseCase(product)
 
 	if err := productDb.UploadThumbnail(thumbnail); err != nil {
-		fmt.Println("err repo Create", err)
 		return err
 	}
 

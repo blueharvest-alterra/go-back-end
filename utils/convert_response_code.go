@@ -26,6 +26,8 @@ func ConvertResponseCode(err error) int {
 		return http.StatusForbidden
 	case errors.Is(err, constant.ErrTokenNotValid):
 		return http.StatusForbidden
+	case errors.Is(err, constant.ErrProductStatusValue):
+		return http.StatusBadRequest
 	default:
 		return http.StatusInternalServerError
 	}

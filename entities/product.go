@@ -22,12 +22,16 @@ type Product struct {
 
 type ProductRepositoryInterface interface {
 	Create(product *Product, thumbnail []*multipart.FileHeader) error
+	Update(product *Product, thumbnail []*multipart.FileHeader) error
+	Delete(product *Product) error
 	GetByID(product *Product) error
 	GetAll(product *[]Product) error
 }
 
 type ProductUseCaseInterface interface {
 	Create(product *Product, userData *middlewares.Claims, thumbnail []*multipart.FileHeader) (Product, error)
+	Update(product *Product, userData *middlewares.Claims, thumbnail []*multipart.FileHeader) (Product, error)
+	Delete(product *Product, userData *middlewares.Claims) (Product, error)
 	GetByID(product *Product) (Product, error)
 	GetAll(product *[]Product) ([]Product, error)
 }

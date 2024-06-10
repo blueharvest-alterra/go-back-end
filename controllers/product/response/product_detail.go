@@ -14,17 +14,15 @@ type ThumbnailDetail struct {
 }
 
 type ProductDetail struct {
-	ID                uuid.UUID      `json:"id"`
-	Name              string         `json:"name"`
-	Description       string         `json:"description"`
-	Price             float64        `json:"price"`
-	PickupAvailable   bool           `json:"pickup_available"`
-	DeliveryAvailable bool           `json:"delivery_available"`
-	Thumbnail         string         `json:"thumbnail"`
-	Status            string         `json:"status"`
-	CreatedAt         time.Time      `json:"created_at"`
-	UpdatedAt         time.Time      `json:"updated_at"`
-	DeletedAt         gorm.DeletedAt `json:"deleted_at"`
+	ID          uuid.UUID      `json:"id"`
+	Name        string         `json:"name"`
+	Description string         `json:"description"`
+	Price       float64        `json:"price"`
+	Thumbnail   string         `json:"thumbnail"`
+	Status      string         `json:"status"`
+	CreatedAt   time.Time      `json:"created_at"`
+	UpdatedAt   time.Time      `json:"updated_at"`
+	DeletedAt   gorm.DeletedAt `json:"deleted_at"`
 }
 
 func ProductDetailFromUseCase(product *entities.Product) *ProductDetail {
