@@ -9,6 +9,7 @@ import (
 	"github.com/google/uuid"
 	"net/http"
 	"os"
+	"time"
 )
 
 type Message struct {
@@ -133,8 +134,9 @@ func (c *ChatBot) CreateOpenAIMessage() error {
 }
 
 type RequestOpenAIRunThread struct {
-	AssistantID string `json:"assistant_id"`
-	Stream      bool   `json:"stream"`
+	AssistantID         string `json:"assistant_id"`
+	Stream              bool   `json:"stream"`
+	MaxCompletionTokens int64  `json:"max_completion_tokens"`
 }
 
 func (c *ChatBot) RunOpenAIThread() error {
@@ -144,6 +146,7 @@ func (c *ChatBot) RunOpenAIThread() error {
 	var payload RequestOpenAIRunThread
 	payload.AssistantID = c.AssistantID
 	payload.Stream = false
+	payload.MaxCompletionTokens = 100
 	jsonPayload, err := json.Marshal(payload)
 	if err != nil {
 		return err
@@ -239,6 +242,10 @@ func (c *ChatBot) GetOpenAIMessageLists() error {
 
 	allMessages := make([]Message, len(response.Data))
 	for i, msg := range response.Data {
+		if len(msg.Content) < 1 {
+			time.Sleep(5 * time.Second)
+			return c.GetOpenAIMessageLists()
+		}
 		allMessages[i] = Message{
 			Role:    msg.Role,
 			Content: msg.Content[0].Text.Value,
