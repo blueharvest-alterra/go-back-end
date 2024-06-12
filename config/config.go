@@ -1,6 +1,7 @@
 package config
 
 import (
+	"github.com/blueharvest-alterra/go-back-end/drivers/redis"
 	"os"
 
 	"github.com/blueharvest-alterra/go-back-end/drivers/postgresql"
@@ -39,5 +40,15 @@ func InitConfigPostgresql() postgresql.Config {
 		Pass: dbPass,
 		Host: dbHost,
 		Port: dbPort,
+	}
+}
+
+func InitConfigRedis() redis.Config {
+	connectionURL := os.Getenv("REDIS_URI")
+	if connectionURL == "" {
+		connectionURL = utils.GetConfig("REDIS_URI")
+	}
+	return redis.Config{
+		ConnectionURL: connectionURL,
 	}
 }
