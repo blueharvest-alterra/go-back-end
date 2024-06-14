@@ -69,7 +69,66 @@ func (ac *ProductController) GetAll(c echo.Context) error {
 	}
 
 	productResponse := response.SliceFromUseCase(&products)
-	return c.JSON(http.StatusCreated, base.NewSuccessResponse("product created", productResponse))
+	return c.JSON(http.StatusCreated, base.NewSuccessResponse("product get all success", productResponse))
+}
+
+func (ac *ProductController) Update(c echo.Context) error {
+	var productUpdate request.ProductUpdateRequest
+	if err := c.Bind(&productUpdate); err != nil {
+		return c.JSON(utils.ConvertResponseCode(err), base.NewErrorResponse(err.Error()))
+	}
+
+	userData, ok := c.Get("claims").(*middlewares.Claims)
+	if !ok {
+		return echo.ErrInternalServerError
+	}
+
+	productID, err := uuid.Parse(c.Param("id"))
+	if err != nil {
+		return c.JSON(utils.ConvertResponseCode(err), base.NewErrorResponse(err.Error()))
+	}
+
+	productEntities := productUpdate.ToEntities()
+	productEntities.ID = productID
+
+	form, err := c.MultipartForm()
+	if err != nil {
+		return c.JSON(utils.ConvertResponseCode(err), base.NewErrorResponse(err.Error()))
+	}
+
+	thumbnail := form.File["thumbnail"]
+
+	product, errUseCase := ac.productUseCase.Update(productEntities, userData, thumbnail)
+	if errUseCase != nil {
+		return c.JSON(utils.ConvertResponseCode(errUseCase), base.NewErrorResponse(errUseCase.Error()))
+	}
+
+	productResponse := response.ProductDetailFromUseCase(&product)
+	return c.JSON(http.StatusOK, base.NewSuccessResponse("product updated", productResponse))
+}
+
+func (ac *ProductController) Delete(c echo.Context) error {
+	var product entities.Product
+
+	userData, ok := c.Get("claims").(*middlewares.Claims)
+	if !ok {
+		return echo.ErrInternalServerError
+	}
+
+	productID, err := uuid.Parse(c.Param("id"))
+	if err != nil {
+		return c.JSON(utils.ConvertResponseCode(err), base.NewErrorResponse(err.Error()))
+	}
+
+	product.ID = productID
+
+	product, errUseCase := ac.productUseCase.Delete(&product, userData)
+	if errUseCase != nil {
+		return c.JSON(utils.ConvertResponseCode(errUseCase), base.NewErrorResponse(errUseCase.Error()))
+	}
+
+	productResponse := response.ProductDetailFromUseCase(&product)
+	return c.JSON(http.StatusOK, base.NewSuccessResponse("product deleted", productResponse))
 }
 
 func NewProductController(productUseCase entities.ProductUseCaseInterface) *ProductController {

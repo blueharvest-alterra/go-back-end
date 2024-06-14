@@ -1,7 +1,6 @@
 package cart
 
 import (
-	"fmt"
 	"net/http"
 
 	"github.com/blueharvest-alterra/go-back-end/controllers/base"
@@ -109,8 +108,11 @@ func (cc *CartController) GetAll(c echo.Context) error {
 		return c.JSON(http.StatusInternalServerError, base.NewErrorResponse("failed parse token"))
 	}
 
-	fmt.Println("value:", userData.ID)
-	carts, errUseCase := cc.CartUseCaseInterface.GetAll(userData.ID)
+	var cart []entities.Cart
+
+
+
+	carts, errUseCase := cc.CartUseCaseInterface.GetAll(&cart, userData)
 	if errUseCase != nil {
 		return c.JSON(utils.ConvertResponseCode(errUseCase), base.NewErrorResponse(errUseCase.Error()))
 	}

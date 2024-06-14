@@ -2,6 +2,7 @@ package usecases
 
 import (
 	"github.com/blueharvest-alterra/go-back-end/entities"
+	"github.com/blueharvest-alterra/go-back-end/middlewares"
 	"github.com/google/uuid"
 )
 
@@ -52,12 +53,10 @@ func (c *CartUseCase) GetById(id uuid.UUID) (entities.Cart, error) {
 	return cart, nil
 }
 
-func (c *CartUseCase) GetAll(customerID uuid.UUID) ([]entities.Cart, error) {
-	var cart []entities.Cart
-
-	if err := c.repository.GetAll(customerID, &cart); err != nil {
+func (c *CartUseCase) GetAll(carts *[]entities.Cart, userData *middlewares.Claims) ([]entities.Cart, error) {
+	if err := c.repository.GetAll(carts, userData); err != nil {
 		return []entities.Cart{}, err
 	}
 
-	return cart, nil
+	return *carts, nil
 }

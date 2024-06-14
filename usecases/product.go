@@ -12,6 +12,36 @@ type ProductUseCase struct {
 	repository entities.ProductRepositoryInterface
 }
 
+func (cu *ProductUseCase) Delete(product *entities.Product, userData *middlewares.Claims) (entities.Product, error) {
+	if userData.Role != "admin" {
+		return entities.Product{}, constant.ErrNotAuthorized
+	}
+
+	if err := cu.repository.Delete(product); err != nil {
+		return entities.Product{}, err
+	}
+
+	return *product, nil
+}
+
+func (cu *ProductUseCase) Update(product *entities.Product, userData *middlewares.Claims, thumbnail []*multipart.FileHeader) (entities.Product, error) {
+	if userData.Role != "admin" {
+		return entities.Product{}, constant.ErrNotAuthorized
+	}
+
+	if product.Status != "" {
+		if !(product.Status == "available" || product.Status == "unavailable") {
+			return entities.Product{}, constant.ErrProductStatusValue
+		}
+	}
+
+	if err := cu.repository.Update(product, thumbnail); err != nil {
+		return entities.Product{}, err
+	}
+
+	return *product, nil
+}
+
 func NewProductUseCase(repository entities.ProductRepositoryInterface) *ProductUseCase {
 	return &ProductUseCase{
 		repository: repository,
@@ -27,8 +57,11 @@ func (cu *ProductUseCase) Create(product *entities.Product, userData *middleware
 		return entities.Product{}, constant.ErrEmptyInput
 	}
 
+	if !(product.Status == "available" || product.Status == "unavailable") {
+		return entities.Product{}, constant.ErrProductStatusValue
+	}
+
 	product.ID = uuid.New()
-	product.Status = "available"
 
 	if err := cu.repository.Create(product, thumbnail); err != nil {
 		return entities.Product{}, err

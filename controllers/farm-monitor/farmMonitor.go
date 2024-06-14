@@ -59,12 +59,12 @@ func (fc *FarmMonitorController) Update(c echo.Context) error {
 }
 
 func (fc *FarmMonitorController) GetById(c echo.Context) error {
-	farmId, err := uuid.Parse(c.Param("id"))
+	farmMonitorId, err := uuid.Parse(c.Param("id"))
 	if err != nil {
 		return c.JSON(utils.ConvertResponseCode(err), base.NewErrorResponse(err.Error()))
 	}
 
-	farmMonitor, errUseCase := fc.FarmMonitorUseCase.GetById(farmId)
+	farmMonitor, errUseCase := fc.FarmMonitorUseCase.GetById(farmMonitorId)
 	if errUseCase != nil {
 		return c.JSON(utils.ConvertResponseCode(errUseCase), base.NewErrorResponse(errUseCase.Error()))
 	}
@@ -74,8 +74,12 @@ func (fc *FarmMonitorController) GetById(c echo.Context) error {
 
 }
 
-func (fc *FarmMonitorController) GetAll(c echo.Context) error {
-	farmMonitors, errUseCase := fc.FarmMonitorUseCase.GetAll(&[]entities.FarmMonitor{})
+func (fc *FarmMonitorController) GetAllByFarmId(c echo.Context) error {
+	farmId, err := uuid.Parse(c.Param("farmid"))
+	if err != nil {
+		return c.JSON(utils.ConvertResponseCode(err), base.NewErrorResponse(err.Error()))
+	}
+	farmMonitors, errUseCase := fc.FarmMonitorUseCase.GetAllByFarmId(farmId)
 	if errUseCase != nil {
 		return c.JSON(utils.ConvertResponseCode(errUseCase), base.NewErrorResponse(errUseCase.Error()))
 	}

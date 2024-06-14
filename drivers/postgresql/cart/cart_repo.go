@@ -3,8 +3,9 @@ package cart
 import (
 	"github.com/blueharvest-alterra/go-back-end/constant"
 	"github.com/blueharvest-alterra/go-back-end/entities"
-	"github.com/google/uuid"
+	"github.com/blueharvest-alterra/go-back-end/middlewares"
 	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 )
 
 type Repo struct {
@@ -68,10 +69,10 @@ func (r *Repo) Delete(cart *entities.Cart) error {
 	return nil
 }
 
-func (r *Repo) GetAll(customerID uuid.UUID, carts *[]entities.Cart) error {
+func (r *Repo) GetAll(carts *[]entities.Cart, userData *middlewares.Claims) error {
 	var cartDb []Cart
 
-	if err := r.DB.Where("customer_id = ?", customerID).Find(&cartDb).Error; err != nil {
+	if err := r.DB.Preload(clause.Associations).Where("customer_id = ?", userData.ID).Find(&cartDb).Error; err != nil {
 		return err
 	}
 

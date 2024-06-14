@@ -22,12 +22,12 @@ type FarmMonitorRepositoryInterface interface {
 	Create(farmMonitor *FarmMonitor) error
 	GetById(farmMonitor *FarmMonitor) error
 	Update(farmMonitor *FarmMonitor) error
-	GetAll(farmMonitors *[]FarmMonitor) error
+	GetAllByFarmId(farmId uuid.UUID, farmMonitors *[]FarmMonitor) error
 }
 
 type FarmMonitorUseCaseInterface interface {
 	Create(farmMonitor *FarmMonitor) (FarmMonitor, error)
-	GetById(id uuid.UUID) (FarmMonitor, error)
+	GetById(farmMonitorId uuid.UUID) (FarmMonitor, error)
 	Update(farmMonitor *FarmMonitor) (FarmMonitor, error)
-	GetAll(farmMonitors *[]FarmMonitor) ([]FarmMonitor, error)
+	GetAllByFarmId(farmId uuid.UUID) ([]FarmMonitor, error)
 }

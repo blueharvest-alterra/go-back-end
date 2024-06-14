@@ -42,12 +42,10 @@ func (c *FarmMonitorUseCase) GetById(id uuid.UUID) (entities.FarmMonitor, error)
 	return farmMonitor, nil
 }
 
-func (c *FarmMonitorUseCase) GetAll(farmMonitor *[]entities.FarmMonitor) ([]entities.FarmMonitor, error) {
-	var farmMonitors []entities.FarmMonitor
-
-	if err := c.repository.GetAll(&farmMonitors); err != nil {
-		return []entities.FarmMonitor{}, err
-	}
-
-	return farmMonitors, nil
+func (c *FarmMonitorUseCase) GetAllByFarmId(farmId uuid.UUID) ([]entities.FarmMonitor, error) {
+    var farmMonitors []entities.FarmMonitor
+    if err := c.repository.GetAllByFarmId(farmId, &farmMonitors); err != nil {
+        return nil, err
+    }
+    return farmMonitors, nil
 }
