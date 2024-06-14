@@ -1,8 +1,6 @@
 package cart
 
 import (
-	"log"
-
 	"github.com/blueharvest-alterra/go-back-end/constant"
 	"github.com/blueharvest-alterra/go-back-end/entities"
 	"github.com/blueharvest-alterra/go-back-end/middlewares"
@@ -31,7 +29,7 @@ func (r *Repo) Create(cart *entities.Cart) error {
 
 func (r *Repo) GetById(cart *entities.Cart) error {
 	var cartDb Cart
-	if err := r.DB.First(&cartDb, "id = ?", cart.ID).Error; err != nil {
+	if err := r.DB.Preload("Product").First(&cartDb, "id = ?", cart.ID).Error; err != nil {
 		if r.DB.RowsAffected < 1 {
 			return constant.ErrNotFound
 		}
@@ -51,9 +49,13 @@ func (r *Repo) Update(cart *entities.Cart) error {
 	if err := db.Error; err != nil {
 		return err
 	}
+    updatedCart := &Cart{}
+    if err := r.DB.Preload("Product").First(updatedCart, "id = ?", cartDb.ID).Error; err != nil {
+        return err
+    }
 
-	*cart = *cartDb.ToUseCase()
-	return nil
+    *cart = *updatedCart.ToUseCase()
+    return nil
 }
 
 func (r *Repo) Delete(cart *entities.Cart) error {
@@ -77,15 +79,9 @@ func (r *Repo) GetAll(carts *[]entities.Cart, userData *middlewares.Claims) erro
 	if err := r.DB.Preload("Product").Where("customer_id = ?", userData.ID).Find(&cartDb).Error; err != nil {
 		return err
 	}
-    for _, cart := range cartDb {
-        // Log the cart and its product for debugging
-        if cart.Product == nil {
-            log.Printf("Cart ID %v has no associated product", cart.ID)
-        } else {
-            log.Printf("Cart ID %v has product: %+v", cart.ID, cart.Product)
-        }
-        *carts = append(*carts, *cart.ToUseCase())
-    }
+	for _, cart := range cartDb {
+		*carts = append(*carts, *cart.ToUseCase())
+	}
 
 	utils.PrettyPrint(cartDb)
 

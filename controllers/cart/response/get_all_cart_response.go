@@ -31,7 +31,7 @@ func SliceFromUseCase(carts *[]entities.Cart) *CartGetAll {
             CustomerID: _cart.CustomerID,
             ProductID:  _cart.ProductID,
             Quantity:   _cart.Quantity,
-            Product:    productResponse,
+            Product:    &productResponse,
         }
     }
 

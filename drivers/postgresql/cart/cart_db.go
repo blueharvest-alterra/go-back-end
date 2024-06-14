@@ -1,9 +1,10 @@
 package cart
 
 import (
+	"time"
+
 	"github.com/blueharvest-alterra/go-back-end/drivers/postgresql/product"
 	"github.com/blueharvest-alterra/go-back-end/entities"
-	"time"
 
 	"github.com/google/uuid"
 	"gorm.io/gorm"
@@ -21,15 +22,9 @@ type Cart struct {
 }
 
 func FromUseCase(cart *entities.Cart) *Cart {
-	return &Cart{
-		ID:         cart.ID,
-		CustomerID: cart.CustomerID,
-		ProductID:  cart.ProductID,
-		Quantity:   cart.Quantity,
-		CreatedAt:  cart.CreatedAt,
-		UpdatedAt:  cart.UpdatedAt,
-		DeletedAt:  cart.DeletedAt,
-		Product: &product.Product{
+	var prdct product.Product
+	if cart.Product != nil {
+		prdct = product.Product{
 			ID:          cart.Product.ID,
 			Name:        cart.Product.Name,
 			Description: cart.Product.Description,
@@ -39,7 +34,18 @@ func FromUseCase(cart *entities.Cart) *Cart {
 			UpdatedAt:   cart.Product.UpdatedAt,
 			DeletedAt:   cart.Product.DeletedAt,
 			Thumbnail:   cart.Product.Thumbnail,
-		},
+		}
+	}
+
+	return &Cart{
+		ID:         cart.ID,
+		CustomerID: cart.CustomerID,
+		ProductID:  cart.ProductID,
+		Quantity:   cart.Quantity,
+		CreatedAt:  cart.CreatedAt,
+		UpdatedAt:  cart.UpdatedAt,
+		DeletedAt:  cart.DeletedAt,
+		Product:    &prdct,
 	}
 }
 

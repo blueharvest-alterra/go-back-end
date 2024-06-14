@@ -1,12 +1,12 @@
 package main
 
 import (
-	// "context"
+	"context"
 	"github.com/blueharvest-alterra/go-back-end/drivers/postgresql/cart"
-	// chatBot "github.com/blueharvest-alterra/go-back-end/drivers/postgresql/chat-bot"
+	chatBot "github.com/blueharvest-alterra/go-back-end/drivers/postgresql/chat-bot"
 	"github.com/blueharvest-alterra/go-back-end/drivers/postgresql/farmInvest"
 	"github.com/blueharvest-alterra/go-back-end/drivers/postgresql/farmMonitor"
-	// "github.com/blueharvest-alterra/go-back-end/drivers/redis"
+	"github.com/blueharvest-alterra/go-back-end/drivers/redis"
 	"log"
 
 	"github.com/blueharvest-alterra/go-back-end/config"
@@ -14,7 +14,7 @@ import (
 	adminController "github.com/blueharvest-alterra/go-back-end/controllers/admin"
 	articleController "github.com/blueharvest-alterra/go-back-end/controllers/article"
 	cartController "github.com/blueharvest-alterra/go-back-end/controllers/cart"
-	// chatBotController "github.com/blueharvest-alterra/go-back-end/controllers/chat-bot"
+	chatBotController "github.com/blueharvest-alterra/go-back-end/controllers/chat-bot"
 	courierController "github.com/blueharvest-alterra/go-back-end/controllers/courier"
 	customerController "github.com/blueharvest-alterra/go-back-end/controllers/customer"
 	farmController "github.com/blueharvest-alterra/go-back-end/controllers/farm"
@@ -44,13 +44,13 @@ import (
 	"github.com/robfig/cron"
 )
 
-// var ctx = context.Background()
+var ctx = context.Background()
 
 func main() {
 	dbConfig := config.InitConfigPostgresql()
 	db := postgresql.ConnectDB(dbConfig)
-	// redisConfig := config.InitConfigRedis()
-	// redisClient := redis.ConnectRedis(redisConfig)
+	redisConfig := config.InitConfigRedis()
+	redisClient := redis.ConnectRedis(redisConfig)
 
 	e := echo.New()
 	e.Use(middleware.Logger())
@@ -111,9 +111,9 @@ func main() {
 	cartUseCase := usecases.NewCartUseCase(cartRepo)
 	newCartController := cartController.NewCartController(cartUseCase)
 	
-	// chatBotRepo := chatBot.NewChatBotRepo(db, redisClient)
-	// chatBotUseCase := usecases.NewChatBotUseCase(chatBotRepo)
-	// newChatBotController := chatBotController.NewChatBotController(chatBotUseCase)
+	chatBotRepo := chatBot.NewChatBotRepo(db, redisClient)
+	chatBotUseCase := usecases.NewChatBotUseCase(chatBotRepo)
+	newChatBotController := chatBotController.NewChatBotController(chatBotUseCase)
 
 	adminRouteController := routes.AdminRouteController{
 		AdminController: newAdminController,
@@ -151,9 +151,10 @@ func main() {
 	farmMonitorRouteController := routes.FarmMonitorRouteController{
 		FarmMonitorController: newFarmMonitorController,
 	}
-	// chatBotRouteController := routes.ChatBotRouteController{
-	// 	ChatBotController: newChatBotController,
-	// }
+
+	chatBotRouteController := routes.ChatBotRouteController{
+		ChatBotController: newChatBotController,
+	}
 
 	cartRouteController := routes.CartRouteController{
 		CartController: newCartController,
@@ -172,7 +173,7 @@ func main() {
 	farmInvestRouteController.InitRoute(e)
 	farmMonitorRouteController.InitRoute(e)
 	cartRouteController.InitRoute(e)
-	// chatBotRouteController.InitRoute(e)
+	chatBotRouteController.InitRoute(e)
 
 	//init cron
 	c := cron.New()

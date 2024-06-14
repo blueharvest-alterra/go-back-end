@@ -1,18 +1,19 @@
 package entities
 
 import (
+	"time"
+
 	"github.com/blueharvest-alterra/go-back-end/middlewares"
 	"github.com/google/uuid"
 	"gorm.io/gorm"
-	"time"
 )
 
 type Cart struct {
 	ID         uuid.UUID
-	CustomerID uuid.UUID `gorm:"type:varchar(100)"`
-	ProductID  uuid.UUID `gorm:"type:varchar(100)"`
+	CustomerID uuid.UUID
+	ProductID  uuid.UUID
 	Product    *Product
-	Quantity   int64 `gorm:"type:decimal"`
+	Quantity   int64
 	CreatedAt  time.Time
 	UpdatedAt  time.Time
 	DeletedAt  gorm.DeletedAt
