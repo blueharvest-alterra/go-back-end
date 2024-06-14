@@ -1,7 +1,7 @@
 package transaction
 
 import (
-	"fmt"
+	"net/http"
 	"github.com/blueharvest-alterra/go-back-end/controllers/base"
 	"github.com/blueharvest-alterra/go-back-end/controllers/transaction/request"
 	"github.com/blueharvest-alterra/go-back-end/controllers/transaction/response"
@@ -10,7 +10,6 @@ import (
 	"github.com/blueharvest-alterra/go-back-end/utils"
 	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
-	"net/http"
 )
 
 type TransactionController struct {
@@ -33,8 +32,6 @@ func (ac *TransactionController) Create(c echo.Context) error {
 	if !ok {
 		return echo.ErrInternalServerError
 	}
-
-	fmt.Println("cntrlrl", utils.PrettyPrint(transactionCreate))
 
 	transaction, errUseCase := ac.transactionUseCase.Create(transactionCreate.ToEntities(), userData)
 	if errUseCase != nil {

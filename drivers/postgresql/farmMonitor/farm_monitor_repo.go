@@ -1,8 +1,11 @@
 package farmMonitor
 
 import (
+	"fmt"
+
 	"github.com/blueharvest-alterra/go-back-end/constant"
 	"github.com/blueharvest-alterra/go-back-end/entities"
+	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
 
@@ -37,14 +40,18 @@ func (r *Repo) GetById(farmMonitor *entities.FarmMonitor) error {
 	*farmMonitor = *farmMonitorDb.ToUseCase()
 	return nil
 }
-func (r *Repo) GetAll(farmMonitors *[]entities.FarmMonitor) error {
-	var farmMonitorDb []FarmMonitor
 
-	if err := r.DB.Find(&farmMonitorDb).Error; err != nil {
+func (r *Repo) GetAllByFarmId(farmID uuid.UUID, farmMonitors *[]entities.FarmMonitor) error {
+	var farmMonitorDb []FarmMonitor
+	if err := r.DB.Where("farm_id = ?", farmID).Find(&farmMonitorDb).Error; err != nil {
 		return err
 	}
 
-	for _, farm := range farmMonitorDb {
+	a := r.DB.Where("farm_id = ?", farmID).Find(&farmMonitorDb)
+
+	fmt.Println("hit", a)
+
+	for _, farm := 	range farmMonitorDb {
 		*farmMonitors = append(*farmMonitors, *farm.ToUseCase())
 	}
 	return nil

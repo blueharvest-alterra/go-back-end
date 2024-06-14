@@ -3,6 +3,7 @@ package farmInvest
 import (
 	"github.com/blueharvest-alterra/go-back-end/constant"
 	"github.com/blueharvest-alterra/go-back-end/entities"
+	"github.com/blueharvest-alterra/go-back-end/middlewares"
 	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
@@ -18,7 +19,32 @@ func NewFarmInvestRepo(db *gorm.DB) *Repo {
 func (r *Repo) Create(farmInvest *entities.FarmInvest) error {
 	farmInvestDb := FromUseCase(farmInvest)
 
-	if err := r.DB.Create(&farmInvestDb).Error; err != nil {
+	tx := r.DB.Begin()
+	defer func() {
+		if re := recover(); re != nil {
+			tx.Rollback()
+		}
+	}()
+
+	// Create Payment
+	farmInvestDb.PaymentID = uuid.New()
+	farmInvestDb.Payment.ID = farmInvestDb.PaymentID
+	farmInvestDb.Payment.Amount = farmInvestDb.InvestmentAmount
+	farmInvestDb.Payment.Status = "UNPAID"
+
+	if err := farmInvestDb.Payment.Create(); err != nil {
+		return err
+	}
+
+	// Create FarmInvest
+	if err := tx.Create(&farmInvestDb).Error; err != nil {
+		tx.Rollback()
+		return err
+	}
+
+	// Commit transaction
+	if err := tx.Commit().Error; err != nil {
+		tx.Rollback()
 		return err
 	}
 
@@ -26,9 +52,10 @@ func (r *Repo) Create(farmInvest *entities.FarmInvest) error {
 	return nil
 }
 
-func (r *Repo) GetById(farmInvest *entities.FarmInvest) error {
+func (r *Repo) GetById(farmInvest *entities.FarmInvest, userData *middlewares.Claims) error {
 	var farmInvestDb FarmInvest
-	if err := r.DB.First(&farmInvestDb, "id = ?", farmInvest.ID).Error; err != nil {
+
+	if err := r.DB.First(&farmInvest, "id = ?", farmInvest.ID).Error; err != nil {
 		if r.DB.RowsAffected < 1 {
 			return constant.ErrNotFound
 		}
@@ -38,10 +65,10 @@ func (r *Repo) GetById(farmInvest *entities.FarmInvest) error {
 	return nil
 }
 
-func (r *Repo) GetAll(customerID uuid.UUID, farmInvests *[]entities.FarmInvest) error {
+func (r *Repo) GetAll(farmInvests *[]entities.FarmInvest, userData *middlewares.Claims) error {
 	var farmInvestDb []FarmInvest
 
-	if err := r.DB.Where("customer_id = ?", customerID).Find(&farmInvestDb).Error; err != nil {
+	if err := r.DB.Where("customer_id = ?", userData.ID).Find(&farmInvestDb).Error; err != nil {
 		return err
 	}
 
