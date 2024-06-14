@@ -2,6 +2,7 @@ package main
 
 import (
 	"context"
+	"github.com/blueharvest-alterra/go-back-end/drivers/postgresql/cart"
 	chatBot "github.com/blueharvest-alterra/go-back-end/drivers/postgresql/chat-bot"
 	"github.com/blueharvest-alterra/go-back-end/drivers/postgresql/farmInvest"
 	"github.com/blueharvest-alterra/go-back-end/drivers/postgresql/farmMonitor"
@@ -12,6 +13,7 @@ import (
 	addressController "github.com/blueharvest-alterra/go-back-end/controllers/address"
 	adminController "github.com/blueharvest-alterra/go-back-end/controllers/admin"
 	articleController "github.com/blueharvest-alterra/go-back-end/controllers/article"
+	cartController "github.com/blueharvest-alterra/go-back-end/controllers/cart"
 	chatBotController "github.com/blueharvest-alterra/go-back-end/controllers/chat-bot"
 	courierController "github.com/blueharvest-alterra/go-back-end/controllers/courier"
 	customerController "github.com/blueharvest-alterra/go-back-end/controllers/customer"
@@ -105,6 +107,10 @@ func main() {
 	farmMonitorUseCase := usecases.NewFarmMonitorUseCase(farmMonitorRepo)
 	newFarmMonitorController := farmMonitorController.NewFarmMonitorController(farmMonitorUseCase)
 
+	cartRepo := cart.NewCartRepo(db)
+	cartUseCase := usecases.NewCartUseCase(cartRepo)
+	newCartController := cartController.NewCartController(cartUseCase)
+	
 	chatBotRepo := chatBot.NewChatBotRepo(db, redisClient)
 	chatBotUseCase := usecases.NewChatBotUseCase(chatBotRepo)
 	newChatBotController := chatBotController.NewChatBotController(chatBotUseCase)
@@ -145,8 +151,13 @@ func main() {
 	farmMonitorRouteController := routes.FarmMonitorRouteController{
 		FarmMonitorController: newFarmMonitorController,
 	}
+
 	chatBotRouteController := routes.ChatBotRouteController{
 		ChatBotController: newChatBotController,
+	}
+
+	cartRouteController := routes.CartRouteController{
+		CartController: newCartController,
 	}
 
 	adminRouteController.InitRoute(e)
@@ -161,6 +172,7 @@ func main() {
 	paymentRouteController.InitRoute(e)
 	farmInvestRouteController.InitRoute(e)
 	farmMonitorRouteController.InitRoute(e)
+	cartRouteController.InitRoute(e)
 	chatBotRouteController.InitRoute(e)
 
 	//init cron

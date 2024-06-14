@@ -1,7 +1,9 @@
 package usecases
 
 import (
+	"github.com/blueharvest-alterra/go-back-end/constant"
 	"github.com/blueharvest-alterra/go-back-end/entities"
+	"github.com/blueharvest-alterra/go-back-end/middlewares"
 	"github.com/google/uuid"
 )
 
@@ -13,8 +15,15 @@ func NewFarmInvestUseCase(repository entities.FarmInvestRepositoryInterface) *Fa
 	return &FarmInvestUseCase{repository: repository}
 }
 
-func (c *FarmInvestUseCase) Create(farmInvest *entities.FarmInvest) (entities.FarmInvest, error) {
+func (c *FarmInvestUseCase) Create(farmInvest *entities.FarmInvest, userData *middlewares.Claims) (entities.FarmInvest, error) {
+	if userData.Role != "customer" {
+		return entities.FarmInvest{}, constant.ErrNotAuthorized
+	}
+
 	farmInvest.ID = uuid.New()
+	farmInvest.Customer.ID = userData.ID
+	farmInvest.Customer.FullName = userData.FullName
+	farmInvest.Customer.PhoneNumber = ""
 
 	if err := c.repository.Create(farmInvest); err != nil {
 		return entities.FarmInvest{}, err
@@ -23,25 +32,27 @@ func (c *FarmInvestUseCase) Create(farmInvest *entities.FarmInvest) (entities.Fa
 	return *farmInvest, nil
 }
 
-func (c *FarmInvestUseCase) GetById(id uuid.UUID) (entities.FarmInvest, error) {
-    var farmInvest entities.FarmInvest
-    farmInvest.ID = id  
+func (c *FarmInvestUseCase) GetById(farmInvest *entities.FarmInvest, userData *middlewares.Claims) (entities.FarmInvest, error) {
+	if farmInvest.ID == uuid.Nil {
+		return entities.FarmInvest{}, constant.ErrEmptyInput
+	}
 
-    if err := c.repository.GetById(&farmInvest); err != nil {
-        return entities.FarmInvest{}, err
-    }
+	if userData.Role == "customer" {
+		farmInvest.CustomerID = userData.ID
+	}
 
-    return farmInvest, nil
+	if err := c.repository.GetById(farmInvest, userData); err != nil {
+		return entities.FarmInvest{}, err
+	}
+
+	return *farmInvest, nil
 }
 
+func (c *FarmInvestUseCase) GetAll(farmInvests *[]entities.FarmInvest, userData *middlewares.Claims) ([]entities.FarmInvest, error) {
 
-
-func (c *FarmInvestUseCase) GetAll(customerID uuid.UUID) ([]entities.FarmInvest, error) {
-	var farmInvests []entities.FarmInvest
-
-	if err := c.repository.GetAll(customerID, &farmInvests); err != nil {
+	if err := c.repository.GetAll(farmInvests, userData); err != nil {
 		return []entities.FarmInvest{}, err
 	}
 
-	return farmInvests, nil
+	return *farmInvests, nil
 }

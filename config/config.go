@@ -1,8 +1,9 @@
 package config
 
 import (
-	"github.com/blueharvest-alterra/go-back-end/drivers/redis"
 	"os"
+
+	"github.com/blueharvest-alterra/go-back-end/drivers/redis"
 
 	"github.com/blueharvest-alterra/go-back-end/drivers/postgresql"
 	"github.com/blueharvest-alterra/go-back-end/utils"

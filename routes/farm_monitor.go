@@ -1,7 +1,7 @@
 package routes
 
 import (
-	"github.com/blueharvest-alterra/go-back-end/controllers/farm-monitor"
+	farm_monitor "github.com/blueharvest-alterra/go-back-end/controllers/farm-monitor"
 	"github.com/blueharvest-alterra/go-back-end/middlewares"
 	"github.com/labstack/echo/v4"
 )
@@ -15,6 +15,6 @@ func (r *FarmMonitorRouteController) InitRoute(e *echo.Echo) {
 	c.Use(middlewares.JWTMiddleware)
 	c.POST("", r.FarmMonitorController.Create)
 	c.PUT("/:id", r.FarmMonitorController.Update)
-	c.GET("", r.FarmMonitorController.GetAll)
+	c.GET("/farm/:farmid", r.FarmMonitorController.GetAllByFarmId)
 	c.GET("/:id", r.FarmMonitorController.GetById)
 }

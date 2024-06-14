@@ -36,7 +36,7 @@ func (fc *FarmInvestController) Create(c echo.Context) error {
 
 	farmInvestCreate.CustomerID = userData.ID
 
-	farm, errUseCase := fc.FarmInvestUseCase.Create(farmInvestCreate.ToEntities())
+	farm, errUseCase := fc.FarmInvestUseCase.Create(farmInvestCreate.ToEntities(), userData)
 	if errUseCase != nil {
 		return c.JSON(utils.ConvertResponseCode(errUseCase), base.NewErrorResponse(errUseCase.Error()))
 	}
@@ -46,12 +46,17 @@ func (fc *FarmInvestController) Create(c echo.Context) error {
 }
 
 func (fc *FarmInvestController) GetById(c echo.Context) error {
-	farmId, err := uuid.Parse(c.Param("id"))
+	farmInvestId, err := uuid.Parse(c.Param("id"))
 	if err != nil {
 		return c.JSON(utils.ConvertResponseCode(err), base.NewErrorResponse(err.Error()))
 	}
 
-	farm, errUseCase := fc.FarmInvestUseCase.GetById(farmId)
+	userData, ok := c.Get("claims").(*middlewares.Claims)
+	if !ok {
+		return echo.ErrInternalServerError
+	}
+
+	farm, errUseCase := fc.FarmInvestUseCase.GetById(&entities.FarmInvest{ID: farmInvestId}, userData)
 	if errUseCase != nil {
 		return c.JSON(utils.ConvertResponseCode(errUseCase), base.NewErrorResponse(errUseCase.Error()))
 	}
@@ -62,11 +67,14 @@ func (fc *FarmInvestController) GetById(c echo.Context) error {
 }
 
 func (fc *FarmInvestController) GetAll(c echo.Context) error {
+	var farmInvestEntities []entities.FarmInvest
+
 	userData, ok := c.Get("claims").(*middlewares.Claims)
 	if !ok {
 		return echo.ErrInternalServerError
 	}
-	farms, errUseCase := fc.FarmInvestUseCase.GetAll(userData.ID)
+
+	farms, errUseCase := fc.FarmInvestUseCase.GetAll(&farmInvestEntities, userData)
 	if errUseCase != nil {
 		return c.JSON(utils.ConvertResponseCode(errUseCase), base.NewErrorResponse(errUseCase.Error()))
 	}
