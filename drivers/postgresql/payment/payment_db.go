@@ -4,12 +4,13 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"net/http"
+	"os"
+
 	"github.com/blueharvest-alterra/go-back-end/constant"
 	"github.com/blueharvest-alterra/go-back-end/entities"
 	"github.com/blueharvest-alterra/go-back-end/utils"
 	"github.com/google/uuid"
-	"net/http"
-	"os"
 )
 
 type Payment struct {
@@ -55,7 +56,6 @@ type xdtInvoicePayload struct {
 }
 
 func (p *Payment) Create() error {
-	fmt.Println("p", utils.PrettyPrint(p))
 	url := "https://api.xendit.co/v2/invoices"
 	method := "POST"
 
@@ -74,8 +74,13 @@ func (p *Payment) Create() error {
 	if err != nil {
 		return err
 	}
+	xenditAPIKey := os.Getenv("XDT_SECRET_API_KEY")
+	if xenditAPIKey == "" {
+		xenditAPIKey = utils.GetConfig("XDT_SECRET_API_KEY")
+	}
+
 	req.Header.Add("Content-Type", "application/json")
-	req.Header.Add("Authorization", "Basic "+os.Getenv("XDT_SECRET_API_KEY"))
+	req.Header.Add("Authorization", "Basic "+xenditAPIKey)
 
 	res, err := client.Do(req)
 	if err != nil {
@@ -84,7 +89,6 @@ func (p *Payment) Create() error {
 	defer res.Body.Close()
 
 	if res.Status != "200 OK" {
-		fmt.Println("response Status:", res.Status)
 		return constant.ErrPaymentGateway
 	}
 
@@ -96,6 +100,7 @@ func (p *Payment) Create() error {
 
 	p.ExternalID = response.ID
 	p.InvoiceURL = response.InvoiceURL
+	fmt.Println("hit", p)
 
 	return nil
 }
