@@ -1,11 +1,13 @@
 package cart
 
 import (
+	"log"
+
 	"github.com/blueharvest-alterra/go-back-end/constant"
 	"github.com/blueharvest-alterra/go-back-end/entities"
 	"github.com/blueharvest-alterra/go-back-end/middlewares"
+	"github.com/blueharvest-alterra/go-back-end/utils"
 	"gorm.io/gorm"
-	"gorm.io/gorm/clause"
 )
 
 type Repo struct {
@@ -72,12 +74,20 @@ func (r *Repo) Delete(cart *entities.Cart) error {
 func (r *Repo) GetAll(carts *[]entities.Cart, userData *middlewares.Claims) error {
 	var cartDb []Cart
 
-	if err := r.DB.Preload(clause.Associations).Where("customer_id = ?", userData.ID).Find(&cartDb).Error; err != nil {
+	if err := r.DB.Preload("Product").Where("customer_id = ?", userData.ID).Find(&cartDb).Error; err != nil {
 		return err
 	}
+    for _, cart := range cartDb {
+        // Log the cart and its product for debugging
+        if cart.Product == nil {
+            log.Printf("Cart ID %v has no associated product", cart.ID)
+        } else {
+            log.Printf("Cart ID %v has product: %+v", cart.ID, cart.Product)
+        }
+        *carts = append(*carts, *cart.ToUseCase())
+    }
 
-	for _, cart := range cartDb {
-		*carts = append(*carts, *cart.ToUseCase())
-	}
+	utils.PrettyPrint(cartDb)
+
 	return nil
 }

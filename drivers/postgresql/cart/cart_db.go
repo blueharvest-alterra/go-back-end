@@ -17,7 +17,7 @@ type Cart struct {
 	CreatedAt  time.Time      `gorm:"autoCreateTime"`
 	UpdatedAt  time.Time      `gorm:"autoUpdateTime"`
 	DeletedAt  gorm.DeletedAt `gorm:"index"`
-	Product    product.Product
+	Product    *product.Product
 }
 
 func FromUseCase(cart *entities.Cart) *Cart {
@@ -29,7 +29,7 @@ func FromUseCase(cart *entities.Cart) *Cart {
 		CreatedAt:  cart.CreatedAt,
 		UpdatedAt:  cart.UpdatedAt,
 		DeletedAt:  cart.DeletedAt,
-		Product: product.Product{
+		Product: &product.Product{
 			ID:          cart.Product.ID,
 			Name:        cart.Product.Name,
 			Description: cart.Product.Description,
@@ -52,7 +52,7 @@ func (u *Cart) ToUseCase() *entities.Cart {
 		CreatedAt:  u.CreatedAt,
 		UpdatedAt:  u.UpdatedAt,
 		DeletedAt:  u.DeletedAt,
-		Product: entities.Product{
+		Product: &entities.Product{
 			ID:          u.Product.ID,
 			Name:        u.Product.Name,
 			Description: u.Product.Description,

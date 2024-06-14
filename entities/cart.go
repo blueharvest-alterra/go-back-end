@@ -11,7 +11,7 @@ type Cart struct {
 	ID         uuid.UUID
 	CustomerID uuid.UUID `gorm:"type:varchar(100)"`
 	ProductID  uuid.UUID `gorm:"type:varchar(100)"`
-	Product    Product
+	Product    *Product
 	Quantity   int64 `gorm:"type:decimal"`
 	CreatedAt  time.Time
 	UpdatedAt  time.Time
