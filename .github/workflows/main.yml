@@ -24,12 +24,16 @@ jobs:
         uses: actions/checkout@v2
       - name: build image
         run: docker build -t 211125352081.dkr.ecr.ap-southeast-1.amazonaws.com/blueharvest-go:latest --no-cache .
-      - name: login registry
-        uses: docker/login-action@v1
+      - name: configure aws credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ap-southeast-1
+      - name: login to ecr
+        uses: docker/login-action@v3
         with:
           registry: 211125352081.dkr.ecr.ap-southeast-1.amazonaws.com
-          username: ${{ secrets.DOCKERHUB_USERNAME }}
-          password: ${{ secrets.DOCKERHUB_TOKEN }}
       - name: push image
         run: docker push 211125352081.dkr.ecr.ap-southeast-1.amazonaws.com/blueharvest-go:latest
 
@@ -39,7 +43,7 @@ jobs:
     needs: build
     steps:
       - uses: actions/checkout@v2
-      - name: deploy ec2
+      - name: deploy to ec2
         env:
           DB_NAME: ${{ secrets.DB_NAME }}
           DB_USER: ${{ secrets.DB_USER }}
