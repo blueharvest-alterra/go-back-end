@@ -9,7 +9,6 @@ import (
 
 	"github.com/blueharvest-alterra/go-back-end/constant"
 	"github.com/blueharvest-alterra/go-back-end/entities"
-	"github.com/blueharvest-alterra/go-back-end/utils"
 	"github.com/google/uuid"
 )
 
