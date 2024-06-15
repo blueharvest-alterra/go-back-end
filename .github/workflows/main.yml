@@ -27,6 +27,7 @@ jobs:
       - name: login registry
         uses: docker/login-action@v1
         with:
+          registry: 211125352081.dkr.ecr.ap-southeast-1.amazonaws.com
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
       - name: push image
