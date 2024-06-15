@@ -7,7 +7,7 @@ import (
 
 type EarningChartResponse struct {
 	Date  string  `json:"date"`
-	Total float64 `json:"total"`
+	Total float64 `json:"value"`
 }
 
 type ArticleDetailResponse struct {

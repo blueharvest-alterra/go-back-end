@@ -1,6 +1,7 @@
 package farmMonitor
 
 import (
+	"github.com/blueharvest-alterra/go-back-end/drivers/postgresql/farm"
 	"time"
 
 	"github.com/blueharvest-alterra/go-back-end/entities"
@@ -9,8 +10,9 @@ import (
 )
 
 type FarmMonitor struct {
-	ID              uuid.UUID      `gorm:"type:varchar(100)"`
-	FarmID          uuid.UUID      `gorm:"type:varchar(100)"`
+	ID              uuid.UUID `gorm:"type:varchar(100)"`
+	FarmID          uuid.UUID `gorm:"type:varchar(100)"`
+	Farm            farm.Farm
 	Temperature     float64        `gorm:"type:decimal"`
 	PH              float64        `gorm:"type:decimal"`
 	DissolvedOxygen float64        `gorm:"type:decimal"`

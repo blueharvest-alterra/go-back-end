@@ -1,6 +1,8 @@
 package entities
 
-import "github.com/blueharvest-alterra/go-back-end/middlewares"
+import (
+	"github.com/blueharvest-alterra/go-back-end/middlewares"
+)
 
 type EarningChart struct {
 	Date  string
@@ -14,11 +16,14 @@ type Dashboard struct {
 	EarningCharts             []EarningChart
 	LatestArticles            []Article
 	LatestProducts            []Product
+	// customer dashboard
+	FarmMonitor FarmMonitor
+	AllProducts []Product
 }
 
 type DashboardRepositoryInterface interface {
 	AdminDashboard(dashboard *Dashboard) error
-	CustomerDashboard(dashboard *Dashboard) error
+	CustomerDashboard(dashboard *Dashboard, userData *middlewares.Claims) error
 }
 
 type DashboardUseCaseInterface interface {

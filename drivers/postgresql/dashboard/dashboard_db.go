@@ -2,6 +2,8 @@ package dashboard
 
 import (
 	"github.com/blueharvest-alterra/go-back-end/drivers/postgresql/article"
+	"github.com/blueharvest-alterra/go-back-end/drivers/postgresql/farm"
+	"github.com/blueharvest-alterra/go-back-end/drivers/postgresql/farmMonitor"
 	"github.com/blueharvest-alterra/go-back-end/drivers/postgresql/product"
 	"github.com/blueharvest-alterra/go-back-end/entities"
 )
@@ -18,12 +20,15 @@ type Dashboard struct {
 	EarningCharts        []EarningChart
 	LatestArticles       []article.Article
 	LatestProducts       []product.Product
+	// customer dashboard
+	FarmMonitor farmMonitor.FarmMonitor
+	AllProducts []product.Product
 }
 
 func FromUseCase(dashboard *entities.Dashboard) *Dashboard {
-	topArticles := make([]article.Article, len(dashboard.LatestArticles))
+	latestArticles := make([]article.Article, len(dashboard.LatestArticles))
 	for i, _article := range dashboard.LatestArticles {
-		topArticles[i] = article.Article{
+		latestArticles[i] = article.Article{
 			ID:        _article.ID,
 			Title:     _article.Title,
 			Content:   _article.Content,
@@ -32,9 +37,22 @@ func FromUseCase(dashboard *entities.Dashboard) *Dashboard {
 		}
 	}
 
-	topProducts := make([]product.Product, len(dashboard.LatestProducts))
+	latestProducts := make([]product.Product, len(dashboard.LatestProducts))
 	for i, _product := range dashboard.LatestProducts {
-		topProducts[i] = product.Product{
+		latestProducts[i] = product.Product{
+			ID:          _product.ID,
+			Name:        _product.Name,
+			Description: _product.Description,
+			Thumbnail:   _product.Thumbnail,
+			Status:      _product.Status,
+			Price:       _product.Price,
+			CreatedAt:   _product.CreatedAt,
+		}
+	}
+
+	allProducts := make([]product.Product, len(dashboard.LatestProducts))
+	for i, _product := range dashboard.LatestProducts {
+		allProducts[i] = product.Product{
 			ID:          _product.ID,
 			Name:        _product.Name,
 			Description: _product.Description,
@@ -58,15 +76,30 @@ func FromUseCase(dashboard *entities.Dashboard) *Dashboard {
 		ProductSoldThisMonth: dashboard.ProductSoldLastThirtyDays,
 		FarmsInvestThisMonth: dashboard.FarmsInvestLastThirtyDays,
 		EarningCharts:        earningChart,
-		LatestArticles:       topArticles,
-		LatestProducts:       topProducts,
+		LatestArticles:       latestArticles,
+		LatestProducts:       latestProducts,
+		FarmMonitor: farmMonitor.FarmMonitor{
+			ID:     dashboard.FarmMonitor.ID,
+			FarmID: dashboard.FarmMonitor.FarmID,
+			Farm: farm.Farm{
+				ID:          dashboard.FarmMonitor.Farm.ID,
+				Title:       dashboard.FarmMonitor.Farm.Title,
+				Description: dashboard.FarmMonitor.Farm.Description,
+				Picture:     dashboard.FarmMonitor.Farm.Picture,
+			},
+			Temperature:     dashboard.FarmMonitor.Temperature,
+			PH:              dashboard.FarmMonitor.PH,
+			DissolvedOxygen: dashboard.FarmMonitor.DissolvedOxygen,
+			CreatedAt:       dashboard.FarmMonitor.CreatedAt,
+		},
+		AllProducts: allProducts,
 	}
 }
 
 func (u *Dashboard) ToUseCase() *entities.Dashboard {
-	topArticles := make([]entities.Article, len(u.LatestArticles))
+	latestArticles := make([]entities.Article, len(u.LatestArticles))
 	for i, _article := range u.LatestArticles {
-		topArticles[i] = entities.Article{
+		latestArticles[i] = entities.Article{
 			ID:        _article.ID,
 			Title:     _article.Title,
 			Content:   _article.Content,
@@ -75,9 +108,22 @@ func (u *Dashboard) ToUseCase() *entities.Dashboard {
 		}
 	}
 
-	topProducts := make([]entities.Product, len(u.LatestProducts))
+	latestProducts := make([]entities.Product, len(u.LatestProducts))
 	for i, _product := range u.LatestProducts {
-		topProducts[i] = entities.Product{
+		latestProducts[i] = entities.Product{
+			ID:          _product.ID,
+			Name:        _product.Name,
+			Description: _product.Description,
+			Thumbnail:   _product.Thumbnail,
+			Status:      _product.Status,
+			Price:       _product.Price,
+			CreatedAt:   _product.CreatedAt,
+		}
+	}
+
+	allProducts := make([]entities.Product, len(u.LatestProducts))
+	for i, _product := range u.LatestProducts {
+		allProducts[i] = entities.Product{
 			ID:          _product.ID,
 			Name:        _product.Name,
 			Description: _product.Description,
@@ -101,7 +147,22 @@ func (u *Dashboard) ToUseCase() *entities.Dashboard {
 		ProductSoldLastThirtyDays: u.ProductSoldThisMonth,
 		FarmsInvestLastThirtyDays: u.FarmsInvestThisMonth,
 		EarningCharts:             earningChart,
-		LatestArticles:            topArticles,
-		LatestProducts:            topProducts,
+		LatestArticles:            latestArticles,
+		LatestProducts:            latestProducts,
+		FarmMonitor: entities.FarmMonitor{
+			ID:     u.FarmMonitor.ID,
+			FarmID: u.FarmMonitor.FarmID,
+			Farm: entities.Farm{
+				ID:          u.FarmMonitor.Farm.ID,
+				Title:       u.FarmMonitor.Farm.Title,
+				Description: u.FarmMonitor.Farm.Description,
+				Picture:     u.FarmMonitor.Farm.Picture,
+			},
+			Temperature:     u.FarmMonitor.Temperature,
+			PH:              u.FarmMonitor.PH,
+			DissolvedOxygen: u.FarmMonitor.DissolvedOxygen,
+			CreatedAt:       u.FarmMonitor.CreatedAt,
+		},
+		AllProducts: allProducts,
 	}
 }

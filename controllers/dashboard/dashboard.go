@@ -44,7 +44,8 @@ func (dc *DashboardController) GetCustomerDashboard(c echo.Context) error {
 		return c.JSON(utils.ConvertResponseCode(errUseCase), base.NewErrorResponse(errUseCase.Error()))
 	}
 
-	return c.JSON(http.StatusOK, base.NewSuccessResponse("get customer dashboard successfully", dashboard))
+	dashboardCustomerResponse := response.CustomerDashboardFromUseCase(&dashboard)
+	return c.JSON(http.StatusOK, base.NewSuccessResponse("get customer dashboard successfully", dashboardCustomerResponse))
 }
 
 func NewDashboardController(dashboardUseCase entities.DashboardUseCaseInterface) *DashboardController {

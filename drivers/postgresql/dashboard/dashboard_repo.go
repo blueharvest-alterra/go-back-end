@@ -3,10 +3,12 @@ package dashboard
 import (
 	"github.com/blueharvest-alterra/go-back-end/drivers/postgresql/article"
 	"github.com/blueharvest-alterra/go-back-end/drivers/postgresql/farmInvest"
+	"github.com/blueharvest-alterra/go-back-end/drivers/postgresql/farmMonitor"
 	"github.com/blueharvest-alterra/go-back-end/drivers/postgresql/product"
 	"github.com/blueharvest-alterra/go-back-end/drivers/postgresql/transaction"
 	"github.com/blueharvest-alterra/go-back-end/drivers/postgresql/transactionDetail"
 	"github.com/blueharvest-alterra/go-back-end/entities"
+	"github.com/blueharvest-alterra/go-back-end/middlewares"
 	"github.com/google/uuid"
 	"gorm.io/gorm"
 	"sort"
@@ -98,8 +100,41 @@ func (r Repo) AdminDashboard(dashboard *entities.Dashboard) error {
 	return nil
 }
 
-func (r Repo) CustomerDashboard(dashboard *entities.Dashboard) error {
+func (r Repo) CustomerDashboard(dashboard *entities.Dashboard, userData *middlewares.Claims) error {
 	dashboardDb := FromUseCase(dashboard)
+
+	var articles []article.Article
+	var products []product.Product
+	var farmInvestData farmInvest.FarmInvest
+	var farmMonitorData farmMonitor.FarmMonitor
+
+	if err := r.DB.Order("created_at DESC").Limit(3).Find(&articles).Error; err != nil {
+		return err
+	}
+	dashboardDb.LatestArticles = articles
+
+	if err := r.DB.Find(&products).Error; err != nil {
+		return err
+	}
+	dashboardDb.AllProducts = products
+
+	lengthAllProducts := len(products)
+	if lengthAllProducts < 4 {
+		dashboardDb.LatestProducts = products
+	} else {
+		dashboardDb.LatestProducts = products[lengthAllProducts-4:]
+	}
+
+	if err := r.DB.Where("customer_id = ?", userData.ID).Find(&farmInvestData).Error; err != nil {
+		return err
+	}
+
+	if farmInvestData.ID != uuid.Nil {
+		if err := r.DB.Order("created_at desc").Preload("Farm").Where("farm_id = ?", farmInvestData.FarmID).Find(&farmMonitorData).Error; err != nil {
+			return err
+		}
+		dashboardDb.FarmMonitor = farmMonitorData
+	}
 
 	*dashboard = *dashboardDb.ToUseCase()
 	return nil

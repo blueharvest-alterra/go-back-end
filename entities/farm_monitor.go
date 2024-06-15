@@ -10,6 +10,7 @@ import (
 type FarmMonitor struct {
 	ID              uuid.UUID
 	FarmID          uuid.UUID
+	Farm            Farm
 	Temperature     float64
 	PH              float64
 	DissolvedOxygen float64

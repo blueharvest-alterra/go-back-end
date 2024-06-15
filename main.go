@@ -8,6 +8,7 @@ import (
 	"github.com/blueharvest-alterra/go-back-end/drivers/postgresql/farmMonitor"
 	"github.com/blueharvest-alterra/go-back-end/drivers/redis"
 	"log"
+	"math/rand"
 
 	"github.com/blueharvest-alterra/go-back-end/config"
 	addressController "github.com/blueharvest-alterra/go-back-end/controllers/address"
@@ -199,9 +200,9 @@ func processDailyFarmMonitor(frp *farm.Repo, fmrp *farmMonitor.Repo) {
 		farmMonitor := entities.FarmMonitor{
 			ID:              uuid.New(),
 			FarmID:          _farm.ID,
-			Temperature:     float64(0),
-			PH:              float64(0),
-			DissolvedOxygen: float64(0),
+			Temperature:     generateRandomFloat(20, 30),
+			PH:              generateRandomFloat(6, 8),
+			DissolvedOxygen: generateRandomFloat(6, 9),
 		}
 
 		if err := fmrp.Create(&farmMonitor); err != nil {
@@ -209,4 +210,8 @@ func processDailyFarmMonitor(frp *farm.Repo, fmrp *farmMonitor.Repo) {
 		}
 	}
 	log.Printf("Successfully running cron")
+}
+
+func generateRandomFloat(min, max float64) float64 {
+	return min + rand.Float64()*(max-min)
 }

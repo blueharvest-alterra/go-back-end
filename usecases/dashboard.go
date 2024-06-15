@@ -27,7 +27,7 @@ func (d DashboardUseCase) CustomerDashboard(dashboard *entities.Dashboard, userD
 		return entities.Dashboard{}, constant.ErrNotAuthorized
 	}
 
-	if err := d.repository.CustomerDashboard(dashboard); err != nil {
+	if err := d.repository.CustomerDashboard(dashboard, userData); err != nil {
 		return entities.Dashboard{}, err
 	}
 
