@@ -11,7 +11,7 @@ services:
     volumes:
       - ~/.docker-conf/postgres-db:/var/lib/postgresql/data
   app:
-    image: irvansn/blueharvest-backend:latest
+    image: 211125352081.dkr.ecr.ap-southeast-1.amazonaws.com/blueharvest-go:latest
     pull_policy: always
     restart: always
     depends_on:
