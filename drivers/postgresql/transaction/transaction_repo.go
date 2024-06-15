@@ -43,7 +43,7 @@ func (r Repo) GetByID(transaction *entities.Transaction, userData *middlewares.C
 	if userData.Role == "customer" {
 		query.Where("customer_id = ?", userData.ID)
 	}
-	
+
 	if err := query.First(&transactionDb).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return constant.ErrNotFound

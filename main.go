@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	chatBot "github.com/blueharvest-alterra/go-back-end/drivers/postgresql/chat-bot"
+	"github.com/blueharvest-alterra/go-back-end/drivers/postgresql/dashboard"
 	"github.com/blueharvest-alterra/go-back-end/drivers/postgresql/farmInvest"
 	"github.com/blueharvest-alterra/go-back-end/drivers/postgresql/farmMonitor"
 	"github.com/blueharvest-alterra/go-back-end/drivers/redis"
@@ -15,6 +16,7 @@ import (
 	chatBotController "github.com/blueharvest-alterra/go-back-end/controllers/chat-bot"
 	courierController "github.com/blueharvest-alterra/go-back-end/controllers/courier"
 	customerController "github.com/blueharvest-alterra/go-back-end/controllers/customer"
+	dashboardController "github.com/blueharvest-alterra/go-back-end/controllers/dashboard"
 	farmController "github.com/blueharvest-alterra/go-back-end/controllers/farm"
 	farmInvestController "github.com/blueharvest-alterra/go-back-end/controllers/farm-invest"
 	farmMonitorController "github.com/blueharvest-alterra/go-back-end/controllers/farm-monitor"
@@ -109,6 +111,10 @@ func main() {
 	chatBotUseCase := usecases.NewChatBotUseCase(chatBotRepo)
 	newChatBotController := chatBotController.NewChatBotController(chatBotUseCase)
 
+	dashboardRepo := dashboard.NewDashboardRepo(db)
+	dashboardUseCase := usecases.NewDashboardUseCase(dashboardRepo)
+	newDashboardController := dashboardController.NewDashboardController(dashboardUseCase)
+
 	adminRouteController := routes.AdminRouteController{
 		AdminController: newAdminController,
 	}
@@ -148,6 +154,9 @@ func main() {
 	chatBotRouteController := routes.ChatBotRouteController{
 		ChatBotController: newChatBotController,
 	}
+	dashboardRouteController := routes.DashboardRouteController{
+		DashboardController: newDashboardController,
+	}
 
 	adminRouteController.InitRoute(e)
 	customerRouteController.InitRoute(e)
@@ -162,6 +171,7 @@ func main() {
 	farmInvestRouteController.InitRoute(e)
 	farmMonitorRouteController.InitRoute(e)
 	chatBotRouteController.InitRoute(e)
+	dashboardRouteController.InitRoute(e)
 
 	//init cron
 	c := cron.New()

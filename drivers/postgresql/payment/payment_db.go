@@ -6,7 +6,6 @@ import (
 	"fmt"
 	"github.com/blueharvest-alterra/go-back-end/constant"
 	"github.com/blueharvest-alterra/go-back-end/entities"
-	"github.com/blueharvest-alterra/go-back-end/utils"
 	"github.com/google/uuid"
 	"net/http"
 	"os"
@@ -55,7 +54,6 @@ type xdtInvoicePayload struct {
 }
 
 func (p *Payment) Create() error {
-	fmt.Println("p", utils.PrettyPrint(p))
 	url := "https://api.xendit.co/v2/invoices"
 	method := "POST"
 
