@@ -14,6 +14,7 @@ func SliceFromUseCase(farmInvests *[]entities.FarmInvest) *FarmInvestGetAll {
 			CustomerID:       _farmInvest.CustomerID,
 			FarmID:           _farmInvest.FarmID,
 			InvestmentAmount: _farmInvest.InvestmentAmount,
+			Payment:          PaymentResponse(_farmInvest.Payment),
 		}
 	}
 

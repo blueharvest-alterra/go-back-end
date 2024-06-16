@@ -71,6 +71,12 @@ func (u *FarmInvest) ToUseCase() *entities.FarmInvest {
 		CreatedAt:        u.CreatedAt,
 		UpdatedAt:        u.UpdatedAt,
 		DeletedAt:        u.DeletedAt,
+		Customer: entities.Customer{
+			ID:          u.Customer.ID,
+			FullName:    u.Customer.FullName,
+			PhoneNumber: u.Customer.PhoneNumber,
+			BirthDate:   u.Customer.BirthDate,
+		},
 		Farm: entities.Farm{
 			ID:          u.Farm.ID,
 			Title:       u.Farm.Title,

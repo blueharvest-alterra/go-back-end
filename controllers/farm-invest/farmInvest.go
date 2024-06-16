@@ -48,6 +48,9 @@ func (fc *FarmInvestController) Create(c echo.Context) error {
 func (fc *FarmInvestController) GetById(c echo.Context) error {
 	farmInvestId, err := uuid.Parse(c.Param("id"))
 	if err != nil {
+		if uuid.IsInvalidLengthError(err) {
+			return c.JSON(http.StatusNotFound, base.NewErrorResponse(err.Error()))
+		}
 		return c.JSON(utils.ConvertResponseCode(err), base.NewErrorResponse(err.Error()))
 	}
 
@@ -62,7 +65,7 @@ func (fc *FarmInvestController) GetById(c echo.Context) error {
 	}
 
 	farmResponse := response.FarmInvestResponseFromUseCase(&farm)
-	return c.JSON(http.StatusOK, base.NewSuccessResponse("Success get farm data!", farmResponse))
+	return c.JSON(http.StatusOK, base.NewSuccessResponse("Success get farm invest data!", farmResponse))
 
 }
 
