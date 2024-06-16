@@ -20,6 +20,10 @@ func (c *FarmInvestUseCase) Create(farmInvest *entities.FarmInvest, userData *mi
 		return entities.FarmInvest{}, constant.ErrNotAuthorized
 	}
 
+	if farmInvest.FarmID == uuid.Nil || farmInvest.InvestmentAmount == 0 {
+		return entities.FarmInvest{}, constant.ErrEmptyInput
+	}
+
 	farmInvest.ID = uuid.New()
 	farmInvest.Customer.ID = userData.ID
 	farmInvest.Customer.FullName = userData.FullName

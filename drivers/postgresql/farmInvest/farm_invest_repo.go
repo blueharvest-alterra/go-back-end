@@ -1,11 +1,15 @@
 package farmInvest
 
 import (
+	"errors"
+	"fmt"
+
 	"github.com/blueharvest-alterra/go-back-end/constant"
 	"github.com/blueharvest-alterra/go-back-end/entities"
 	"github.com/blueharvest-alterra/go-back-end/middlewares"
 	"github.com/google/uuid"
 	"gorm.io/gorm"
+	"gorm.io/gorm/clause"
 )
 
 type Repo struct {
@@ -53,14 +57,21 @@ func (r *Repo) Create(farmInvest *entities.FarmInvest) error {
 }
 
 func (r *Repo) GetById(farmInvest *entities.FarmInvest, userData *middlewares.Claims) error {
-	var farmInvestDb FarmInvest
+	farmInvestDb := FromUseCase(farmInvest)
 
-	if err := r.DB.First(&farmInvest, "id = ?", farmInvest.ID).Error; err != nil {
-		if r.DB.RowsAffected < 1 {
+	query := r.DB.Preload("Farm").Preload(clause.Associations)
+
+	if userData.Role == "customer" {
+		query.Where("customer_id = ?", userData.ID)
+	}
+
+	if err := query.First(&farmInvestDb).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return constant.ErrNotFound
 		}
 		return err
 	}
+
 	*farmInvest = *farmInvestDb.ToUseCase()
 	return nil
 }
@@ -68,9 +79,11 @@ func (r *Repo) GetById(farmInvest *entities.FarmInvest, userData *middlewares.Cl
 func (r *Repo) GetAll(farmInvests *[]entities.FarmInvest, userData *middlewares.Claims) error {
 	var farmInvestDb []FarmInvest
 
-	if err := r.DB.Where("customer_id = ?", userData.ID).Find(&farmInvestDb).Error; err != nil {
+	if err := r.DB.Preload("Payment").Where("customer_id = ?", userData.ID).Find(&farmInvestDb).Error; err != nil {
 		return err
 	}
+
+	fmt.Println("hit: ", farmInvestDb)
 
 	for _, farminvest := range farmInvestDb {
 		*farmInvests = append(*farmInvests, *farminvest.ToUseCase())
