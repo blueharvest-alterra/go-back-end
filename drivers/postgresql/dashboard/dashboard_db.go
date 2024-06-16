@@ -44,7 +44,7 @@ func FromUseCase(dashboard *entities.Dashboard) *Dashboard {
 			Name:        _product.Name,
 			Description: _product.Description,
 			Thumbnail:   _product.Thumbnail,
-			Status:      _product.Status,
+			Status:      product.Status(_product.Status),
 			Price:       _product.Price,
 			CreatedAt:   _product.CreatedAt,
 		}
@@ -57,7 +57,7 @@ func FromUseCase(dashboard *entities.Dashboard) *Dashboard {
 			Name:        _product.Name,
 			Description: _product.Description,
 			Thumbnail:   _product.Thumbnail,
-			Status:      _product.Status,
+			Status:      product.Status(_product.Status),
 			Price:       _product.Price,
 			CreatedAt:   _product.CreatedAt,
 		}
@@ -115,7 +115,7 @@ func (u *Dashboard) ToUseCase() *entities.Dashboard {
 			Name:        _product.Name,
 			Description: _product.Description,
 			Thumbnail:   _product.Thumbnail,
-			Status:      _product.Status,
+			Status:      entities.ProductStatus(_product.Status),
 			Price:       _product.Price,
 			CreatedAt:   _product.CreatedAt,
 		}
@@ -128,7 +128,7 @@ func (u *Dashboard) ToUseCase() *entities.Dashboard {
 			Name:        _product.Name,
 			Description: _product.Description,
 			Thumbnail:   _product.Thumbnail,
-			Status:      _product.Status,
+			Status:      entities.ProductStatus(_product.Status),
 			Price:       _product.Price,
 			CreatedAt:   _product.CreatedAt,
 		}

@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"github.com/blueharvest-alterra/go-back-end/drivers/postgresql/address"
 	"github.com/blueharvest-alterra/go-back-end/entities"
 	"github.com/google/uuid"
 	"io"
@@ -12,11 +13,12 @@ import (
 )
 
 type Courier struct {
-	ID                   uuid.UUID `gorm:"type:varchar(100)"`
-	DestinationAddressID uuid.UUID `gorm:"type:varchar(100)"`
-	Name                 string    `gorm:"type:varchar(255);not null"`
-	Fee                  float64   `gorm:"type:decimal;not null"`
-	Type                 string    `gorm:"type:varchar(50);not null"`
+	ID                   uuid.UUID       `gorm:"type:varchar(100)"`
+	DestinationAddressID uuid.UUID       `gorm:"type:varchar(100)"`
+	DestinationAddress   address.Address `gorm:"-"`
+	Name                 string          `gorm:"type:varchar(255);not null"`
+	Fee                  float64         `gorm:"type:decimal;not null"`
+	Type                 string          `gorm:"type:varchar(50);not null"`
 }
 
 func FromUseCase(courier *entities.Courier) *Courier {

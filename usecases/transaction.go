@@ -11,6 +11,24 @@ type TransactionUseCase struct {
 	repository entities.TransactionRepositoryInterface
 }
 
+func (t TransactionUseCase) CheckoutSummary(transaction *entities.Transaction, userData *middlewares.Claims) (entities.Transaction, error) {
+	if userData.Role != "customer" {
+		return entities.Transaction{}, constant.ErrNotAuthorized
+	}
+
+	if len(transaction.TransactionDetails) < 1 || transaction.Courier.DestinationAddressID == uuid.Nil || transaction.Courier.Name == "" || transaction.Courier.Type == "" || transaction.Courier.Fee < 0 {
+		return entities.Transaction{}, constant.ErrEmptyInput
+	}
+
+	transaction.Customer.ID = userData.ID
+
+	if err := t.repository.CheckoutSummary(transaction, userData); err != nil {
+		return entities.Transaction{}, err
+	}
+
+	return *transaction, nil
+}
+
 func (t TransactionUseCase) GetAll(transactions *[]entities.Transaction, userData *middlewares.Claims) ([]entities.Transaction, error) {
 
 	if err := t.repository.GetAll(transactions, userData); err != nil {

@@ -7,6 +7,7 @@ import (
 type Courier struct {
 	ID                   uuid.UUID
 	DestinationAddressID uuid.UUID
+	DestinationAddress   Address
 	Name                 string
 	Fee                  float64
 	Type                 string

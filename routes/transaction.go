@@ -16,4 +16,5 @@ func (r *TransactionRouteController) InitRoute(e *echo.Echo) {
 	t.POST("", r.TransactionController.Create)
 	t.GET("/:id", r.TransactionController.GetByID)
 	t.GET("", r.TransactionController.GetAll)
+	t.POST("/checkout/summaries", r.TransactionController.CheckoutSummary)
 }

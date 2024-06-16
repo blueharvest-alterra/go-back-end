@@ -48,7 +48,7 @@ func CustomerDashboardFromUseCase(dashboard *entities.Dashboard) *CustomerDashbo
 			Name:        _product.Name,
 			Description: _product.Description,
 			Thumbnail:   _product.Thumbnail,
-			Status:      _product.Status,
+			Status:      string(_product.Status),
 			Price:       _product.Price,
 		}
 	}
@@ -60,7 +60,7 @@ func CustomerDashboardFromUseCase(dashboard *entities.Dashboard) *CustomerDashbo
 			Name:        _product.Name,
 			Description: _product.Description,
 			Thumbnail:   _product.Thumbnail,
-			Status:      _product.Status,
+			Status:      string(_product.Status),
 			Price:       _product.Price,
 		}
 	}

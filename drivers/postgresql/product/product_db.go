@@ -11,12 +11,19 @@ import (
 	"time"
 )
 
+type Status string
+
+const (
+	Available   Status = "available"
+	Unavailable Status = "unavailable"
+)
+
 type Product struct {
 	ID          uuid.UUID      `gorm:"type:varchar(100);"`
 	Name        string         `gorm:"type:varchar(255);not null"`
 	Description string         `gorm:"type:text;not null"`
 	Price       float64        `gorm:"type:decimal;not null"`
-	Status      string         `gorm:"type:varchar(50);not null"`
+	Status      Status         `gorm:"type:varchar(50);not null"`
 	Thumbnail   string         `gorm:"type:text;not null"`
 	CreatedAt   time.Time      `gorm:"autoCreateTime"`
 	UpdatedAt   time.Time      `gorm:"autoUpdateTime"`
@@ -29,7 +36,7 @@ func FromUseCase(product *entities.Product) *Product {
 		Name:        product.Name,
 		Description: product.Description,
 		Price:       product.Price,
-		Status:      product.Status,
+		Status:      Status(product.Status),
 		CreatedAt:   product.CreatedAt,
 		UpdatedAt:   product.UpdatedAt,
 		DeletedAt:   product.DeletedAt,
@@ -43,7 +50,7 @@ func (product *Product) ToUseCase() *entities.Product {
 		Name:        product.Name,
 		Description: product.Description,
 		Price:       product.Price,
-		Status:      product.Status,
+		Status:      entities.ProductStatus(product.Status),
 		CreatedAt:   product.CreatedAt,
 		UpdatedAt:   product.UpdatedAt,
 		DeletedAt:   product.DeletedAt,
