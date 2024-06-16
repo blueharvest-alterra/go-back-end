@@ -49,6 +49,7 @@ func ConnectDB(config Config) *gorm.DB {
 
 func MigrationUser(db *gorm.DB) {
 	db.Exec("DO $$ BEGIN IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'promo_status') THEN CREATE TYPE promo_status AS ENUM ('available', 'unavailable'); END IF; END $$;")
+	db.Exec("DO $$ BEGIN IF NOT EXISTS (SELECT 1 FROM pg_type WHERE typname = 'product_status') THEN CREATE TYPE product_status AS ENUM ('available', 'unavailable'); END IF; END $$;")
 
 	err := db.AutoMigrate(
 		auth.Auth{},

@@ -1,7 +1,6 @@
 package transaction
 
 import (
-	"net/http"
 	"github.com/blueharvest-alterra/go-back-end/controllers/base"
 	"github.com/blueharvest-alterra/go-back-end/controllers/transaction/request"
 	"github.com/blueharvest-alterra/go-back-end/controllers/transaction/response"
@@ -10,6 +9,7 @@ import (
 	"github.com/blueharvest-alterra/go-back-end/utils"
 	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
+	"net/http"
 )
 
 type TransactionController struct {
@@ -77,4 +77,24 @@ func (ac *TransactionController) GetAll(c echo.Context) error {
 
 	transactionResponse := response.SliceFromUseCase(&transactions)
 	return c.JSON(http.StatusOK, base.NewSuccessResponse("get transaction succesful", transactionResponse))
+}
+
+func (ac *TransactionController) CheckoutSummary(c echo.Context) error {
+	var checkoutSummary request.TransactionCreateResponse
+	if err := c.Bind(&checkoutSummary); err != nil {
+		return c.JSON(utils.ConvertResponseCode(err), base.NewErrorResponse(err.Error()))
+	}
+
+	userData, ok := c.Get("claims").(*middlewares.Claims)
+	if !ok {
+		return echo.ErrInternalServerError
+	}
+
+	transaction, errUseCase := ac.transactionUseCase.CheckoutSummary(checkoutSummary.ToEntities(), userData)
+	if errUseCase != nil {
+		return c.JSON(utils.ConvertResponseCode(errUseCase), base.NewErrorResponse(errUseCase.Error()))
+	}
+
+	transactionResponse := response.GetCheckoutSummaryFromUseCase(&transaction)
+	return c.JSON(http.StatusOK, base.NewSuccessResponse("get checkout summary successfully", transactionResponse))
 }

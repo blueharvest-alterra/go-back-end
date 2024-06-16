@@ -41,15 +41,17 @@ func (cc *CartController) Create(c echo.Context) error {
 		return c.JSON(utils.ConvertResponseCode(errUseCase), base.NewErrorResponse(errUseCase.Error()))
 	}
 
-	farmResponse := response.CartResponseFromUseCase(&farm)
-	return c.JSON(http.StatusOK, base.NewSuccessResponse("cart created!", farmResponse))
+	farmResponse := response.CreateCartResponseFromUseCase(&farm)
+	return c.JSON(http.StatusCreated, base.NewSuccessResponse("cart created!", farmResponse))
 }
 
 func (cc *CartController) Update(c echo.Context) error {
 	var cartEdit request.EditCartRequest
+
 	if err := c.Bind(&cartEdit); err != nil {
 		return c.JSON(utils.ConvertResponseCode(err), base.NewErrorResponse(err.Error()))
 	}
+
 	userData, ok := c.Get("claims").(*middlewares.Claims)
 	if !ok {
 		return c.JSON(http.StatusInternalServerError, base.NewErrorResponse("failed parse token"))
@@ -109,8 +111,6 @@ func (cc *CartController) GetAll(c echo.Context) error {
 	}
 
 	var cart []entities.Cart
-
-
 
 	carts, errUseCase := cc.CartUseCaseInterface.GetAll(&cart, userData)
 	if errUseCase != nil {

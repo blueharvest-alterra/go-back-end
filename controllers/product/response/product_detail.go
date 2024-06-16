@@ -32,7 +32,7 @@ func ProductDetailFromUseCase(product *entities.Product) *ProductDetail {
 		Description: product.Description,
 		Price:       product.Price,
 		Thumbnail:   product.Thumbnail,
-		Status:      product.Status,
+		Status:      string(product.Status),
 		CreatedAt:   product.CreatedAt,
 		UpdatedAt:   product.UpdatedAt,
 		DeletedAt:   product.DeletedAt,

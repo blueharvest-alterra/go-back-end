@@ -19,7 +19,7 @@ type CourierResponse struct {
 
 type TransactionCreateResponse struct {
 	TransactionDetails []DetailTransactionResponse `json:"transaction_details"`
-	PromoID            uuid.UUID                   `json:"promo_id"`
+	PromoID            string                      `json:"promo_id" binding:"omitempty"`
 	Courier            CourierResponse             `json:"courier"`
 }
 
@@ -33,9 +33,15 @@ func (r *TransactionCreateResponse) ToEntities() *entities.Transaction {
 		}
 	}
 
+	var promoID uuid.UUID
+	if r.PromoID != "" {
+		promoIDUUID, _ := uuid.Parse(r.PromoID)
+		promoID = promoIDUUID
+	}
+
 	return &entities.Transaction{
 		TransactionDetails: allTransactionDetail,
-		PromoID:            r.PromoID,
+		PromoID:            promoID,
 		Courier: entities.Courier{
 			DestinationAddressID: r.Courier.DestinationAddressID,
 			Name:                 r.Courier.Name,

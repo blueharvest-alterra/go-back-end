@@ -12,7 +12,7 @@ type Cart struct {
 	ID         uuid.UUID
 	CustomerID uuid.UUID
 	ProductID  uuid.UUID
-	Product    *Product
+	Product    Product
 	Quantity   int64
 	CreatedAt  time.Time
 	UpdatedAt  time.Time
