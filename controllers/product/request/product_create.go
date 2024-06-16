@@ -18,6 +18,6 @@ func (r *ProductCreateRequest) ToEntities() *entities.Product {
 		Name:        r.Name,
 		Description: r.Description,
 		Price:       r.Price,
-		Status:      r.Status,
+		Status:      entities.ProductStatus(r.Status),
 	}
 }

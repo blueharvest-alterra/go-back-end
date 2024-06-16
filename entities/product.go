@@ -8,12 +8,19 @@ import (
 	"time"
 )
 
+type ProductStatus string
+
+const (
+	ProductAvailable   ProductStatus = "available"
+	ProductUnavailable ProductStatus = "unavailable"
+)
+
 type Product struct {
 	ID          uuid.UUID
 	Name        string
 	Description string
 	Price       float64
-	Status      string
+	Status      ProductStatus
 	CreatedAt   time.Time
 	UpdatedAt   time.Time
 	DeletedAt   gorm.DeletedAt

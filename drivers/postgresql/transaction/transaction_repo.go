@@ -16,6 +16,10 @@ type Repo struct {
 	DB *gorm.DB
 }
 
+func NewTransactionRepo(db *gorm.DB) *Repo {
+	return &Repo{DB: db}
+}
+
 func (r Repo) GetAll(transactions *[]entities.Transaction, userData *middlewares.Claims) error {
 	var transactionsDb []Transaction
 
@@ -53,10 +57,6 @@ func (r Repo) GetByID(transaction *entities.Transaction, userData *middlewares.C
 
 	*transaction = *transactionDb.ToUseCase()
 	return nil
-}
-
-func NewTransactionRepo(db *gorm.DB) *Repo {
-	return &Repo{DB: db}
 }
 
 func (r Repo) Create(transaction *entities.Transaction) error {
@@ -115,6 +115,36 @@ func (r Repo) Create(transaction *entities.Transaction) error {
 	if err := tx.Commit().Error; err != nil {
 		tx.Rollback()
 	}
+
+	*transaction = *transactionDb.ToUseCase()
+	return nil
+}
+
+func (r Repo) CheckoutSummary(transaction *entities.Transaction, userData *middlewares.Claims) error {
+	transactionDb := FromUseCase(transaction)
+
+	if err := transactionDb.SetCustomerData(r.DB); err != nil {
+		return err
+	}
+
+	if transactionDb.PromoID != uuid.Nil {
+		if err := transactionDb.SetPromoData(r.DB); err != nil {
+			return err
+		}
+	}
+
+	if err := transactionDb.SetAddressData(); err != nil {
+		return err
+	}
+
+	for i := range transactionDb.TransactionDetails {
+		if err := transactionDb.SetTransactionDetail(r.DB, &transactionDb.TransactionDetails[i]); err != nil {
+			return err
+		}
+	}
+
+	transactionDb.Tax = TaxFee
+	transactionDb.Total = (transactionDb.SubTotal + transactionDb.Tax + transactionDb.Courier.Fee) - transactionDb.Discount
 
 	*transaction = *transactionDb.ToUseCase()
 	return nil
