@@ -2,6 +2,7 @@ package routes
 
 import (
 	"github.com/blueharvest-alterra/go-back-end/controllers/article"
+	"github.com/blueharvest-alterra/go-back-end/middlewares"
 	"github.com/labstack/echo/v4"
 )
 
@@ -11,6 +12,7 @@ type ArticleRouteController struct {
 
 func (r *ArticleRouteController) InitRoute(e *echo.Echo) {
 	c := e.Group("/v1/articles")
+	c.Use(middlewares.JWTMiddleware)
 	c.POST("", r.ArticleController.Create)
 	c.PUT("/:id", r.ArticleController.Update)
 	c.DELETE("/:id", r.ArticleController.Delete)

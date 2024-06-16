@@ -2,6 +2,7 @@ package routes
 
 import (
 	"github.com/blueharvest-alterra/go-back-end/controllers/promo"
+	"github.com/blueharvest-alterra/go-back-end/middlewares"
 	"github.com/labstack/echo/v4"
 )
 
@@ -11,6 +12,7 @@ type PromoRouteController struct {
 
 func (r *PromoRouteController) InitRoute(e *echo.Echo) {
 	c := e.Group("/v1/promos")
+	c.Use(middlewares.JWTMiddleware)
 	c.POST("", r.PromoController.Create)
 	c.PUT("/:id", r.PromoController.Update)
 	c.DELETE("/:id", r.PromoController.Delete)

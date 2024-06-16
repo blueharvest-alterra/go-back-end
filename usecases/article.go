@@ -5,7 +5,9 @@ import (
 	"mime/multipart"
 	"path/filepath"
 
+	"github.com/blueharvest-alterra/go-back-end/constant"
 	"github.com/blueharvest-alterra/go-back-end/entities"
+	"github.com/blueharvest-alterra/go-back-end/middlewares"
 	"github.com/blueharvest-alterra/go-back-end/utils/google"
 	"github.com/google/uuid"
 )
@@ -18,7 +20,14 @@ func NewArticleUseCase(repository entities.ArticleRepositoryInterface) *ArticleU
 	return &ArticleUseCase{repository: repository}
 }
 
-func (c *ArticleUseCase) Create(article *entities.Article, picture []*multipart.FileHeader) (entities.Article, error) {
+func (c *ArticleUseCase) Create(article *entities.Article, userData *middlewares.Claims, picture []*multipart.FileHeader) (entities.Article, error) {
+	if userData.Role != "admin" {
+		return entities.Article{}, constant.ErrNotAuthorized
+	}
+
+	if article.Title == "" || article.Content == "" {
+		return entities.Article{}, constant.ErrEmptyInput
+	}
 
 	article.ID = uuid.New()
 
@@ -58,19 +67,25 @@ func (c *ArticleUseCase) GetById(id uuid.UUID) (entities.Article, error) {
 	return article, nil
 }
 
-func (c *ArticleUseCase) Update(article *entities.Article, picture []*multipart.FileHeader) (entities.Article, error) {
+func (c *ArticleUseCase) Update(article *entities.Article, userData *middlewares.Claims, picture []*multipart.FileHeader) (entities.Article, error) {
+	if userData.Role != "admin" {
+		return entities.Article{}, constant.ErrNotAuthorized
+	}
 
+	if article.Title == "" || article.Content == "" {
+		return entities.Article{}, constant.ErrEmptyInput
+	}
 	if len(picture) != 0 {
 		file, err := picture[0].Open()
 		if err != nil {
 			return entities.Article{}, err
 		}
 		defer file.Close()
-	
+
 		ext := filepath.Ext(picture[0].Filename)
-	
+
 		ctx := context.Background()
-	
+
 		objectName := article.ID.String() + ext
 		url, err := google.Upload.UploadFile(ctx, file, objectName)
 		if err != nil {
@@ -86,7 +101,11 @@ func (c *ArticleUseCase) Update(article *entities.Article, picture []*multipart.
 	return *article, nil
 }
 
-func (c *ArticleUseCase) Delete(id uuid.UUID) (entities.Article, error) {
+func (c *ArticleUseCase) Delete(id uuid.UUID, userData *middlewares.Claims) (entities.Article, error) {
+	if userData.Role != "admin" {
+		return entities.Article{}, constant.ErrNotAuthorized
+	}
+
 	ctx := context.Background()
 
 	var article entities.Article
