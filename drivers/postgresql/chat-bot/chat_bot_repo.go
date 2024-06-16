@@ -60,6 +60,12 @@ func (r Repo) SendMessage(chat *entities.ChatBot, userData *middlewares.Claims) 
 		return err
 	}
 
+	time.Sleep(5 * time.Second)
+
+	if err := chatBotDb.GetOpenAIMessageLists(); err != nil {
+		return err
+	}
+
 	*chat = *chatBotDb.ToUseCase()
 	return nil
 }
