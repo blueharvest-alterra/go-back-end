@@ -37,7 +37,7 @@ func (ac *ChatBotController) SendMessage(c echo.Context) error {
 		return c.JSON(utils.ConvertResponseCode(errUseCase), base.NewErrorResponse(errUseCase.Error()))
 	}
 
-	chatBotResponse := response.SendMessageFromUseCase(&chatBot)
+	chatBotResponse := response.GetAllFromUseCase(&chatBot)
 	return c.JSON(http.StatusCreated, base.NewSuccessResponse("send message successful", chatBotResponse))
 }
 
