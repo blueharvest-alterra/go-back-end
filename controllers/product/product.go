@@ -117,6 +117,9 @@ func (ac *ProductController) Delete(c echo.Context) error {
 
 	productID, err := uuid.Parse(c.Param("id"))
 	if err != nil {
+		if uuid.IsInvalidLengthError(err) {
+			return c.JSON(http.StatusNotFound, base.NewErrorResponse(err.Error()))
+		}
 		return c.JSON(utils.ConvertResponseCode(err), base.NewErrorResponse(err.Error()))
 	}
 

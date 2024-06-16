@@ -65,5 +65,6 @@ jobs:
           key: ${{ secrets.SSH_KEY }}
           envs: DB_NAME,DB_USER,DB_PASS,DB_HOST,DB_PORT,JWT_SECRET_KEY,RAJAONGKIR_API_KEY,KEY_GCS,XDT_SECRET_API_KEY,XDT_CALLBACK_VERIFICATION,OPEN_API_KEY,OPEN_API_ASSISTANT_ID,REDIS_URI
           script: |
+            aws ecr get-login-password --region ap-southeast-1 | docker login --username AWS --password-stdin 211125352081.dkr.ecr.ap-southeast-1.amazonaws.com
             cd blueharvest-backend
             DB_HOST="$DB_HOST" DB_NAME="$DB_NAME" DB_PASS="$DB_PASS" DB_PORT="$DB_PORT" DB_USER="$DB_USER" JWT_SECRET_KEY="$JWT_SECRET_KEY" RAJAONGKIR_API_KEY="$RAJAONGKIR_API_KEY" KEY_GCS="$KEY_GCS" XDT_CALLBACK_VERIFICATION="$XDT_CALLBACK_VERIFICATION" XDT_SECRET_API_KEY="$XDT_SECRET_API_KEY" OPEN_API_KEY="$OPEN_API_KEY" OPEN_API_ASSISTANT_ID="$OPEN_API_ASSISTANT_ID" REDIS_URI="$REDIS_URI" docker compose up --build -d --no-deps
