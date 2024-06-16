@@ -3,10 +3,12 @@ package article
 import (
 	"net/http"
 
+	"github.com/blueharvest-alterra/go-back-end/constant"
 	"github.com/blueharvest-alterra/go-back-end/controllers/article/request"
 	"github.com/blueharvest-alterra/go-back-end/controllers/article/response"
 	"github.com/blueharvest-alterra/go-back-end/controllers/base"
 	"github.com/blueharvest-alterra/go-back-end/entities"
+	"github.com/blueharvest-alterra/go-back-end/middlewares"
 	"github.com/blueharvest-alterra/go-back-end/utils"
 	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
@@ -23,14 +25,18 @@ func NewarticleController(articleUseCase entities.ArticleUseCaseInterface) *Arti
 }
 
 func (ac *ArticleController) Create(c echo.Context) error {
+	userData, ok := c.Get("claims").(*middlewares.Claims)
+	if !ok {
+		return echo.ErrInternalServerError
+	}
+
 	var articleCreate request.CreateArticleRequest
 	if err := c.Bind(&articleCreate); err != nil {
 		return c.JSON(utils.ConvertResponseCode(err), base.NewErrorResponse(err.Error()))
 	}
-
 	form, err := c.MultipartForm()
 	if err != nil {
-		return c.JSON(utils.ConvertResponseCode(err), base.NewErrorResponse(err.Error()))
+		return c.JSON(http.StatusBadRequest, base.NewErrorResponse(constant.ErrEmptyInput.Error()))
 	}
 
 	picture := form.File["picture_file"]
@@ -47,7 +53,7 @@ func (ac *ArticleController) Create(c echo.Context) error {
 		}
 	}
 
-	article, errUseCase := ac.articleUseCase.Create(articleCreate.ToEntities(), picture)
+	article, errUseCase := ac.articleUseCase.Create(articleCreate.ToEntities(), userData, picture)
 	if errUseCase != nil {
 		return c.JSON(utils.ConvertResponseCode(errUseCase), base.NewErrorResponse(errUseCase.Error()))
 	}
@@ -59,6 +65,9 @@ func (ac *ArticleController) Create(c echo.Context) error {
 func (ac *ArticleController) GetById(c echo.Context) error {
 	articleId, err := uuid.Parse(c.Param("id"))
 	if err != nil {
+		if uuid.IsInvalidLengthError(err) {
+			return c.JSON(http.StatusNotFound, base.NewErrorResponse(err.Error()))
+		}
 		return c.JSON(utils.ConvertResponseCode(err), base.NewErrorResponse(err.Error()))
 	}
 
@@ -73,6 +82,11 @@ func (ac *ArticleController) GetById(c echo.Context) error {
 }
 
 func (ac *ArticleController) Update(c echo.Context) error {
+	userData, ok := c.Get("claims").(*middlewares.Claims)
+	if !ok {
+		return echo.ErrInternalServerError
+	}
+
 	var articleEdit request.EditArticleRequest
 	if err := c.Bind(&articleEdit); err != nil {
 		return c.JSON(utils.ConvertResponseCode(err), base.NewErrorResponse(err.Error()))
@@ -80,13 +94,17 @@ func (ac *ArticleController) Update(c echo.Context) error {
 
 	articleId, err := uuid.Parse(c.Param("id"))
 	if err != nil {
+		if uuid.IsInvalidLengthError(err) {
+			return c.JSON(http.StatusNotFound, base.NewErrorResponse(err.Error()))
+		}
 		return c.JSON(utils.ConvertResponseCode(err), base.NewErrorResponse(err.Error()))
 	}
+
 	articleEdit.ID = articleId
 
 	form, err := c.MultipartForm()
 	if err != nil {
-		return c.JSON(utils.ConvertResponseCode(err), base.NewErrorResponse(err.Error()))
+		return c.JSON(http.StatusBadRequest, base.NewErrorResponse(constant.ErrEmptyInput.Error()))
 	}
 
 	picture := form.File["picture_file"]
@@ -100,7 +118,7 @@ func (ac *ArticleController) Update(c echo.Context) error {
 		}
 	}
 
-	article, errUseCase := ac.articleUseCase.Update(articleEdit.ToEntities(), picture)
+	article, errUseCase := ac.articleUseCase.Update(articleEdit.ToEntities(), userData, picture)
 	if errUseCase != nil {
 		return c.JSON(utils.ConvertResponseCode(errUseCase), base.NewErrorResponse(errUseCase.Error()))
 	}
@@ -110,12 +128,20 @@ func (ac *ArticleController) Update(c echo.Context) error {
 }
 
 func (ac *ArticleController) Delete(c echo.Context) error {
+	userData, ok := c.Get("claims").(*middlewares.Claims)
+	if !ok {
+		return echo.ErrInternalServerError
+	}
+
 	articleId, err := uuid.Parse(c.Param("id"))
 	if err != nil {
+		if uuid.IsInvalidLengthError(err) {
+			return c.JSON(http.StatusNotFound, base.NewErrorResponse(err.Error()))
+		}
 		return c.JSON(utils.ConvertResponseCode(err), base.NewErrorResponse(err.Error()))
 	}
 
-	article, errUseCase := ac.articleUseCase.Delete(articleId)
+	article, errUseCase := ac.articleUseCase.Delete(articleId, userData)
 	if errUseCase != nil {
 		return c.JSON(utils.ConvertResponseCode(errUseCase), base.NewErrorResponse(errUseCase.Error()))
 	}

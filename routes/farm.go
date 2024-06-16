@@ -3,6 +3,7 @@ package routes
 import (
 	"github.com/blueharvest-alterra/go-back-end/controllers/farm"
 	"github.com/labstack/echo/v4"
+	"github.com/blueharvest-alterra/go-back-end/middlewares"
 )
 
 type FarmRouteController struct {
@@ -11,6 +12,7 @@ type FarmRouteController struct {
 
 func (r *FarmRouteController) InitRoute(e *echo.Echo) {
 	c := e.Group("/v1/farms")
+	c.Use(middlewares.JWTMiddleware)
 	c.POST("", r.FarmController.Create)
 	c.PUT("/:id", r.FarmController.Update)
 	c.DELETE("/:id", r.FarmController.Delete)

@@ -2,14 +2,15 @@ package main
 
 import (
 	"context"
+	"log"
+	"math/rand"
+
 	"github.com/blueharvest-alterra/go-back-end/drivers/postgresql/cart"
 	chatBot "github.com/blueharvest-alterra/go-back-end/drivers/postgresql/chat-bot"
 	"github.com/blueharvest-alterra/go-back-end/drivers/postgresql/dashboard"
 	"github.com/blueharvest-alterra/go-back-end/drivers/postgresql/farmInvest"
 	"github.com/blueharvest-alterra/go-back-end/drivers/postgresql/farmMonitor"
 	"github.com/blueharvest-alterra/go-back-end/drivers/redis"
-	"log"
-	"math/rand"
 
 	"github.com/blueharvest-alterra/go-back-end/config"
 	addressController "github.com/blueharvest-alterra/go-back-end/controllers/address"
@@ -113,7 +114,7 @@ func main() {
 	cartRepo := cart.NewCartRepo(db)
 	cartUseCase := usecases.NewCartUseCase(cartRepo)
 	newCartController := cartController.NewCartController(cartUseCase)
-	
+
 	chatBotRepo := chatBot.NewChatBotRepo(db, redisClient)
 	chatBotUseCase := usecases.NewChatBotUseCase(chatBotRepo)
 	newChatBotController := chatBotController.NewChatBotController(chatBotUseCase)

@@ -5,7 +5,9 @@ import (
 	"mime/multipart"
 	"path/filepath"
 
+	"github.com/blueharvest-alterra/go-back-end/constant"
 	"github.com/blueharvest-alterra/go-back-end/entities"
+	"github.com/blueharvest-alterra/go-back-end/middlewares"
 	"github.com/blueharvest-alterra/go-back-end/utils/google"
 	"github.com/google/uuid"
 )
@@ -18,7 +20,14 @@ func NewFarmUseCase(repository entities.FarmRepositoryInterface) *FarmUseCase {
 	return &FarmUseCase{repository: repository}
 }
 
-func (c *FarmUseCase) Create(farm *entities.Farm, picture []*multipart.FileHeader) (entities.Farm, error) {
+func (c *FarmUseCase) Create(farm *entities.Farm, userData *middlewares.Claims, picture []*multipart.FileHeader) (entities.Farm, error) {
+	if userData.Role != "admin" {
+		return entities.Farm{}, constant.ErrNotAuthorized
+	}
+
+	if farm.Title == "" || farm.Description == "" {
+		return entities.Farm{}, constant.ErrEmptyInput
+	}
 	farm.ID = uuid.New()
 
 	file, err := picture[0].Open()
@@ -57,7 +66,15 @@ func (c *FarmUseCase) GetById(id uuid.UUID) (entities.Farm, error) {
 	return farm, nil
 }
 
-func (c *FarmUseCase) Update(farm *entities.Farm, picture []*multipart.FileHeader) (entities.Farm, error) {
+func (c *FarmUseCase) Update(farm *entities.Farm, userData *middlewares.Claims, picture []*multipart.FileHeader) (entities.Farm, error) {
+	if userData.Role != "admin" {
+		return entities.Farm{}, constant.ErrNotAuthorized
+	}
+
+	if farm.Title == "" || farm.Description == "" {
+		return entities.Farm{}, constant.ErrEmptyInput
+	}
+
 	if len(picture) != 0 {
 		file, err := picture[0].Open()
 		if err != nil {
@@ -84,7 +101,10 @@ func (c *FarmUseCase) Update(farm *entities.Farm, picture []*multipart.FileHeade
 	return *farm, nil
 }
 
-func (c *FarmUseCase) Delete(id uuid.UUID) (entities.Farm, error) {
+func (c *FarmUseCase) Delete(id uuid.UUID, userData *middlewares.Claims) (entities.Farm, error) {
+	if userData.Role != "admin" {
+		return entities.Farm{}, constant.ErrNotAuthorized
+	}
 	var farm entities.Farm
 	farm.ID = id
 
