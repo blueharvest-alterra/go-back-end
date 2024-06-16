@@ -1,7 +1,9 @@
 package usecases
 
 import (
+	"github.com/blueharvest-alterra/go-back-end/constant"
 	"github.com/blueharvest-alterra/go-back-end/entities"
+	"github.com/blueharvest-alterra/go-back-end/middlewares"
 	"github.com/google/uuid"
 )
 
@@ -23,7 +25,15 @@ func (c *FarmMonitorUseCase) Create(farmMonitor *entities.FarmMonitor) (entities
 	return *farmMonitor, nil
 }
 
-func (c *FarmMonitorUseCase) Update(farmMonitor *entities.FarmMonitor) (entities.FarmMonitor, error) {
+func (c *FarmMonitorUseCase) Update(farmMonitor *entities.FarmMonitor, userData *middlewares.Claims) (entities.FarmMonitor, error) {
+	if userData.Role != "admin" {
+		return entities.FarmMonitor{}, constant.ErrNotAuthorized
+	}
+
+	if farmMonitor.FarmID == uuid.Nil || farmMonitor.Temperature == 0.0 || farmMonitor.PH == 0.0  || farmMonitor.DissolvedOxygen == 0.0  {
+		return entities.FarmMonitor{}, constant.ErrEmptyInput
+	}
+
 	if err := c.repository.Update(farmMonitor); err != nil {
 		return entities.FarmMonitor{}, err
 	}
@@ -43,9 +53,9 @@ func (c *FarmMonitorUseCase) GetById(id uuid.UUID) (entities.FarmMonitor, error)
 }
 
 func (c *FarmMonitorUseCase) GetAllByFarmId(farmId uuid.UUID) ([]entities.FarmMonitor, error) {
-    var farmMonitors []entities.FarmMonitor
-    if err := c.repository.GetAllByFarmId(farmId, &farmMonitors); err != nil {
-        return nil, err
-    }
-    return farmMonitors, nil
+	var farmMonitors []entities.FarmMonitor
+	if err := c.repository.GetAllByFarmId(farmId, &farmMonitors); err != nil {
+		return nil, err
+	}
+	return farmMonitors, nil
 }

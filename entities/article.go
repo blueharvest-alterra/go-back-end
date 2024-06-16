@@ -4,6 +4,7 @@ import (
 	"mime/multipart"
 	"time"
 
+	"github.com/blueharvest-alterra/go-back-end/middlewares"
 	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
@@ -27,9 +28,9 @@ type ArticleRepositoryInterface interface {
 }
 
 type ArticleUseCaseInterface interface {
-	Create(article *Article, picture []*multipart.FileHeader) (Article, error)
+	Create(article *Article, userData *middlewares.Claims, picture []*multipart.FileHeader) (Article, error)
 	GetById(id uuid.UUID) (Article, error)
-	Update(article *Article, picture []*multipart.FileHeader) (Article, error)
-	Delete(id uuid.UUID) (Article, error)
+	Update(article *Article, userData *middlewares.Claims, picture []*multipart.FileHeader) (Article, error)
+	Delete(id uuid.UUID, userData *middlewares.Claims) (Article, error)
 	GetAll(articles *[]Article) ([]Article, error)
 }

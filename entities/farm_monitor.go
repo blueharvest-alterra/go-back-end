@@ -3,6 +3,7 @@ package entities
 import (
 	"time"
 
+	"github.com/blueharvest-alterra/go-back-end/middlewares"
 	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
@@ -29,6 +30,6 @@ type FarmMonitorRepositoryInterface interface {
 type FarmMonitorUseCaseInterface interface {
 	Create(farmMonitor *FarmMonitor) (FarmMonitor, error)
 	GetById(farmMonitorId uuid.UUID) (FarmMonitor, error)
-	Update(farmMonitor *FarmMonitor) (FarmMonitor, error)
+	Update(farmMonitor *FarmMonitor, userData *middlewares.Claims) (FarmMonitor, error)
 	GetAllByFarmId(farmId uuid.UUID) ([]FarmMonitor, error)
 }

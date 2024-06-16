@@ -3,6 +3,7 @@ package entities
 import (
 	"time"
 
+	"github.com/blueharvest-alterra/go-back-end/middlewares"
 	"github.com/google/uuid"
 	"gorm.io/gorm"
 )
@@ -34,9 +35,9 @@ type PromoRepositoryInterface interface {
 }
 
 type PromoUseCaseInterface interface {
-	Create(promo *Promo) (Promo, error)
+	Create(promo *Promo, userData *middlewares.Claims) (Promo, error)
 	GetById(id uuid.UUID) (Promo, error)
-	Update(promo *Promo) (Promo, error)
-	Delete(id uuid.UUID) (Promo, error)
-	GetAll(promo *[]Promo) ([]Promo, error)
+	Update(promo *Promo, userData *middlewares.Claims) (Promo, error)
+	Delete(id uuid.UUID, userData *middlewares.Claims) (Promo, error)
+	GetAll(promo *[]Promo, userData *middlewares.Claims) ([]Promo, error)
 }

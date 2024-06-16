@@ -1,7 +1,9 @@
 package usecases
 
 import (
+	"github.com/blueharvest-alterra/go-back-end/constant"
 	"github.com/blueharvest-alterra/go-back-end/entities"
+	"github.com/blueharvest-alterra/go-back-end/middlewares"
 	"github.com/google/uuid"
 )
 
@@ -13,7 +15,14 @@ func NewPromoUseCase(repository entities.PromoRepositoryInterface) *PromoUseCase
 	return &PromoUseCase{repository: repository}
 }
 
-func (c *PromoUseCase) Create(promo *entities.Promo) (entities.Promo, error) {
+func (c *PromoUseCase) Create(promo *entities.Promo, userData *middlewares.Claims) (entities.Promo, error) {
+	if userData.Role != "admin" {
+		return entities.Promo{}, constant.ErrNotAuthorized
+	}
+
+	if promo.Name == "" || promo.Code == "" || promo.Status == "" || promo.Amount == 0 {
+		return entities.Promo{}, constant.ErrEmptyInput
+	}
 	promo.ID = uuid.New()
 
 	if err := c.repository.Create(promo); err != nil {
@@ -34,7 +43,14 @@ func (c *PromoUseCase) GetById(id uuid.UUID) (entities.Promo, error) {
 	return promo, nil
 }
 
-func (c *PromoUseCase) Update(promo *entities.Promo) (entities.Promo, error) {
+func (c *PromoUseCase) Update(promo *entities.Promo, userData *middlewares.Claims) (entities.Promo, error) {
+	if userData.Role != "admin" {
+		return entities.Promo{}, constant.ErrNotAuthorized
+	}
+
+	if promo.Name == "" || promo.Code == "" || promo.Status == "" || promo.Amount == 0 {
+		return entities.Promo{}, constant.ErrEmptyInput
+	}
 	if err := c.repository.Update(promo); err != nil {
 		return entities.Promo{}, err
 	}
@@ -42,7 +58,11 @@ func (c *PromoUseCase) Update(promo *entities.Promo) (entities.Promo, error) {
 	return *promo, nil
 }
 
-func (c *PromoUseCase) Delete(id uuid.UUID) (entities.Promo, error) {
+func (c *PromoUseCase) Delete(id uuid.UUID, userData *middlewares.Claims) (entities.Promo, error) {
+	if userData.Role != "admin" {
+		return entities.Promo{}, constant.ErrNotAuthorized
+	}
+
 	var promo entities.Promo
 	promo.ID = id
 
@@ -53,7 +73,11 @@ func (c *PromoUseCase) Delete(id uuid.UUID) (entities.Promo, error) {
 	return promo, nil
 }
 
-func (c *PromoUseCase) GetAll(promo *[]entities.Promo) ([]entities.Promo, error) {
+func (c *PromoUseCase) GetAll(promo *[]entities.Promo, userData *middlewares.Claims) ([]entities.Promo, error) {
+	if userData.Role != "admin" {
+		return []entities.Promo{}, constant.ErrNotAuthorized
+	}
+
 	if err := c.repository.GetAll(promo); err != nil {
 		return []entities.Promo{}, err
 	}

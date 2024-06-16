@@ -7,6 +7,7 @@ import (
 	"github.com/blueharvest-alterra/go-back-end/controllers/farm-monitor/request"
 	"github.com/blueharvest-alterra/go-back-end/controllers/farm-monitor/response"
 	"github.com/blueharvest-alterra/go-back-end/entities"
+	"github.com/blueharvest-alterra/go-back-end/middlewares"
 	"github.com/blueharvest-alterra/go-back-end/utils"
 	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
@@ -38,18 +39,26 @@ func (fc *FarmMonitorController) Create(c echo.Context) error {
 }
 
 func (fc *FarmMonitorController) Update(c echo.Context) error {
+	userData, ok := c.Get("claims").(*middlewares.Claims)
+	if !ok {
+		return echo.ErrInternalServerError
+	}
+
 	var farmMonitorEdit request.EditFarmMonitorRequest
 	if err := c.Bind(&farmMonitorEdit); err != nil {
 		return c.JSON(utils.ConvertResponseCode(err), base.NewErrorResponse(err.Error()))
 	}
 
-	farmId, err := uuid.Parse(c.Param("id"))
+	farmMonitorId, err := uuid.Parse(c.Param("id"))
 	if err != nil {
+		if uuid.IsInvalidLengthError(err) {
+			return c.JSON(http.StatusNotFound, base.NewErrorResponse(err.Error()))
+		}
 		return c.JSON(utils.ConvertResponseCode(err), base.NewErrorResponse(err.Error()))
 	}
-	farmMonitorEdit.ID = farmId
+	farmMonitorEdit.ID = farmMonitorId
 
-	farmMonitor, errUseCase := fc.FarmMonitorUseCase.Update(farmMonitorEdit.ToEntities())
+	farmMonitor, errUseCase := fc.FarmMonitorUseCase.Update(farmMonitorEdit.ToEntities(), userData)
 	if errUseCase != nil {
 		return c.JSON(utils.ConvertResponseCode(errUseCase), base.NewErrorResponse(errUseCase.Error()))
 	}
@@ -61,6 +70,9 @@ func (fc *FarmMonitorController) Update(c echo.Context) error {
 func (fc *FarmMonitorController) GetById(c echo.Context) error {
 	farmMonitorId, err := uuid.Parse(c.Param("id"))
 	if err != nil {
+		if uuid.IsInvalidLengthError(err) {
+			return c.JSON(http.StatusNotFound, base.NewErrorResponse(err.Error()))
+		}
 		return c.JSON(utils.ConvertResponseCode(err), base.NewErrorResponse(err.Error()))
 	}
 
@@ -77,8 +89,12 @@ func (fc *FarmMonitorController) GetById(c echo.Context) error {
 func (fc *FarmMonitorController) GetAllByFarmId(c echo.Context) error {
 	farmId, err := uuid.Parse(c.Param("farmid"))
 	if err != nil {
+		if uuid.IsInvalidLengthError(err) {
+			return c.JSON(http.StatusNotFound, base.NewErrorResponse(err.Error()))
+		}
 		return c.JSON(utils.ConvertResponseCode(err), base.NewErrorResponse(err.Error()))
 	}
+
 	farmMonitors, errUseCase := fc.FarmMonitorUseCase.GetAllByFarmId(farmId)
 	if errUseCase != nil {
 		return c.JSON(utils.ConvertResponseCode(errUseCase), base.NewErrorResponse(errUseCase.Error()))

@@ -7,6 +7,7 @@ import (
 	"github.com/blueharvest-alterra/go-back-end/controllers/promo/request"
 	"github.com/blueharvest-alterra/go-back-end/controllers/promo/response"
 	"github.com/blueharvest-alterra/go-back-end/entities"
+	"github.com/blueharvest-alterra/go-back-end/middlewares"
 	"github.com/blueharvest-alterra/go-back-end/utils"
 	"github.com/google/uuid"
 	"github.com/labstack/echo/v4"
@@ -23,12 +24,17 @@ func NewPromoController(promoUseCase entities.PromoUseCaseInterface) *PromoContr
 }
 
 func (pc *PromoController) Create(c echo.Context) error {
+	userData, ok := c.Get("claims").(*middlewares.Claims)
+	if !ok {
+		return echo.ErrInternalServerError
+	}
+
 	var promoCreate request.CreatePromoRequest
 	if err := c.Bind(&promoCreate); err != nil {
 		return c.JSON(utils.ConvertResponseCode(err), base.NewErrorResponse(err.Error()))
 	}
 
-	promo, errUseCase := pc.promoUseCase.Create(promoCreate.ToEntities())
+	promo, errUseCase := pc.promoUseCase.Create(promoCreate.ToEntities(), userData)
 	if errUseCase != nil {
 		return c.JSON(utils.ConvertResponseCode(errUseCase), base.NewErrorResponse(errUseCase.Error()))
 	}
@@ -40,6 +46,9 @@ func (pc *PromoController) Create(c echo.Context) error {
 func (pc *PromoController) GetById(c echo.Context) error {
 	promoId, err := uuid.Parse(c.Param("id"))
 	if err != nil {
+		if uuid.IsInvalidLengthError(err) {
+			return c.JSON(http.StatusNotFound, base.NewErrorResponse(err.Error()))
+		}
 		return c.JSON(utils.ConvertResponseCode(err), base.NewErrorResponse(err.Error()))
 	}
 
@@ -54,6 +63,11 @@ func (pc *PromoController) GetById(c echo.Context) error {
 }
 
 func (pc *PromoController) Update(c echo.Context) error {
+	userData, ok := c.Get("claims").(*middlewares.Claims)
+	if !ok {
+		return echo.ErrInternalServerError
+	}
+
 	var promoEdit request.EditPromoRequest
 	if err := c.Bind(&promoEdit); err != nil {
 		return c.JSON(utils.ConvertResponseCode(err), base.NewErrorResponse(err.Error()))
@@ -61,11 +75,14 @@ func (pc *PromoController) Update(c echo.Context) error {
 
 	promoId, err := uuid.Parse(c.Param("id"))
 	if err != nil {
+		if uuid.IsInvalidLengthError(err) {
+			return c.JSON(http.StatusNotFound, base.NewErrorResponse(err.Error()))
+		}
 		return c.JSON(utils.ConvertResponseCode(err), base.NewErrorResponse(err.Error()))
 	}
 	promoEdit.ID = promoId
 
-	promo, errUseCase := pc.promoUseCase.Update(promoEdit.ToEntities())
+	promo, errUseCase := pc.promoUseCase.Update(promoEdit.ToEntities(), userData)
 	if errUseCase != nil {
 		return c.JSON(utils.ConvertResponseCode(errUseCase), base.NewErrorResponse(errUseCase.Error()))
 	}
@@ -75,12 +92,19 @@ func (pc *PromoController) Update(c echo.Context) error {
 }
 
 func (pc *PromoController) Delete(c echo.Context) error {
-	promoId, err := uuid.Parse(c.Param("id"))
-	if err != nil {
-		return c.JSON(utils.ConvertResponseCode(err), base.NewErrorResponse(err.Error()))
+	userData, ok := c.Get("claims").(*middlewares.Claims)
+	if !ok {
+		return echo.ErrInternalServerError
 	}
 
-	promo, errUseCase := pc.promoUseCase.Delete(promoId)
+	promoId, err := uuid.Parse(c.Param("id"))
+	if err != nil {
+		if uuid.IsInvalidLengthError(err) {
+			return c.JSON(http.StatusNotFound, base.NewErrorResponse(err.Error()))
+		}
+		return c.JSON(utils.ConvertResponseCode(err), base.NewErrorResponse(err.Error()))
+	}
+	promo, errUseCase := pc.promoUseCase.Delete(promoId, userData)
 	if errUseCase != nil {
 		return c.JSON(utils.ConvertResponseCode(errUseCase), base.NewErrorResponse(errUseCase.Error()))
 	}
@@ -90,7 +114,12 @@ func (pc *PromoController) Delete(c echo.Context) error {
 }
 
 func (pc *PromoController) GetAll(c echo.Context) error {
-	promos, errUseCase := pc.promoUseCase.GetAll(&[]entities.Promo{})
+	userData, ok := c.Get("claims").(*middlewares.Claims)
+	if !ok {
+		return echo.ErrInternalServerError
+	}
+
+	promos, errUseCase := pc.promoUseCase.GetAll(&[]entities.Promo{}, userData)
 	if errUseCase != nil {
 		return c.JSON(utils.ConvertResponseCode(errUseCase), base.NewErrorResponse(errUseCase.Error()))
 	}
