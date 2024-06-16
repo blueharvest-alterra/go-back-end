@@ -110,8 +110,6 @@ func (cc *CartController) GetAll(c echo.Context) error {
 
 	var cart []entities.Cart
 
-
-
 	carts, errUseCase := cc.CartUseCaseInterface.GetAll(&cart, userData)
 	if errUseCase != nil {
 		return c.JSON(utils.ConvertResponseCode(errUseCase), base.NewErrorResponse(errUseCase.Error()))

@@ -3,7 +3,6 @@ package payment
 import (
 	"bytes"
 	"encoding/json"
-	"fmt"
 	"github.com/blueharvest-alterra/go-back-end/utils"
 	"net/http"
 	"os"
@@ -100,7 +99,6 @@ func (p *Payment) Create() error {
 
 	p.ExternalID = response.ID
 	p.InvoiceURL = response.InvoiceURL
-	fmt.Println("hit", p)
 
 	return nil
 }
