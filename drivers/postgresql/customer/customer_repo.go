@@ -2,7 +2,6 @@ package customer
 
 import (
 	"errors"
-
 	"github.com/blueharvest-alterra/go-back-end/constant"
 	"github.com/blueharvest-alterra/go-back-end/drivers/postgresql/auth"
 	"github.com/blueharvest-alterra/go-back-end/entities"
@@ -107,48 +106,38 @@ func (r *Repo) GetProfile(customer *entities.Customer) error {
 }
 
 func (r *Repo) EditProfile(customer *entities.Customer) error {
-	tx := r.DB.Begin()
-	if tx.Error != nil {
-		return tx.Error
-	}
-
 	customerDb := FromUseCase(customer)
 
-	if err := tx.Omit("Addresses").Where("id = ?", customerDb.ID).Updates(customerDb).Error; err != nil {
-		tx.Rollback()
+	customerData := Customer{}
+	if err := r.DB.Preload("Auth").First(&customerData, customerDb.ID).Error; err != nil {
 		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return constant.ErrNotFound
 		}
 		return err
 	}
 
-	if err := tx.Where("id = ?", customerDb.ID).First(&customerDb).Error; err != nil {
-		tx.Rollback()
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return constant.ErrNotFound
-		}
-		return err
+	if customerDb.FullName != "" {
+		customerData.FullName = customerDb.FullName
+	}
+	if customerDb.NickName != "" {
+		customerData.NickName = customerDb.NickName
+	}
+	if customerDb.PhoneNumber != "" {
+		customerData.PhoneNumber = customerDb.PhoneNumber
+	}
+	if customerDb.Gender != "" {
+		customerData.Gender = customerDb.Gender
+	}
+	if customerDb.Auth.Email != "" {
+		customerData.Auth.Email = customerDb.Auth.Email
+	}
+	if customerDb.Avatar != "" {
+		customerData.Avatar = customerDb.Avatar
 	}
 
-	var existingAuth entities.Auth
-	if err := tx.Where("email = ?", customerDb.Auth.Email).First(&existingAuth).Error; err == nil {
-		tx.Rollback()
-		return errors.New("email already exists")
-	} else if !errors.Is(err, gorm.ErrRecordNotFound) {
-		tx.Rollback()
+	if err := r.DB.Session(&gorm.Session{FullSaveAssociations: true}).Save(&customerData).Error; err != nil {
 		return err
 	}
-
-	if err := tx.Where("id = ?", customerDb.AuthID).Updates(customerDb.Auth).Error; err != nil {
-		tx.Rollback()
-		return err
-	}
-
-	if err := tx.Commit().Error; err != nil {
-		return err
-	}
-
-	customer.Auth.Email = customerDb.Auth.Email
 
 	*customer = *customerDb.ToUseCase()
 	return nil
