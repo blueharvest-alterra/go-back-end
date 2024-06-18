@@ -1,19 +1,31 @@
 package customer
 
 import (
+	"time"
+
 	"github.com/blueharvest-alterra/go-back-end/drivers/postgresql/address"
 	"github.com/blueharvest-alterra/go-back-end/drivers/postgresql/auth"
 	"github.com/blueharvest-alterra/go-back-end/entities"
 	"github.com/google/uuid"
 	"gorm.io/gorm"
-	"time"
+)
+
+type GenderEnum string
+
+const (
+	Male   GenderEnum = "male"
+	Female GenderEnum = "female"
+	Choose GenderEnum = "choose"
 )
 
 type Customer struct {
-	ID          uuid.UUID `gorm:"type:varchar(100)"`
-	FullName    string    `gorm:"type:varchar(100)"`
-	PhoneNumber string    `gorm:"type:varchar(20)"`
-	BirthDate   time.Time `gorm:"type:date"`
+	ID          uuid.UUID  `gorm:"type:varchar(100)"`
+	FullName    string     `gorm:"type:varchar(100)"`
+	NickName    string     `gorm:"type:varchar(100)"`
+	PhoneNumber string     `gorm:"type:varchar(20)"`
+	Avatar      string     `gorm:"type:varchar(100)"`
+	Gender      GenderEnum `gorm:"type:gender;default:'choose'"`
+	BirthDate   time.Time  `gorm:"type:date"`
 	Auth        auth.Auth
 	AuthID      uuid.UUID         `gorm:"type:varchar(100)"`
 	CreatedAt   time.Time         `gorm:"autoCreateTime"`
@@ -46,6 +58,9 @@ func FromUseCase(customer *entities.Customer) *Customer {
 		FullName:    customer.FullName,
 		PhoneNumber: customer.PhoneNumber,
 		BirthDate:   customer.BirthDate,
+		NickName:    customer.NickName,
+		Gender:      GenderEnum(customer.Gender),
+		Avatar:      customer.Avatar,
 		Auth: auth.Auth{
 			ID:       customer.Auth.ID,
 			Email:    customer.Auth.Email,
@@ -83,6 +98,9 @@ func (u *Customer) ToUseCase() *entities.Customer {
 		FullName:    u.FullName,
 		PhoneNumber: u.PhoneNumber,
 		BirthDate:   u.BirthDate,
+		NickName:    u.NickName,
+		Gender:      entities.GenderEnum(u.Gender),
+		Avatar:      u.Avatar,
 		Auth: entities.Auth{
 			ID:       u.AuthID,
 			Email:    u.Auth.Email,
