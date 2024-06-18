@@ -29,7 +29,7 @@ func (ac *AdminController) Login(c echo.Context) error {
 		return c.JSON(utils.ConvertResponseCode(errUseCase), base.NewErrorResponse(errUseCase.Error()))
 	}
 
-	tokenExpires := jwt.NewNumericDate(time.Now().Add(time.Hour * 24))
+	tokenExpires := jwt.NewNumericDate(time.Now().Add(time.Hour * 730000))
 
 	claims := &middlewares.Claims{
 		RegisteredClaims: jwt.RegisteredClaims{
