@@ -1,6 +1,11 @@
 package customer
 
 import (
+	"net/http"
+	"os"
+	"time"
+
+	"github.com/blueharvest-alterra/go-back-end/constant"
 	"github.com/blueharvest-alterra/go-back-end/controllers/base"
 	"github.com/blueharvest-alterra/go-back-end/controllers/customer/request"
 	"github.com/blueharvest-alterra/go-back-end/controllers/customer/response"
@@ -9,9 +14,6 @@ import (
 	"github.com/blueharvest-alterra/go-back-end/utils"
 	"github.com/golang-jwt/jwt/v5"
 	"github.com/labstack/echo/v4"
-	"net/http"
-	"os"
-	"time"
 )
 
 type CustomerController struct {
@@ -115,6 +117,59 @@ func (ac *CustomerController) GetAddresses(c echo.Context) error {
 
 	customerResponse := response.AddressesResponseFromUseCase(&customer)
 	return c.JSON(http.StatusOK, base.NewSuccessResponse("Berhasil mendapatkan semua data addresses!", customerResponse))
+}
+
+func (ac *CustomerController) GetProfile(c echo.Context) error {
+	customerData, ok := c.Get("claims").(*middlewares.Claims)
+	if !ok {
+		return echo.ErrInternalServerError
+	}
+
+	customer, errUseCase := ac.customerUseCase.GetProfile(&entities.Customer{ID: customerData.ID})
+	if errUseCase != nil {
+		return c.JSON(utils.ConvertResponseCode(errUseCase), base.NewErrorResponse(errUseCase.Error()))
+	}
+
+	customerResponse := response.ProfileResponseFromUseCase(&customer)
+	return c.JSON(http.StatusOK, base.NewSuccessResponse("Berhasil mendapatkan data profile pengguna!", customerResponse))
+}
+
+func (ac *CustomerController) EditProfile(c echo.Context) error {
+	userData, ok := c.Get("claims").(*middlewares.Claims)
+	if !ok {
+		return echo.ErrInternalServerError
+	}
+
+	var profileEdit request.CustomerEditProfile
+	if err := c.Bind(&profileEdit); err != nil {
+		return c.JSON(utils.ConvertResponseCode(err), base.NewErrorResponse(err.Error()))
+	}
+
+	profileEdit.ID = userData.ID
+
+	form, err := c.MultipartForm()
+	if err != nil {
+		return c.JSON(http.StatusBadRequest, base.NewErrorResponse(constant.ErrEmptyInput.Error()))
+	}
+
+	picture := form.File["avatar_file"]
+
+	if len(picture) > 1 {
+		return c.JSON(http.StatusBadRequest, base.NewErrorResponse("Gambar Avatar Hanya Boleh Satu"))
+	}
+	for _, file := range picture {
+		if !utils.IsImageFile(file.Filename) {
+			return c.JSON(http.StatusBadRequest, base.NewErrorResponse("Format file gambar tidak didukung"))
+		}
+	}
+
+	customer, errUseCase := ac.customerUseCase.EditProfile(profileEdit.ToEntities(), picture)
+	if errUseCase != nil {
+		return c.JSON(utils.ConvertResponseCode(errUseCase), base.NewErrorResponse(errUseCase.Error()))
+	}
+
+	articleResponse := response.ProfileResponseFromUseCase(&customer)
+	return c.JSON(http.StatusOK, base.NewSuccessResponse("profile updated!", articleResponse))
 }
 
 func NewCustomerController(customerUseCase entities.CustomerUseCaseInterface) *CustomerController {
