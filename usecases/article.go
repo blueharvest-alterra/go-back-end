@@ -75,6 +75,7 @@ func (c *ArticleUseCase) Update(article *entities.Article, userData *middlewares
 	if article.Title == "" || article.Content == "" {
 		return entities.Article{}, constant.ErrEmptyInput
 	}
+
 	if len(picture) != 0 {
 		file, err := picture[0].Open()
 		if err != nil {

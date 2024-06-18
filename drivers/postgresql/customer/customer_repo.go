@@ -80,3 +80,65 @@ func (r *Repo) GetAddresses(customer *entities.Customer) error {
 	*customer = *customerDb.ToUseCase()
 	return nil
 }
+
+func (r *Repo) GetProfile(customer *entities.Customer) error {
+	customerDb := FromUseCase(customer)
+
+	if err := r.DB.First(&customerDb, "id = ?", customerDb.ID).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return constant.ErrNotFound
+		}
+		return err
+	}
+
+	customerAuth := auth.Auth{ID: customerDb.AuthID}
+	if err := r.DB.Model(&customerAuth).Where("id = ?", customerDb.AuthID).First(&customerAuth).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return constant.ErrNotFound
+		}
+		return err
+	}
+
+	customerDb.Auth.Email = customerAuth.Email
+
+	*customer = *customerDb.ToUseCase()
+	return nil
+}
+
+func (r *Repo) EditProfile(customer *entities.Customer) error {
+	customerDb := FromUseCase(customer)
+
+	customerData := Customer{}
+	if err := r.DB.Preload("Auth").First(&customerData, customerDb.ID).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return constant.ErrNotFound
+		}
+		return err
+	}
+
+	if customerDb.FullName != "" {
+		customerData.FullName = customerDb.FullName
+	}
+	if customerDb.NickName != "" {
+		customerData.NickName = customerDb.NickName
+	}
+	if customerDb.PhoneNumber != "" {
+		customerData.PhoneNumber = customerDb.PhoneNumber
+	}
+	if customerDb.Gender != "" {
+		customerData.Gender = customerDb.Gender
+	}
+	if customerDb.Auth.Email != "" {
+		customerData.Auth.Email = customerDb.Auth.Email
+	}
+	if customerDb.Avatar != "" {
+		customerData.Avatar = customerDb.Avatar
+	}
+
+	if err := r.DB.Session(&gorm.Session{FullSaveAssociations: true}).Save(&customerData).Error; err != nil {
+		return err
+	}
+
+	*customer = *customerDb.ToUseCase()
+	return nil
+}

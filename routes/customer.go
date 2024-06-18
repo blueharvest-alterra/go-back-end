@@ -18,4 +18,8 @@ func (r *CustomerRouteController) InitRoute(e *echo.Echo) {
 	c.Use(middlewares.JWTMiddleware)
 	c.POST("/addresses", r.CustomerController.CreateAddress)
 	c.GET("/addresses", r.CustomerController.GetAddresses)
+
+	c.GET("/profile", r.CustomerController.GetProfile)
+	c.POST("/profile", r.CustomerController.EditProfile)
+
 }
