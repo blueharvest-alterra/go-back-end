@@ -92,7 +92,7 @@ func (r Repo) Create(transaction *entities.Transaction) error {
 	transactionDb.Payment.Amount = transactionDb.Total
 	transactionDb.Payment.Status = "UNPAID"
 
-	if err := transactionDb.Payment.Create(); err != nil {
+	if err := transactionDb.Payment.Create("buy_product", transactionDb.ID.String()); err != nil {
 		return err
 	}
 
@@ -157,3 +157,13 @@ func (r Repo) CheckoutSummary(transaction *entities.Transaction, userData *middl
 	*transaction = *transactionDb.ToUseCase()
 	return nil
 }
+
+//func UpdateBuyProductContext(paymentID uuid.UUID) error {
+//	if err := Repo.DB.Preload("TransactionDetail").Where("payment_id = ?", paymentID).First(&transactionDb).Error; err != nil {
+//		if errors.Is(err, gorm.ErrRecordNotFound) {
+//			return constant.ErrNotFound
+//		}
+//		return err
+//	}
+//	return nil
+//}
