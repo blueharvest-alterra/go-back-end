@@ -22,3 +22,4 @@ var ErrCustomerAddressNotFound error = errors.New("customer don't have that addr
 var ErrProductNotFound error = errors.New("product data not found")
 var ErrProductUnavailable error = errors.New("some of product unavailable")
 var ErrCreateTransaction error = errors.New("error creating transaction")
+var ErrMinumumAmount error = errors.New("investment amount is lower than minimum required")

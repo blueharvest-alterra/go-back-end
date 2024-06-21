@@ -1,6 +1,8 @@
 package article
 
 import (
+	"errors"
+
 	"github.com/blueharvest-alterra/go-back-end/constant"
 	"github.com/blueharvest-alterra/go-back-end/entities"
 	"gorm.io/gorm"
@@ -57,8 +59,8 @@ func (r *Repo) Delete(article *entities.Article) error {
 
 func (r *Repo) GetById(article *entities.Article) error {
 	var articleDb Article
-	if err := r.DB.First(&articleDb, "id = ?", article.ID).Error; err != nil {
-		if r.DB.RowsAffected < 1 {
+	if err := r.DB.Preload("Admin").First(&articleDb, "id = ?", article.ID).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return constant.ErrNotFound
 		}
 		return err
@@ -71,7 +73,7 @@ func (r *Repo) GetById(article *entities.Article) error {
 func (r *Repo) GetAll(articles *[]entities.Article) error {
 	var articleDb []Article
 
-	if err := r.DB.Find(&articleDb).Error; err != nil {
+	if err := r.DB.Preload("Admin").Find(&articleDb).Error; err != nil {
 		return err
 	}
 

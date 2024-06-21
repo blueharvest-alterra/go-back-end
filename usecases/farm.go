@@ -25,7 +25,7 @@ func (c *FarmUseCase) Create(farm *entities.Farm, userData *middlewares.Claims, 
 		return entities.Farm{}, constant.ErrNotAuthorized
 	}
 
-	if farm.Title == "" || farm.Description == "" {
+	if farm.Title == "" || farm.Description == "" || farm.MinimumInvestmentAmount == 0 {
 		return entities.Farm{}, constant.ErrEmptyInput
 	}
 	farm.ID = uuid.New()
@@ -71,7 +71,7 @@ func (c *FarmUseCase) Update(farm *entities.Farm, userData *middlewares.Claims, 
 		return entities.Farm{}, constant.ErrNotAuthorized
 	}
 
-	if farm.Title == "" || farm.Description == "" {
+	if farm.Title == "" || farm.Description == "" || farm.MinimumInvestmentAmount == 0 {
 		return entities.Farm{}, constant.ErrEmptyInput
 	}
 
