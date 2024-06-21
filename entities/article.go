@@ -11,6 +11,8 @@ import (
 
 type Article struct {
 	ID        uuid.UUID
+	AdminID   uuid.UUID
+	Admin     Admin
 	Title     string
 	Content   string
 	Picture   string
