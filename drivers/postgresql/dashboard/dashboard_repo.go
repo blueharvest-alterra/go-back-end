@@ -69,7 +69,7 @@ func (r Repo) AdminDashboard(dashboard *entities.Dashboard) error {
 	}
 
 	// Top Article section
-	if err := r.DB.Order("created_at DESC").Limit(3).Find(&articles).Error; err != nil {
+	if err := r.DB.Preload("Admin").Order("created_at DESC").Limit(3).Find(&articles).Error; err != nil {
 		return err
 	}
 	dashboardDb.LatestArticles = articles
