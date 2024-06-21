@@ -19,12 +19,13 @@ const (
 )
 
 type Product struct {
-	ID          uuid.UUID      `gorm:"type:varchar(100);"`
-	Name        string         `gorm:"type:varchar(255);not null"`
-	Description string         `gorm:"type:text;not null"`
-	Price       float64        `gorm:"type:decimal;not null"`
-	Status      Status         `gorm:"type:varchar(50);not null"`
-	Thumbnail   string         `gorm:"type:text;not null"`
+	ID          uuid.UUID `gorm:"type:varchar(100);"`
+	Name        string    `gorm:"type:varchar(255);not null"`
+	Description string    `gorm:"type:text;not null"`
+	Price       float64   `gorm:"type:decimal;not null"`
+	Status      Status    `gorm:"type:varchar(50);not null"`
+	Thumbnail   string    `gorm:"type:text;not null"`
+	CountSold   uint
 	CreatedAt   time.Time      `gorm:"autoCreateTime"`
 	UpdatedAt   time.Time      `gorm:"autoUpdateTime"`
 	DeletedAt   gorm.DeletedAt `gorm:"index"`
@@ -37,10 +38,11 @@ func FromUseCase(product *entities.Product) *Product {
 		Description: product.Description,
 		Price:       product.Price,
 		Status:      Status(product.Status),
+		Thumbnail:   product.Thumbnail,
+		CountSold:   product.CountSold,
 		CreatedAt:   product.CreatedAt,
 		UpdatedAt:   product.UpdatedAt,
 		DeletedAt:   product.DeletedAt,
-		Thumbnail:   product.Thumbnail,
 	}
 }
 
@@ -51,10 +53,11 @@ func (product *Product) ToUseCase() *entities.Product {
 		Description: product.Description,
 		Price:       product.Price,
 		Status:      entities.ProductStatus(product.Status),
+		Thumbnail:   product.Thumbnail,
+		CountSold:   product.CountSold,
 		CreatedAt:   product.CreatedAt,
 		UpdatedAt:   product.UpdatedAt,
 		DeletedAt:   product.DeletedAt,
-		Thumbnail:   product.Thumbnail,
 	}
 }
 

@@ -49,7 +49,7 @@ func (r *Repo) Create(farmInvest *entities.FarmInvest) error {
 	farmInvestDb.Payment.Amount = farmInvestDb.InvestmentAmount
 	farmInvestDb.Payment.Status = "UNPAID"
 
-	if err := farmInvestDb.Payment.Create(); err != nil {
+	if err := farmInvestDb.Payment.Create("farm_invest", farmInvest.FarmID.String()); err != nil {
 		return err
 	}
 

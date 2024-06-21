@@ -24,8 +24,13 @@ func (ac *PaymentController) Callback(c echo.Context) error {
 		return c.JSON(utils.ConvertResponseCode(err), base.NewErrorResponse(err.Error()))
 	}
 
-	_, errUseCase := ac.paymentUseCase.UpdateStatus(PaymentCallback.ToEntities())
+	payment, errUseCase := ac.paymentUseCase.UpdateStatus(PaymentCallback.ToEntities())
 	if errUseCase != nil {
+		return c.JSON(utils.ConvertResponseCode(errUseCase), base.NewErrorResponse(errUseCase.Error()))
+	}
+
+	_, errUseCaseUpdatePaymentContext := ac.paymentUseCase.UpdatePaymentContext(&payment)
+	if errUseCaseUpdatePaymentContext != nil {
 		return c.JSON(utils.ConvertResponseCode(errUseCase), base.NewErrorResponse(errUseCase.Error()))
 	}
 

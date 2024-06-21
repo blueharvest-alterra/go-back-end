@@ -3,6 +3,7 @@ package request
 import (
 	"github.com/blueharvest-alterra/go-back-end/entities"
 	"github.com/google/uuid"
+	"strings"
 )
 
 type PaymentCallbackRequest struct {
@@ -12,11 +13,16 @@ type PaymentCallbackRequest struct {
 }
 
 func (p *PaymentCallbackRequest) ToEntities() *entities.Payment {
-	paymentId, _ := uuid.Parse(p.ExternalID)
+	split := strings.Split(p.ExternalID, ":")
+	context := split[0]
+	contextID := split[1]
+	paymentId, _ := uuid.Parse(split[2])
 
 	return &entities.Payment{
 		ID:         paymentId,
 		ExternalID: p.ID,
 		Status:     p.Status,
+		Context:    context,
+		ContextID:  contextID,
 	}
 }
