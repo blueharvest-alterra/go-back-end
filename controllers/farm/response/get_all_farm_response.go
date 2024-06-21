@@ -10,10 +10,11 @@ func SliceFromUseCase(farms *[]entities.Farm) *FarmGetAll {
 	allFarms := make([]FarmResponse, len(*farms))
 	for i, _farm := range *farms {
 		allFarms[i] = FarmResponse{
-			ID:          _farm.ID,
-			Title:       _farm.Description,
-			Description: _farm.Description,
-			Picture:     _farm.Picture,
+			ID:                      _farm.ID,
+			Title:                   _farm.Description,
+			Description:             _farm.Description,
+			Picture:                 _farm.Picture,
+			MinimumInvestmentAmount: _farm.MinimumInvestmentAmount,
 		}
 	}
 

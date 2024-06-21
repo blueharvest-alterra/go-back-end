@@ -11,6 +11,8 @@ func SliceFromUseCase(articles *[]entities.Article) *ArticleGetAll {
 	for i, _article := range *articles {
 		allArticles[i] = ArticleResponse{
 			ID:      _article.ID,
+			AdminID: _article.AdminID,
+			Author:  _article.Admin.FullName,
 			Title:   _article.Title,
 			Content: _article.Content,
 			Picture: _article.Picture,

@@ -6,17 +6,19 @@ import (
 )
 
 type FarmResponse struct {
-	ID          uuid.UUID `json:"id"`
-	Title       string    `json:"title"`
-	Description string    `json:"description"`
-	Picture     string    `json:"picture"`
+	ID                      uuid.UUID `json:"id"`
+	Title                   string    `json:"title"`
+	Description             string    `json:"description"`
+	Picture                 string    `json:"picture"`
+	MinimumInvestmentAmount float64   `json:"minimum_investment_amount"`
 }
 
 func FarmResponseFromUseCase(farm *entities.Farm) *FarmResponse {
 	return &FarmResponse{
-		ID:          farm.ID,
-		Title:       farm.Title,
-		Description: farm.Description,
-		Picture:     farm.Picture,
+		ID:                      farm.ID,
+		Title:                   farm.Title,
+		Description:             farm.Description,
+		Picture:                 farm.Picture,
+		MinimumInvestmentAmount: farm.MinimumInvestmentAmount,
 	}
 }

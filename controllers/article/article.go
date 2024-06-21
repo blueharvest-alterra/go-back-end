@@ -31,6 +31,7 @@ func (ac *ArticleController) Create(c echo.Context) error {
 	}
 
 	var articleCreate request.CreateArticleRequest
+	articleCreate.AdminID = userData.ID
 	if err := c.Bind(&articleCreate); err != nil {
 		return c.JSON(utils.ConvertResponseCode(err), base.NewErrorResponse(err.Error()))
 	}
@@ -88,6 +89,7 @@ func (ac *ArticleController) Update(c echo.Context) error {
 	}
 
 	var articleEdit request.EditArticleRequest
+	articleEdit.AdminID = userData.ID
 	if err := c.Bind(&articleEdit); err != nil {
 		return c.JSON(utils.ConvertResponseCode(err), base.NewErrorResponse(err.Error()))
 	}

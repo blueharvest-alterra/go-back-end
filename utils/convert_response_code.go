@@ -2,8 +2,9 @@ package utils
 
 import (
 	"errors"
-	"github.com/blueharvest-alterra/go-back-end/constant"
 	"net/http"
+
+	"github.com/blueharvest-alterra/go-back-end/constant"
 )
 
 func ConvertResponseCode(err error) int {
@@ -39,6 +40,8 @@ func ConvertResponseCode(err error) int {
 	case errors.Is(err, constant.ErrPromoUnavailable):
 		return http.StatusBadRequest
 	case errors.Is(err, constant.ErrProductUnavailable):
+		return http.StatusBadRequest
+	case errors.Is(err, constant.ErrMinumumAmount):
 		return http.StatusBadRequest
 	default:
 		return http.StatusInternalServerError

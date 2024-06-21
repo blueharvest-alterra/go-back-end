@@ -10,13 +10,14 @@ import (
 )
 
 type Farm struct {
-	ID          uuid.UUID
-	Title       string
-	Description string
-	Picture     string
-	CreatedAt   time.Time
-	UpdatedAt   time.Time
-	DeletedAt   gorm.DeletedAt
+	ID                      uuid.UUID
+	Title                   string
+	Description             string
+	Picture                 string
+	MinimumInvestmentAmount float64
+	CreatedAt               time.Time
+	UpdatedAt               time.Time
+	DeletedAt               gorm.DeletedAt
 }
 
 type FarmRepositoryInterface interface {

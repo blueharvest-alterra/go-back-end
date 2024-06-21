@@ -21,6 +21,19 @@ func NewFarmInvestRepo(db *gorm.DB) *Repo {
 }
 
 func (r *Repo) Create(farmInvest *entities.FarmInvest) error {
+	var farm entities.Farm
+	if err := r.DB.First(&farm, "id = ?", farmInvest.FarmID).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return constant.ErrNotFound
+		}
+		return err
+	}
+
+	// Check minimum invest amount validation
+	if farmInvest.InvestmentAmount < farm.MinimumInvestmentAmount {
+		return constant.ErrMinumumAmount
+	}
+
 	farmInvestDb := FromUseCase(farmInvest)
 
 	tx := r.DB.Begin()
