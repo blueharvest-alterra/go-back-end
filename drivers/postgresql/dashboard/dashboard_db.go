@@ -100,10 +100,14 @@ func (u *Dashboard) ToUseCase() *entities.Dashboard {
 	latestArticles := make([]entities.Article, len(u.LatestArticles))
 	for i, _article := range u.LatestArticles {
 		latestArticles[i] = entities.Article{
-			ID:        _article.ID,
-			Title:     _article.Title,
-			Content:   _article.Content,
-			Picture:   _article.Picture,
+			ID:      _article.ID,
+			Title:   _article.Title,
+			Content: _article.Content,
+			Picture: _article.Picture,
+			Admin: entities.Admin{
+				ID:       _article.Admin.ID,
+				FullName: _article.Admin.FullName,
+			},
 			CreatedAt: _article.CreatedAt,
 		}
 	}
@@ -117,6 +121,7 @@ func (u *Dashboard) ToUseCase() *entities.Dashboard {
 			Thumbnail:   _product.Thumbnail,
 			Status:      entities.ProductStatus(_product.Status),
 			Price:       _product.Price,
+			CountSold:   _product.CountSold,
 			CreatedAt:   _product.CreatedAt,
 		}
 	}
