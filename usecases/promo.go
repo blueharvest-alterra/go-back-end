@@ -74,10 +74,6 @@ func (c *PromoUseCase) Delete(id uuid.UUID, userData *middlewares.Claims) (entit
 }
 
 func (c *PromoUseCase) GetAll(promo *[]entities.Promo, userData *middlewares.Claims) ([]entities.Promo, error) {
-	if userData.Role != "admin" {
-		return []entities.Promo{}, constant.ErrNotAuthorized
-	}
-
 	if err := c.repository.GetAll(promo); err != nil {
 		return []entities.Promo{}, err
 	}
