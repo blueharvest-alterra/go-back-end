@@ -3,9 +3,10 @@ package payment
 import (
 	"bytes"
 	"encoding/json"
-	"github.com/blueharvest-alterra/go-back-end/utils"
 	"net/http"
 	"os"
+
+	"github.com/blueharvest-alterra/go-back-end/utils"
 
 	"github.com/blueharvest-alterra/go-back-end/constant"
 	"github.com/blueharvest-alterra/go-back-end/entities"
