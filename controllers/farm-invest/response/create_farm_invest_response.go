@@ -10,9 +10,7 @@ type PaymentResponse struct {
 	ExternalID string    `json:"external_id"`
 	InvoiceURL string    `json:"invoice_url"`
 	Status     string    `json:"status"`
-	Context    string
-	ContextID  string
-	Amount     float64 `json:"amount"`
+	Amount     float64   `json:"amount"`
 }
 
 type FarmInvestResponse struct {

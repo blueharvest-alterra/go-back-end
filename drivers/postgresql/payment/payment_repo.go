@@ -4,7 +4,6 @@ import (
 	"errors"
 
 	"github.com/blueharvest-alterra/go-back-end/constant"
-	//fi "github.com/blueharvest-alterra/go-back-end/drivers/postgresql/farmInvest"
 	"github.com/blueharvest-alterra/go-back-end/drivers/postgresql/farm"
 	"github.com/blueharvest-alterra/go-back-end/drivers/postgresql/product"
 	"github.com/blueharvest-alterra/go-back-end/drivers/postgresql/transactionDetail"
