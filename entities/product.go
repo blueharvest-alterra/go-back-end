@@ -21,10 +21,11 @@ type Product struct {
 	Description string
 	Price       float64
 	Status      ProductStatus
+	Thumbnail   string
+	CountSold   uint
 	CreatedAt   time.Time
 	UpdatedAt   time.Time
 	DeletedAt   gorm.DeletedAt
-	Thumbnail   string
 }
 
 type ProductRepositoryInterface interface {

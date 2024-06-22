@@ -3,6 +3,7 @@ package response
 import (
 	"github.com/blueharvest-alterra/go-back-end/entities"
 	"github.com/google/uuid"
+	"time"
 )
 
 type EarningChartResponse struct {
@@ -11,10 +12,12 @@ type EarningChartResponse struct {
 }
 
 type ArticleDetailResponse struct {
-	ID      uuid.UUID `json:"id"`
-	Title   string    `json:"title"`
-	Content string    `json:"content"`
-	Picture string    `json:"picture"`
+	ID         uuid.UUID `json:"id"`
+	Title      string    `json:"title"`
+	Content    string    `json:"content"`
+	Picture    string    `json:"picture"`
+	AuthorName string    `json:"author_name"`
+	CreatedAt  time.Time `json:"created_at"`
 }
 
 type ProductDetailResponse struct {
@@ -24,6 +27,8 @@ type ProductDetailResponse struct {
 	Price       float64   `json:"price"`
 	Status      string    `json:"status"`
 	Thumbnail   string    `json:"thumbnail"`
+	CountSold   uint      `json:"count_sold"`
+	CreatedAt   time.Time `json:"created_at"`
 }
 
 type Dashboard struct {
@@ -39,10 +44,12 @@ func AdminDashboardFromUseCase(dashboard *entities.Dashboard) *Dashboard {
 	topArticles := make([]ArticleDetailResponse, len(dashboard.LatestArticles))
 	for i, _article := range dashboard.LatestArticles {
 		topArticles[i] = ArticleDetailResponse{
-			ID:      _article.ID,
-			Title:   _article.Title,
-			Content: _article.Content,
-			Picture: _article.Picture,
+			ID:         _article.ID,
+			Title:      _article.Title,
+			Content:    _article.Content,
+			Picture:    _article.Picture,
+			AuthorName: _article.Admin.FullName,
+			CreatedAt:  _article.CreatedAt,
 		}
 	}
 
@@ -55,6 +62,8 @@ func AdminDashboardFromUseCase(dashboard *entities.Dashboard) *Dashboard {
 			Thumbnail:   _product.Thumbnail,
 			Status:      string(_product.Status),
 			Price:       _product.Price,
+			CountSold:   _product.CountSold,
+			CreatedAt:   _product.CreatedAt,
 		}
 	}
 

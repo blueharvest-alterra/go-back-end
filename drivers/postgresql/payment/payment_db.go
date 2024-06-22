@@ -3,9 +3,10 @@ package payment
 import (
 	"bytes"
 	"encoding/json"
-	"github.com/blueharvest-alterra/go-back-end/utils"
 	"net/http"
 	"os"
+
+	"github.com/blueharvest-alterra/go-back-end/utils"
 
 	"github.com/blueharvest-alterra/go-back-end/constant"
 	"github.com/blueharvest-alterra/go-back-end/entities"
@@ -17,6 +18,8 @@ type Payment struct {
 	ExternalID string    `gorm:"type:text;not null"`
 	InvoiceURL string    `gorm:"type:text;not null"`
 	Status     string    `gorm:"type:varchar(50);not null"`
+	Context    string    `gorm:"-"`
+	ContextID  string    `gorm:"-"`
 	Amount     float64   `gorm:"type:decimal;not null"`
 }
 
@@ -26,6 +29,8 @@ func FromUseCase(payment *entities.Payment) *Payment {
 		ExternalID: payment.ExternalID,
 		InvoiceURL: payment.InvoiceURL,
 		Status:     payment.Status,
+		Context:    payment.Context,
+		ContextID:  payment.ContextID,
 		Amount:     payment.Amount,
 	}
 }
@@ -36,6 +41,8 @@ func (p *Payment) ToUseCase() *entities.Payment {
 		ExternalID: p.ExternalID,
 		InvoiceURL: p.InvoiceURL,
 		Status:     p.Status,
+		Context:    p.Context,
+		ContextID:  p.ContextID,
 		Amount:     p.Amount,
 	}
 }
@@ -54,12 +61,12 @@ type xdtInvoicePayload struct {
 	Description string `json:"description"`
 }
 
-func (p *Payment) Create() error {
+func (p *Payment) Create(context string, contextID string) error {
 	url := "https://api.xendit.co/v2/invoices"
 	method := "POST"
 
 	var payload xdtInvoicePayload
-	payload.ExternalID = p.ID.String()
+	payload.ExternalID = context + ":" + contextID + ":" + p.ID.String()
 	payload.Amount = int64(p.Amount)
 	payload.PayerEmail = "blueharvest@gmail.com"
 	payload.Description = "Blueharvest App Invoice"

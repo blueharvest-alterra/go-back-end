@@ -20,6 +20,7 @@ type ProductDetail struct {
 	Price       float64        `json:"price"`
 	Thumbnail   string         `json:"thumbnail"`
 	Status      string         `json:"status"`
+	CountSold   uint           `json:"count_sold"`
 	CreatedAt   time.Time      `json:"created_at"`
 	UpdatedAt   time.Time      `json:"updated_at"`
 	DeletedAt   gorm.DeletedAt `json:"deleted_at"`
@@ -32,6 +33,7 @@ func ProductDetailFromUseCase(product *entities.Product) *ProductDetail {
 		Description: product.Description,
 		Price:       product.Price,
 		Thumbnail:   product.Thumbnail,
+		CountSold:   product.CountSold,
 		Status:      string(product.Status),
 		CreatedAt:   product.CreatedAt,
 		UpdatedAt:   product.UpdatedAt,
