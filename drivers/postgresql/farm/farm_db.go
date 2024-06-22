@@ -9,12 +9,12 @@ import (
 )
 
 type Farm struct {
-	ID                      uuid.UUID `gorm:"type:varchar(100)"`
-	Title                   string    `gorm:"type:varchar(100)"`
-	Description             string    `gorm:"type:varchar(100)"`
-	Picture                 string    `gorm:"type:varchar(100)"`
-	MinimumInvestmentAmount float64   `gorm:"type:decimal"`
-	CountInvestment         uint64
+	ID                      uuid.UUID      `gorm:"type:varchar(100)"`
+	Title                   string         `gorm:"type:varchar(100)"`
+	Description             string         `gorm:"type:varchar(100)"`
+	Picture                 string         `gorm:"type:varchar(100)"`
+	MinimumInvestmentAmount float64        `gorm:"type:decimal"`
+	CountInvestment         float64        `gorm:"type:decimal"`
 	CreatedAt               time.Time      `gorm:"autoCreateTime"`
 	UpdatedAt               time.Time      `gorm:"autoUpdateTime"`
 	DeletedAt               gorm.DeletedAt `gorm:"index"`
