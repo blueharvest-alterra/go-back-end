@@ -11,7 +11,7 @@ type FarmResponse struct {
 	Description             string    `json:"description"`
 	Picture                 string    `json:"picture"`
 	MinimumInvestmentAmount float64   `json:"minimum_investment_amount"`
-	CountInvestment         uint64    `json:"count_investment"`
+	CountInvestment         float64    `json:"count_investment"`
 }
 
 func FarmResponseFromUseCase(farm *entities.Farm) *FarmResponse {
