@@ -15,6 +15,7 @@ type Farm struct {
 	Description             string
 	Picture                 string
 	MinimumInvestmentAmount float64
+	CountInvestment         float64
 	CreatedAt               time.Time
 	UpdatedAt               time.Time
 	DeletedAt               gorm.DeletedAt

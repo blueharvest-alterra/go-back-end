@@ -14,6 +14,7 @@ type Farm struct {
 	Description             string         `gorm:"type:varchar(100)"`
 	Picture                 string         `gorm:"type:varchar(100)"`
 	MinimumInvestmentAmount float64        `gorm:"type:decimal"`
+	CountInvestment         float64        `gorm:"type:decimal"`
 	CreatedAt               time.Time      `gorm:"autoCreateTime"`
 	UpdatedAt               time.Time      `gorm:"autoUpdateTime"`
 	DeletedAt               gorm.DeletedAt `gorm:"index"`
@@ -26,6 +27,7 @@ func FromUseCase(farm *entities.Farm) *Farm {
 		Description:             farm.Description,
 		Picture:                 farm.Picture,
 		MinimumInvestmentAmount: farm.MinimumInvestmentAmount,
+		CountInvestment:         farm.CountInvestment,
 		CreatedAt:               farm.CreatedAt,
 		UpdatedAt:               farm.UpdatedAt,
 		DeletedAt:               farm.DeletedAt,
@@ -38,6 +40,7 @@ func (u *Farm) ToUseCase() *entities.Farm {
 		Title:                   u.Title,
 		Description:             u.Description,
 		Picture:                 u.Picture,
+		CountInvestment:         u.CountInvestment,
 		MinimumInvestmentAmount: u.MinimumInvestmentAmount,
 		CreatedAt:               u.CreatedAt,
 		UpdatedAt:               u.UpdatedAt,

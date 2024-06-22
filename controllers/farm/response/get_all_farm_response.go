@@ -15,6 +15,7 @@ func SliceFromUseCase(farms *[]entities.Farm) *FarmGetAll {
 			Description:             _farm.Description,
 			Picture:                 _farm.Picture,
 			MinimumInvestmentAmount: _farm.MinimumInvestmentAmount,
+			CountInvestment:         _farm.CountInvestment,
 		}
 	}
 
