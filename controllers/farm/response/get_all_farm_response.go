@@ -21,5 +21,5 @@ func SliceFromUseCase(farms *[]entities.Farm) *FarmGetAll {
 
 	return &FarmGetAll{
 		Farms: allFarms,
-	}
+	}	
 }
