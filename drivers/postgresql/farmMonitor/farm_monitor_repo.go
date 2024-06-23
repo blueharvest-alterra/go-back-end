@@ -51,7 +51,7 @@ func (r *Repo) GetAllByFarmId(farmID uuid.UUID, farmMonitors *[]entities.FarmMon
 
 	fmt.Println("hit", a)
 
-	for _, farm := 	range farmMonitorDb {
+	for _, farm := range farmMonitorDb {
 		*farmMonitors = append(*farmMonitors, *farm.ToUseCase())
 	}
 	return nil
