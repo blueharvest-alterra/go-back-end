@@ -3,6 +3,7 @@ package response
 import (
 	"github.com/blueharvest-alterra/go-back-end/entities"
 	"github.com/google/uuid"
+	"time"
 )
 
 type CustomerResponse struct {
@@ -52,6 +53,7 @@ type GetTransactionResponse struct {
 	Payment            PaymentResponse              `json:"payment"`
 	Courier            CourierResponse              `json:"courier"`
 	TransactionDetails []TransactionDetailsResponse `json:"transaction_details"`
+	CreatedAt          time.Time                    `json:"created_at"`
 }
 
 func GetTransactionFromUseCase(transaction *entities.Transaction) *GetTransactionResponse {
@@ -97,5 +99,6 @@ func GetTransactionFromUseCase(transaction *entities.Transaction) *GetTransactio
 			Type:                 transaction.Courier.Type,
 		},
 		TransactionDetails: allTransactionDetail,
+		CreatedAt:          transaction.CreatedAt,
 	}
 }

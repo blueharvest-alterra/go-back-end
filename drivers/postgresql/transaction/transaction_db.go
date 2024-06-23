@@ -106,6 +106,7 @@ func FromUseCase(transaction *entities.Transaction) *Transaction {
 			Type: transaction.Courier.Type,
 		},
 		TransactionDetails: allTransactionDetails,
+		CreatedAt:          transaction.CreatedAt,
 	}
 }
 
@@ -177,6 +178,7 @@ func (u *Transaction) ToUseCase() *entities.Transaction {
 			Type: u.Courier.Type,
 		},
 		TransactionDetails: allTransactionDetails,
+		CreatedAt:          u.CreatedAt,
 	}
 }
 

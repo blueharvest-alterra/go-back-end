@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"github.com/blueharvest-alterra/go-back-end/constant"
 	"github.com/blueharvest-alterra/go-back-end/entities"
+	"github.com/blueharvest-alterra/go-back-end/utils"
 	"github.com/google/uuid"
 	"net/http"
 	"os"
@@ -209,7 +210,7 @@ type TextResponse struct {
 }
 
 func (c *ChatBot) GetOpenAIMessageLists() error {
-	url := "https://api.openai.com/v1/threads/" + c.ThreadID + "/messages?order=asc"
+	url := "https://api.openai.com/v1/threads/" + c.ThreadID + "/messages?order=asc&limit=100"
 	method := "GET"
 
 	client := &http.Client{}
@@ -239,6 +240,9 @@ func (c *ChatBot) GetOpenAIMessageLists() error {
 	if err != nil {
 		return err
 	}
+
+	fmt.Println("response", utils.PrettyPrint(response))
+	fmt.Println("len(response.Data)", len(response.Data))
 
 	allMessages := make([]Message, len(response.Data))
 	for i, msg := range response.Data {
