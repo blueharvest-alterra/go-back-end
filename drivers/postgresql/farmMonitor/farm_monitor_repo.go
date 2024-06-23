@@ -1,7 +1,7 @@
 package farmMonitor
 
 import (
-	"fmt"
+	"errors"
 
 	"github.com/blueharvest-alterra/go-back-end/constant"
 	"github.com/blueharvest-alterra/go-back-end/entities"
@@ -31,7 +31,7 @@ func (r *Repo) Create(farmInvest *entities.FarmMonitor) error {
 func (r *Repo) GetById(farmMonitor *entities.FarmMonitor) error {
 	var farmMonitorDb FarmMonitor
 	if err := r.DB.First(&farmMonitorDb, "id = ?", farmMonitor.ID).Error; err != nil {
-		if r.DB.RowsAffected < 1 {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
 			return constant.ErrNotFound
 		}
 		return err
@@ -44,14 +44,13 @@ func (r *Repo) GetById(farmMonitor *entities.FarmMonitor) error {
 func (r *Repo) GetAllByFarmId(farmID uuid.UUID, farmMonitors *[]entities.FarmMonitor) error {
 	var farmMonitorDb []FarmMonitor
 	if err := r.DB.Where("farm_id = ?", farmID).Find(&farmMonitorDb).Error; err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return constant.ErrNotFound
+		}
 		return err
 	}
 
-	a := r.DB.Where("farm_id = ?", farmID).Find(&farmMonitorDb)
-
-	fmt.Println("hit", a)
-
-	for _, farm := 	range farmMonitorDb {
+	for _, farm := range farmMonitorDb {
 		*farmMonitors = append(*farmMonitors, *farm.ToUseCase())
 	}
 	return nil
@@ -64,8 +63,8 @@ func (r *Repo) Update(farmMonitor *entities.FarmMonitor) error {
 	if db.RowsAffected < 1 {
 		return constant.ErrNotFound
 	}
-	if err := db.Error; err != nil {
-		return err
+	if errors.Is(db.Error, gorm.ErrRecordNotFound) {
+		return constant.ErrNotFound
 	}
 
 	*farmMonitor = *farmMonitorDb.ToUseCase()
