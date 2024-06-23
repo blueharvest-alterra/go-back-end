@@ -22,7 +22,7 @@ func NewTransactionRepo(db *gorm.DB) *Repo {
 func (r Repo) GetAll(transactions *[]entities.Transaction, userData *middlewares.Claims) error {
 	var transactionsDb []Transaction
 
-	query := r.DB.Preload("TransactionDetails.Product").Preload(clause.Associations)
+	query := r.DB.Unscoped().Preload("TransactionDetails.Product").Preload(clause.Associations)
 
 	if userData.Role == "customer" {
 		query.Where("customer_id = ?", userData.ID)
