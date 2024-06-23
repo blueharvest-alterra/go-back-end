@@ -32,9 +32,6 @@ func (r *Repo) Update(farm *entities.Farm) error {
 	if db.RowsAffected < 1 {
 		return constant.ErrNotFound
 	}
-	if err := db.Error; err != nil {
-		return err
-	}
 
 	*farm = *farmDb.ToUseCase()
 	return nil
